@@ -1,6 +1,6 @@
 substitutions:
-  name: ball_v2
-  friendly_name: "Ball V2"
+  name: ball_v3
+  friendly_name: "Ball V3"
 
 ## v1.07 26-jul-2025 #############################################################################################################################
 ## changed how to play startup sound to avoid double triggering
