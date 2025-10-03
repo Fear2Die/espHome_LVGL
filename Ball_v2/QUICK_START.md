@@ -19,14 +19,14 @@ wifi_password: "YourWiFiPassword"
 
 Edit `Ball_v2.yaml` and replace **all 4 instances** of `light.YOUR_LIGHT_ENTITY`:
 
-1. **Line ~205** (Home Assistant sensor):
+1. **Line ~207** (Home Assistant sensor):
    ```yaml
    - platform: homeassistant
      id: ha_light_brightness
      entity_id: light.living_room_lamp  # ← Change this
    ```
 
-2. **Line ~1172** (Slider release):
+2. **Line ~1043** (Slider release on Ready page):
    ```yaml
    on_release:
      - homeassistant.action:
@@ -35,7 +35,7 @@ Edit `Ball_v2.yaml` and replace **all 4 instances** of `light.YOUR_LIGHT_ENTITY`
            entity_id: light.living_room_lamp  # ← Change this
    ```
 
-3. **Line ~1206** (Button click):
+3. **Line ~1078** (Button click on Ready page):
    ```yaml
    on_click:
      - homeassistant.action:
@@ -44,7 +44,7 @@ Edit `Ball_v2.yaml` and replace **all 4 instances** of `light.YOUR_LIGHT_ENTITY`
            entity_id: light.living_room_lamp  # ← Change this
    ```
 
-4. **Line ~858** (Number entity):
+4. **Line ~857** (Number entity):
    ```yaml
    set_action:
      - homeassistant.action:
@@ -88,7 +88,7 @@ Reboot the device:
 - In Home Assistant: Device → **REBOOT** button
 
 **Test light control:**
-1. Navigate to light control page (see navigation options below)
+1. Light controls are on the Ready page (default idle screen)
 2. Move slider → Light brightness should change
 3. Click button → Light should toggle on/off
 
@@ -122,41 +122,16 @@ Reboot the device:
 
 ---
 
-## Navigation to Light Control Page
+## Accessing Light Controls
 
-The `light_control_page` exists but needs navigation setup. Choose one:
+The light control widgets (slider and button) are integrated into the **Ready page** (`idle_page`), which is the default screen when the device is idle and ready for voice commands.
 
-### Option A: Home Assistant Automation
-```yaml
-# In Home Assistant automations.yaml
-- alias: "Show Ball V2 Light Control"
-  trigger:
-    - platform: state
-      entity_id: input_boolean.ball_light_control_toggle
-      to: 'on'
-  action:
-    - service: esphome.ball_v2_lvgl_page_show
-      data:
-        page: light_control_page
-```
+**No navigation needed!** The controls are always visible on the Ready page.
 
-### Option B: Add Touch Long-Press (Edit Ball_v2.yaml)
-```yaml
-# Find the touchscreen section and add:
-touchscreen:
-  - platform: cst816
-    # ... existing config ...
-    on_touch:
-      - if:
-          condition:
-            lambda: 'return id(touch_input).state;'
-          then:
-            - delay: 2s
-            - lvgl.page.show: light_control_page
-```
+### Alternative Control Options
 
-### Option C: Use Number Entity
-Simply adjust "Ball V2 Light Brightness" in Home Assistant dashboard!
+- **Home Assistant Number Entity**: Adjust "Ball V2 Light Brightness" (0-100%) in Home Assistant dashboard
+- **Voice Commands**: Use voice assistant to control the light (e.g., "Set brightness to 50%")
 
 ---
 

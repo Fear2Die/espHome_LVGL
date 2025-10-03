@@ -1009,17 +1009,73 @@ lvgl:
               - label:
                   id: idle_label
                   text: "Ready"
-                  align: CENTER
+                  align: TOP_MID
+                  y: 5
                   text_align: CENTER
                   text_color: 0x00FF00
-                  text_font: montserrat_32
+                  text_font: montserrat_20
               - label:
                   id: battery_label
-                  align: TOP_MID
-                  y: 10
+                  align: TOP_RIGHT
+                  x: -10
+                  y: 5
                   text: ""
                   text_color: 0xFFFFFF
-                  text_font: montserrat_20
+                  text_font: montserrat_16
+              
+              # Brightness slider (0-255)
+              - slider:
+                  id: my_light_slider
+                  x: 20
+                  y: 70
+                  width: 200
+                  height: 20
+                  min_value: 0
+                  max_value: 255
+                  value: 128
+                  align: TOP_MID
+                  pad_all: 8
+                  # When user releases slider, call HA to set brightness
+                  on_release:
+                    - homeassistant.action:
+                        action: light.turn_on
+                        data:
+                          entity_id: light.YOUR_LIGHT_ENTITY  # Replace with your actual light entity ID
+                          brightness: !lambda 'return (int) x;'
+              
+              # Brightness value label
+              - label:
+                  id: brightness_value_label
+                  text: "Brightness: 128"
+                  align: TOP_MID
+                  y: 105
+                  text_color: 0xCCCCCC
+                  text_font: montserrat_16
+                  text_align: CENTER
+              
+              # On/Off toggle button
+              - button:
+                  id: my_light_button
+                  x: 0
+                  y: 150
+                  width: 140
+                  height: 50
+                  align: CENTER
+                  checkable: true
+                  bg_color: 0x555555
+                  border_width: 2
+                  border_color: 0x888888
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: "Toggle Light"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_16
+                  on_click:
+                    - homeassistant.action:
+                        action: light.toggle
+                        data:
+                          entity_id: light.YOUR_LIGHT_ENTITY  # Replace with your actual light entity ID
     
     - id: listening_page
       bg_color: 0x0000FF
@@ -1143,67 +1199,4 @@ lvgl:
             text_font: montserrat_32
     
     # Light control page with slider and button
-    - id: light_control_page
-      bg_color: 0x222222
-      widgets:
-        - label:
-            text: "Light Control"
-            align: TOP_MID
-            y: 10
-            text_color: 0xFFFFFF
-            text_font: montserrat_20
-            text_align: CENTER
-        
-        # Brightness slider (0-255)
-        - slider:
-            id: my_light_slider
-            x: 20
-            y: 60
-            width: 200
-            height: 20
-            min_value: 0
-            max_value: 255
-            value: 128
-            align: TOP_MID
-            pad_all: 8
-            # When user releases slider, call HA to set brightness
-            on_release:
-              - homeassistant.action:
-                  action: light.turn_on
-                  data:
-                    entity_id: light.YOUR_LIGHT_ENTITY  # Replace with your actual light entity ID
-                    brightness: !lambda 'return (int) x;'
-        
-        # Brightness value label
-        - label:
-            id: brightness_value_label
-            text: "Brightness: 128"
-            align: TOP_MID
-            y: 95
-            text_color: 0xCCCCCC
-            text_font: montserrat_16
-            text_align: CENTER
-        
-        # On/Off toggle button
-        - button:
-            id: my_light_button
-            x: 0
-            y: 140
-            width: 140
-            height: 50
-            align: CENTER
-            checkable: true
-            bg_color: 0x555555
-            border_width: 2
-            border_color: 0x888888
-            widgets:
-              - label:
-                  align: CENTER
-                  text: "Toggle Light"
-                  text_color: 0xFFFFFF
-                  text_font: montserrat_16
-            on_click:
-              - homeassistant.action:
-                  action: light.toggle
-                  data:
-                    entity_id: light.YOUR_LIGHT_ENTITY  # Replace with your actual light entity ID
+

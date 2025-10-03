@@ -46,16 +46,16 @@ wifi_password: "your_password"
 
 ### 2. Configure your light entity
 
-**IMPORTANT:** Before flashing, replace `light.YOUR_LIGHT_ENTITY` with your actual Home Assistant light entity ID in three places in `Ball_v2.yaml`:
+**IMPORTANT:** Before flashing, replace `light.YOUR_LIGHT_ENTITY` with your actual Home Assistant light entity ID in four places in `Ball_v2.yaml`:
 
-1. **Home Assistant sensor** (around line 205):
+1. **Home Assistant sensor** (around line 207):
    ```yaml
    - platform: homeassistant
      id: ha_light_brightness
      entity_id: light.YOUR_LIGHT_ENTITY  # ← Change this
    ```
 
-2. **Slider on_release action** (around line 1146):
+2. **Slider on_release action on Ready page** (around line 1043):
    ```yaml
    on_release:
      - homeassistant.action:
@@ -64,7 +64,7 @@ wifi_password: "your_password"
            entity_id: light.YOUR_LIGHT_ENTITY  # ← Change this
    ```
 
-3. **Button on_click action** (around line 1176):
+3. **Button on_click action on Ready page** (around line 1078):
    ```yaml
    on_click:
      - homeassistant.action:
@@ -73,7 +73,7 @@ wifi_password: "your_password"
            entity_id: light.YOUR_LIGHT_ENTITY  # ← Change this
    ```
 
-4. **Number entity** (around line 858):
+4. **Number entity** (around line 857):
    ```yaml
    set_action:
      - homeassistant.action:
@@ -107,29 +107,9 @@ After enabling HA actions, reboot your Ball V2 device for changes to take effect
 
 ## Usage
 
-### Accessing Light Control Page
-
-The light control page (`light_control_page`) is included in the configuration. To navigate to it, you have several options:
-
-1. **Add touch navigation**: Modify the `touchscreen` section to switch pages on long-press
-2. **Use Home Assistant**: Create an automation to call `lvgl.page.show` service
-3. **Button navigation**: Modify button press actions to cycle through pages
-
-Example automation to switch to light control page:
-```yaml
-# In Home Assistant automations.yaml
-- alias: "Ball V2 - Show Light Control"
-  trigger:
-    - platform: state
-      entity_id: input_boolean.ball_show_light_control
-      to: 'on'
-  action:
-    - service: esphome.ball_v2_lvgl_page_show
-      data:
-        page: light_control_page
-```
-
 ### Using the Light Control
+
+The light control widgets (brightness slider and toggle button) are integrated directly into the **Ready page** (`idle_page`), which is the default display when the device is idle and ready for voice commands.
 
 1. **Brightness Slider**: 
    - Drag the slider to adjust brightness (0-255)

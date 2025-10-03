@@ -32,34 +32,41 @@ sensor:
           id: my_light_slider
           value: !lambda 'return x;'
 
-# LVGL page with light control widgets
+# LVGL idle page with integrated light control widgets
 lvgl:
   pages:
-    - id: light_control_page
-      bg_color: 0x222222
+    - id: idle_page
+      bg_color: 0x111111
       widgets:
-        # Brightness slider (0-255)
-        - slider:
-            id: my_light_slider
-            min_value: 0
-            max_value: 255
-            value: 128
-            on_release:
-              - homeassistant.action:
-                  action: light.turn_on
-                  data:
-                    entity_id: light.YOUR_LIGHT_ENTITY
-                    brightness: !lambda 'return (int) x;'
-        
-        # Toggle button
-        - button:
-            id: my_light_button
-            checkable: true
-            on_click:
-              - homeassistant.action:
-                  action: light.toggle
-                  data:
-                    entity_id: light.YOUR_LIGHT_ENTITY
+        - obj:
+            id: idle_container
+            widgets:
+              - label:
+                  text: "Ready"
+                  text_color: 0x00FF00
+              
+              # Brightness slider (0-255)
+              - slider:
+                  id: my_light_slider
+                  min_value: 0
+                  max_value: 255
+                  value: 128
+                  on_release:
+                    - homeassistant.action:
+                        action: light.turn_on
+                        data:
+                          entity_id: light.YOUR_LIGHT_ENTITY
+                          brightness: !lambda 'return (int) x;'
+              
+              # Toggle button
+              - button:
+                  id: my_light_button
+                  checkable: true
+                  on_click:
+                    - homeassistant.action:
+                        action: light.toggle
+                        data:
+                          entity_id: light.YOUR_LIGHT_ENTITY
 
 # Optional: HA number entity for percentage control
 number:
@@ -183,10 +190,10 @@ cp secrets.yaml.example secrets.yaml
 
 ### 3. Configure Light Entity
 Edit `Ball_v2.yaml` and replace `light.YOUR_LIGHT_ENTITY` with your actual Home Assistant light entity ID in 4 places:
-- Home Assistant sensor (~line 205)
-- Slider on_release (~line 1172)
-- Button on_click (~line 1206)
-- Number set_action (~line 858)
+- Home Assistant sensor (~line 207)
+- Slider on_release on Ready page (~line 1043)
+- Button on_click on Ready page (~line 1078)
+- Number set_action (~line 857)
 
 Example: `light.living_room_floor`
 
@@ -203,7 +210,7 @@ esphome run Ball_v2.yaml
 
 ### 6. Reboot and Test
 - Reboot the Ball V2 device
-- Navigate to light control page
+- Light controls are on the Ready page (idle_page)
 - Test slider and button
 - Verify external sync works
 

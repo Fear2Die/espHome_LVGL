@@ -11,10 +11,10 @@ INFO Configuration is valid! ✅
 ```
 
 ### LVGL Pages Verification
-All 11 display pages are present and configured:
+All 10 display pages are present and configured:
 
 ```
-✅ idle_page              - Ready state (dark gray, green text)
+✅ idle_page              - Ready state with light controls (dark gray, green text)
 ✅ listening_page         - Voice input (blue background)
 ✅ thinking_page          - Processing (orange background)
 ✅ replying_page          - Speaking response (green background)
@@ -24,8 +24,9 @@ All 11 display pages are present and configured:
 ✅ no_wifi_page           - WiFi disconnected (yellow)
 ✅ initializing_page      - Boot state (gray)
 ✅ muted_page             - Mute state (black, red text)
-✅ light_control_page     - NEW: Light control (dark gray)
 ```
+
+**Note:** Light control widgets (slider and toggle button) are now integrated into the `idle_page` (Ready page).
 
 ### Voice Assistant Components
 ```yaml
