@@ -19,6 +19,7 @@ substitutions:
 
 ## SETTINGS ######################################################################################################################################
 
+  imagemodel: "HA-character" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,Eyes2,GLaDOS,Girl1,Guy1,Guy2,Gwen,HA-character,Harley,Jarvis,Luffy,Mario,Max,Prime,Robochibi,Robocop,Robot,Robotgirl,Shaun)
   startup_sound: "Home_Connected" # (options are: available,Home_Connected,Computer_Ready)
 
   imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
@@ -57,7 +58,23 @@ substitutions:
 
 ##################################################################################################################################################
 
+  loading_illustration_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
+  idle_illustration_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/idle.png
+  listening_illustration_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/listening.png
+  thinking_illustration_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/thinking.png
+  replying_illustration_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/replying.png
+  error_illustration_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/error.png
+  timer_finished_illustration_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
+  mute_illustration_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/mute.png
+
   startup_sound_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/sounds/${startup_sound}.flac
+
+  loading_illustration_background_color: "000000"
+  idle_illustration_background_color: "000000"
+  listening_illustration_background_color: "000000"
+  thinking_illustration_background_color: "000000"
+  replying_illustration_background_color: "000000"
+  error_illustration_background_color: "000000"
 
   voice_assist_idle_phase_id: "1"
   voice_assist_listening_phase_id: "2"
@@ -556,48 +573,46 @@ script:
                         - lambda: |
                             switch(id(voice_assistant_phase)) {
                               case ${voice_assist_listening_phase_id}:
-                                id(listening_page).show();
+                                id(s3_box_lcd).show_page(listening_page);
+                                id(s3_box_lcd).update();
                                 break;
                               case ${voice_assist_thinking_phase_id}:
-                                id(thinking_page).show();
-                                if (id(show_text).state) {
-                                  id(request_label).set_text(id(text_request).state.c_str());
-                                }
+                                id(s3_box_lcd).show_page(thinking_page);
+                                id(s3_box_lcd).update();
                                 break;
                               case ${voice_assist_replying_phase_id}:
-                                id(replying_page).show();
-                                if (id(show_text).state) {
-                                  id(response_label).set_text(id(text_response).state.c_str());
-                                }
+                                id(s3_box_lcd).show_page(replying_page);
+                                id(s3_box_lcd).update();
                                 break;
                               case ${voice_assist_error_phase_id}:
-                                id(error_page).show();
+                                id(s3_box_lcd).show_page(error_page);
+                                id(s3_box_lcd).update();
                                 break;
                               case ${voice_assist_muted_phase_id}:
-                                id(muted_page).show();
+                                id(s3_box_lcd).show_page(muted_page);
+                                id(s3_box_lcd).update();
                                 break;
                               case ${voice_assist_not_ready_phase_id}:
-                                id(no_ha_page).show();
+                                id(s3_box_lcd).show_page(no_ha_page);
+                                id(s3_box_lcd).update();
                                 break;
                               case ${voice_assist_timer_finished_phase_id}:
-                                id(timer_finished_page).show();
+                                id(s3_box_lcd).show_page(timer_finished_page);
+                                id(s3_box_lcd).update();
                                 break;
                               default:
-                                id(idle_page).show();
-                                if (id(show_battery_status).state) {
-                                  char battery_text[16];
-                                  snprintf(battery_text, sizeof(battery_text), "%.0f%%", id(battery_percentage).state);
-                                  id(battery_label).set_text(battery_text);
-                                } else {
-                                  id(battery_label).set_text("");
-                                }
+                                id(s3_box_lcd).show_page(idle_page);
+                                id(s3_box_lcd).update();
                             }
                       else:
-                        - lvgl.page.show: no_ha_page
+                        - display.page.show: no_ha_page
+                        - component.update: s3_box_lcd
                 else:
-                  - lvgl.page.show: no_wifi_page
+                  - display.page.show: no_wifi_page
+                  - component.update: s3_box_lcd
           else:
-            - lvgl.page.show: initializing_page
+            - display.page.show: initializing_page
+            - component.update: s3_box_lcd
 
   - id: fetch_first_active_timer
     then:
@@ -644,7 +659,50 @@ script:
           }
           id(global_is_timer) = output;
 
-# Timer drawing scripts removed - LVGL handles display
+  - id: draw_timer_timeline
+    then:
+      - lambda: |
+          id(check_if_timers_active).execute();
+          id(check_if_timers).execute();
+          if (id(global_is_timer_active)){
+            id(fetch_first_active_timer).execute();
+            int active_pixels = round( 320 * id(global_first_active_timer).seconds_left / max(id(global_first_active_timer).total_seconds , static_cast<uint32_t>(1)) );
+            if (active_pixels > 0){
+              id(s3_box_lcd).filled_rectangle(0 , 225 , 240 , 15 , Color::WHITE );
+              id(s3_box_lcd).filled_rectangle(0 , 226 , active_pixels , 13 , id(active_timer_color) );
+            }
+          } else if (id(global_is_timer)){
+            id(fetch_first_timer).execute();
+            int active_pixels = round( 320 * id(global_first_timer).seconds_left / max(id(global_first_timer).total_seconds , static_cast<uint32_t>(1)));
+            if (active_pixels > 0){
+              id(s3_box_lcd).filled_rectangle(0 , 225 , 240 , 15 , Color::WHITE );
+              id(s3_box_lcd).filled_rectangle(0 , 226 , active_pixels , 13 , id(paused_timer_color) );
+            }
+          }
+  - id: draw_active_timer_widget
+    then:
+      - lambda: |
+          id(check_if_timers_active).execute();
+          if (id(global_is_timer_active)){
+            id(s3_box_lcd).filled_rectangle(80 , 40 , 160 , 50 , Color::WHITE );
+            id(s3_box_lcd).rectangle(80 , 40 , 160 , 50 , Color::BLACK );
+
+            id(fetch_first_active_timer).execute();
+            int hours_left = floor(id(global_first_active_timer).seconds_left / 3600);
+            int minutes_left = floor((id(global_first_active_timer).seconds_left - hours_left * 3600) / 60);
+            int seconds_left = id(global_first_active_timer).seconds_left - hours_left * 3600 - minutes_left * 60 ;
+            auto display_hours = (hours_left < 10 ? "0" : "") + std::to_string(hours_left);
+            auto display_minute = (minutes_left < 10 ? "0" : "") + std::to_string(minutes_left);
+            auto display_seconds = (seconds_left  < 10 ? "0" : "") + std::to_string(seconds_left) ;
+
+            std::string display_string = "";
+            if (hours_left > 0) {
+              display_string = display_hours + ":" + display_minute;
+            } else {
+              display_string = display_minute + ":" + display_seconds;
+            }
+            id(s3_box_lcd).printf(120, 47, id(font_timer), Color::BLACK, "%s", display_string.c_str());
+          }
   - id: start_wake_word
     then:
       - if:
@@ -874,9 +932,92 @@ globals:
     restore_value: no
     initial_value: "false"
 
-# Images removed - using LVGL instead
+image:
+  - file: ${error_illustration_file}
+    id: casita_error
+    resize: ${imagewidth}x${imageheight}
+    type: RGB565
+    transparency: alpha_channel
+  - file: ${idle_illustration_file}
+    id: casita_idle
+    resize: ${imagewidth}x${imageheight}
+    type: RGB565
+    transparency: alpha_channel
+  - file: ${listening_illustration_file}
+    id: casita_listening
+    resize: ${imagewidth}x${imageheight}
+    type: RGB565
+    transparency: alpha_channel
+  - file: ${thinking_illustration_file}
+    id: casita_thinking
+    resize: ${imagewidth}x${imageheight}
+    type: RGB565
+    transparency: alpha_channel
+  - file: ${replying_illustration_file}
+    id: casita_replying
+    resize: ${imagewidth}x${imageheight}
+    type: RGB565
+    transparency: alpha_channel
+  - file: ${timer_finished_illustration_file}
+    id: casita_timer_finished
+    resize: ${imagewidth}x${imageheight}
+    type: RGB565
+    transparency: alpha_channel
+  - file: ${loading_illustration_file}
+    id: casita_initializing
+    resize: ${imagewidth}x${imageheight}
+    type: RGB565
+    transparency: alpha_channel
+  - file: ${mute_illustration_file}
+    id: casita_muted
+    resize: ${imagewidth}x${imageheight}
+    type: RGB565
+    transparency: alpha_channel
+  - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-wifi.png
+    id: error_no_wifi
+    resize: ${imagewidth}x${imageheight}
+    type: RGB565
+    transparency: alpha_channel
+  - file: https://github.com/esphome/wake-word-voice-assistants/raw/main/error_box_illustrations/error-no-ha.png
+    id: error_no_ha
+    resize: ${imagewidth}x${imageheight}
+    type: RGB565
+    transparency: alpha_channel
 
-# Fonts defined in LVGL section
+font:
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 300
+      italic: true
+    id: font_request
+    size: 15
+    glyphsets:
+      - ${font_glyphsets}
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 300
+    id: font_response
+    size: 15
+    glyphsets:
+      - ${font_glyphsets}
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 300
+    id: font_battery
+    size: 24
+    glyphsets:
+      - ${font_glyphsets}
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 300
+    id: font_timer
+    size: 30
+    glyphsets:
+      - ${font_glyphsets}
 
 text_sensor:
   - id: text_request
@@ -899,7 +1040,23 @@ text_sensor:
           id(text_response).state = (truncated+"...").c_str();
         }
 
-# Colors defined in LVGL section
+color:
+  - id: idle_color
+    hex: ${idle_illustration_background_color}
+  - id: listening_color
+    hex: ${listening_illustration_background_color}
+  - id: thinking_color
+    hex: ${thinking_illustration_background_color}
+  - id: replying_color
+    hex: ${replying_illustration_background_color}
+  - id: loading_color
+    hex: ${loading_illustration_background_color}
+  - id: error_color
+    hex: ${error_illustration_background_color}
+  - id: active_timer_color
+    hex: "26ed3a"
+  - id: paused_timer_color
+    hex: "3b89e3"
 
 spi:
   - id: spi_bus
@@ -916,167 +1073,77 @@ display:
     dc_pin: GPIO${lcd_dc_pin}
     reset_pin:
       number: GPIO${lcd_reset_pin}
-    auto_clear_enabled: false
+#      inverted: false
+    update_interval: never
     dimensions:
         height: ${imageheight}
         width: ${imagewidth}
-
-lvgl:
-  log_level: WARN
-  displays:
-    - s3_box_lcd
-  touchscreens:
-    - touch_dp
-  
-  color_depth: 16
-  bg_color: 0x000000
-  text_color: 0xFFFFFF
-  
-  default_font: montserrat_20
-  
-  pages:
-    - id: idle_page
-      bg_color: 0x111111
-      widgets:
-        - obj:
-            id: idle_container
-            width: 240
-            height: 240
-            bg_color: 0x111111
-            border_width: 0
-            widgets:
-              - label:
-                  id: idle_label
-                  text: "Ready"
-                  align: CENTER
-                  text_align: CENTER
-                  text_color: 0x00FF00
-                  text_font: montserrat_32
-              - label:
-                  id: battery_label
-                  align: TOP_MID
-                  y: 10
-                  text: ""
-                  text_color: 0xFFFFFF
-                  text_font: montserrat_20
-    
-    - id: listening_page
-      bg_color: 0x0000FF
-      widgets:
-        - label:
-            id: listening_label
-            text: "Listening..."
-            align: CENTER
-            text_align: CENTER
-            text_color: 0xFFFFFF
-            text_font: montserrat_32
-    
-    - id: thinking_page
-      bg_color: 0xFF8800
-      widgets:
-        - obj:
-            width: 240
-            height: 240
-            bg_color: 0xFF8800
-            border_width: 0
-            widgets:
-              - label:
-                  text: "Thinking..."
-                  align: CENTER
-                  text_align: CENTER
-                  text_color: 0xFFFFFF
-                  text_font: montserrat_32
-              - label:
-                  id: request_label
-                  align: BOTTOM_MID
-                  y: -20
-                  width: 200
-                  text: ""
-                  text_color: 0xFFFFFF
-                  text_font: montserrat_16
-                  text_align: CENTER
-    
-    - id: replying_page
-      bg_color: 0x00AA00
-      widgets:
-        - obj:
-            width: 240
-            height: 240
-            bg_color: 0x00AA00
-            border_width: 0
-            widgets:
-              - label:
-                  text: "Replying..."
-                  align: CENTER
-                  text_align: CENTER
-                  text_color: 0xFFFFFF
-                  text_font: montserrat_32
-              - label:
-                  id: response_label
-                  align: BOTTOM_MID
-                  y: -20
-                  width: 200
-                  text: ""
-                  text_color: 0xFFFFFF
-                  text_font: montserrat_16
-                  text_align: CENTER
-    
-    - id: timer_finished_page
-      bg_color: 0xFF0000
-      widgets:
-        - label:
-            text: "Timer Finished!"
-            align: CENTER
-            text_align: CENTER
-            text_color: 0xFFFFFF
-            text_font: montserrat_32
-    
-    - id: error_page
-      bg_color: 0xFF0000
-      widgets:
-        - label:
-            text: "Error"
-            align: CENTER
-            text_align: CENTER
-            text_color: 0xFFFFFF
-            text_font: montserrat_32
-    
-    - id: no_ha_page
-      bg_color: 0x660000
-      widgets:
-        - label:
-            text: "No Home Assistant"
-            align: CENTER
-            text_align: CENTER
-            text_color: 0xFFFFFF
-            text_font: montserrat_20
-    
-    - id: no_wifi_page
-      bg_color: 0x666600
-      widgets:
-        - label:
-            text: "No WiFi"
-            align: CENTER
-            text_align: CENTER
-            text_color: 0xFFFFFF
-            text_font: montserrat_32
-    
-    - id: initializing_page
-      bg_color: 0x333333
-      widgets:
-        - label:
-            text: "Initializing..."
-            align: CENTER
-            text_align: CENTER
-            text_color: 0xFFFFFF
-            text_font: montserrat_32
-    
-    - id: muted_page
-      bg_color: 0x000000
-      widgets:
-        - label:
-            text: "Muted"
-            align: CENTER
-            text_align: CENTER
-            text_color: 0xFF0000
-            text_font: montserrat_32
+    pages:
+      - id: idle_page
+        lambda: |-
+          it.fill(id(idle_color));
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_idle), ImageAlign::CENTER);
+          if (id(show_battery_status).state) {
+            const int box_top = 2;
+            const int box_height = 28;
+            it.filled_rectangle((it.get_width()/2)-40, box_top, 80, box_height, Color::WHITE);
+            it.rectangle((it.get_width()/2)-40, box_top, 80, box_height, Color::BLACK);
+            char battery_text[16];
+            snprintf(battery_text, sizeof(battery_text), "%.0f%%", id(battery_percentage).state);
+            it.printf(it.get_width() / 2, 4, id(font_battery), Color::BLACK, TextAlign::TOP_CENTER, "%s", battery_text);
+          }
+          id(draw_timer_timeline).execute();
+          id(draw_active_timer_widget).execute();
+      - id: listening_page
+        lambda: |-
+          it.fill(id(listening_color));
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_listening), ImageAlign::CENTER);
+          id(draw_timer_timeline).execute();
+      - id: thinking_page
+        lambda: |-
+          it.fill(id(thinking_color));
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_thinking), ImageAlign::CENTER);
+          if (id(show_text).state) {
+            it.filled_rectangle(20 , 20 , 200 , 30 , Color::WHITE );
+            it.rectangle(20 , 20 , 200 , 30 , Color::BLACK );
+            it.printf(30, 25, id(font_request), Color::BLACK, "%s", id(text_request).state.c_str());
+          }
+          id(draw_timer_timeline).execute();
+      - id: replying_page
+        lambda: |-
+          it.fill(id(replying_color));
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_replying), ImageAlign::CENTER);
+          int y_offset = 190; // default for 240px display
+          if (it.get_height() == 320) {
+            y_offset = 270; // Move box lower for 320px tall screens
+          }
+          if (id(show_text).state) {
+            it.filled_rectangle(20, y_offset, 200, 30, Color::WHITE);
+            it.rectangle(20, y_offset, 200, 30, Color::BLACK);
+            it.printf(30, y_offset + 5, id(font_response), Color::BLACK, "%s", id(text_response).state.c_str());
+          }
+          id(draw_timer_timeline).execute();
+      - id: timer_finished_page
+        lambda: |-
+          it.fill(id(idle_color));
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_timer_finished), ImageAlign::CENTER);
+      - id: error_page
+        lambda: |-
+          it.fill(id(error_color));
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_error), ImageAlign::CENTER);
+      - id: no_ha_page
+        lambda: |-
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(error_no_ha), ImageAlign::CENTER);
+      - id: no_wifi_page
+        lambda: |-
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(error_no_wifi), ImageAlign::CENTER);
+      - id: initializing_page
+        lambda: |-
+          it.fill(id(loading_color));
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_initializing), ImageAlign::CENTER);
+      - id: muted_page
+        lambda: |-
+          it.fill(Color::BLACK);
+          it.image((it.get_width() / 2), (it.get_height() / 2), id(casita_muted), ImageAlign::CENTER);
+          id(draw_timer_timeline).execute();
+          id(draw_active_timer_widget).execute();
