@@ -553,45 +553,77 @@ script:
                       condition:
                         api.connected:
                       then:
-                        - lambda: |
-                            switch(id(voice_assistant_phase)) {
-                              case ${voice_assist_listening_phase_id}:
-                                id(listening_page).show();
-                                break;
-                              case ${voice_assist_thinking_phase_id}:
-                                id(thinking_page).show();
-                                if (id(show_text).state) {
-                                  id(request_label).set_text(id(text_request).state.c_str());
-                                }
-                                break;
-                              case ${voice_assist_replying_phase_id}:
-                                id(replying_page).show();
-                                if (id(show_text).state) {
-                                  id(response_label).set_text(id(text_response).state.c_str());
-                                }
-                                break;
-                              case ${voice_assist_error_phase_id}:
-                                id(error_page).show();
-                                break;
-                              case ${voice_assist_muted_phase_id}:
-                                id(muted_page).show();
-                                break;
-                              case ${voice_assist_not_ready_phase_id}:
-                                id(no_ha_page).show();
-                                break;
-                              case ${voice_assist_timer_finished_phase_id}:
-                                id(timer_finished_page).show();
-                                break;
-                              default:
-                                id(idle_page).show();
-                                if (id(show_battery_status).state) {
-                                  char battery_text[16];
-                                  snprintf(battery_text, sizeof(battery_text), "%.0f%%", id(battery_percentage).state);
-                                  id(battery_label).set_text(battery_text);
-                                } else {
-                                  id(battery_label).set_text("");
-                                }
-                            }
+                        - if:
+                            condition:
+                              lambda: return id(voice_assistant_phase) == ${voice_assist_listening_phase_id};
+                            then:
+                              - lvgl.page.show: listening_page
+                            else:
+                              - if:
+                                  condition:
+                                    lambda: return id(voice_assistant_phase) == ${voice_assist_thinking_phase_id};
+                                  then:
+                                    - lvgl.page.show: thinking_page
+                                    - if:
+                                        condition:
+                                          lambda: return id(show_text).state;
+                                        then:
+                                          - lvgl.label.update:
+                                              id: request_label
+                                              text: !lambda return id(text_request).state.c_str();
+                                  else:
+                                    - if:
+                                        condition:
+                                          lambda: return id(voice_assistant_phase) == ${voice_assist_replying_phase_id};
+                                        then:
+                                          - lvgl.page.show: replying_page
+                                          - if:
+                                              condition:
+                                                lambda: return id(show_text).state;
+                                              then:
+                                                - lvgl.label.update:
+                                                    id: response_label
+                                                    text: !lambda return id(text_response).state.c_str();
+                                        else:
+                                          - if:
+                                              condition:
+                                                lambda: return id(voice_assistant_phase) == ${voice_assist_error_phase_id};
+                                              then:
+                                                - lvgl.page.show: error_page
+                                              else:
+                                                - if:
+                                                    condition:
+                                                      lambda: return id(voice_assistant_phase) == ${voice_assist_muted_phase_id};
+                                                    then:
+                                                      - lvgl.page.show: muted_page
+                                                    else:
+                                                      - if:
+                                                          condition:
+                                                            lambda: return id(voice_assistant_phase) == ${voice_assist_not_ready_phase_id};
+                                                          then:
+                                                            - lvgl.page.show: no_ha_page
+                                                          else:
+                                                            - if:
+                                                                condition:
+                                                                  lambda: return id(voice_assistant_phase) == ${voice_assist_timer_finished_phase_id};
+                                                                then:
+                                                                  - lvgl.page.show: timer_finished_page
+                                                                else:
+                                                                  - lvgl.page.show: idle_page
+                                                                  - if:
+                                                                      condition:
+                                                                        lambda: return id(show_battery_status).state;
+                                                                      then:
+                                                                        - lvgl.label.update:
+                                                                            id: battery_label
+                                                                            text: !lambda |-
+                                                                              char battery_text[16];
+                                                                              snprintf(battery_text, sizeof(battery_text), "%.0f%%", id(battery_percentage).state);
+                                                                              return battery_text;
+                                                                      else:
+                                                                        - lvgl.label.update:
+                                                                            id: battery_label
+                                                                            text: ""
                       else:
                         - lvgl.page.show: no_ha_page
                 else:
