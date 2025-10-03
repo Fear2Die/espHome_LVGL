@@ -1,0 +1,38 @@
+substitutions:
+  name: spotpear_v2
+  friendly_name: "Spotpear V2"
+
+  imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
+  imageheight: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
+  displaymodel: "GC9A01A" # GC9A01A (Ball v2 & Puck) or ST7789V (Muma)
+  invertcolors: "true" # GC9A01A/ST7789V (Ball v2 & Muma & Puck) "true"
+##################################################################################################################################################
+
+  # Hardware v2 pin mappings
+  sda_pin_bus_a: "15"        # I2C Bus A SDA
+  scl_pin_bus_a: "14"        # I2C BUS A SCL
+  sda_pin_bus_b: "11"        # I2C Bus B SDA
+  scl_pin_bus_b: "7"         # I2C BUS B SCL
+
+  i2s_lrclk_pin: "45"        # I2S LRCLK (Word Select)
+  i2s_bclk_pin: "9"          # I2S BCLK (Bit Clock)
+  i2s_mclk_pin: "16"         # I2S MCLK (Master Clock)
+  i2s_din_pin: "10"          # I2S Data In (Mic)
+  i2s_dout_pin: "8"          # I2S Data Out (Speaker)
+
+  speaker_enable_pin: "46"   # Speaker Enable
+  touch_input_pin: "12"      # Touch interrupt
+  touch_reset_pin: "6"       # Touch Reset
+
+  backlight_output_pin: "42" # Display Backlight
+  lcd_cs_pin: "5"            # Display CS (Chip Select)
+  lcd_dc_pin: "47"           # Display DC (Data/Command)
+  lcd_reset_pin: "38"        # Display Reset
+  spi_clk_pin: "4"           # SPI Clock
+  spi_mosi_pin: "2"          # SPI MOSI (Data Out)
+
+  left_top_button_pin: "0"   # Main Button
+  led_pin: "48"              # RGB LED (WS2812)
+  battery_adc_pin: "1"       # Battery Voltage ADC
+
+##################################################################################################################################################
