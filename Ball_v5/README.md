@@ -2,6 +2,16 @@
 
 Ball V5 is a major upgrade from Ball V4 with live state tracking, media player controls, and weather display.
 
+> **📢 Important**: If upgrading from an older V5 version and experiencing light flickering, see [QUICK_FIX_GUIDE.md](QUICK_FIX_GUIDE.md) for the fix.
+
+## What's New in Ball V5.1
+
+### 🐛 Bug Fix: Flickering Issue Resolved
+- **Fixed**: Light flickering and cycling on/off when adjusting brightness
+- **Cause**: Feedback loop between device slider and Home Assistant sensor
+- **Solution**: Added protection flags to prevent infinite loops
+- **Details**: See [BUGFIX_FLICKERING.md](BUGFIX_FLICKERING.md)
+
 ## What's New in Ball V5
 
 ### 🌟 Live State Tracking

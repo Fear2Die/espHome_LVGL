@@ -202,6 +202,8 @@ sensor:
     attribute: brightness
     on_value:
       # Convert 0-255 from HA to 0-100 percentage for slider
+      # Set flag to prevent feedback loop
+      - lambda: 'id(updating_light_from_ha) = true;'
       - lvgl.slider.update:
           id: my_light_slider
           value: !lambda 'return (x / 255.0) * 100.0;'
@@ -211,6 +213,7 @@ sensor:
             char buf[20];
             snprintf(buf, sizeof(buf), "%.0f%%", (x / 255.0) * 100.0);
             return buf;
+      - lambda: 'id(updating_light_from_ha) = false;'
 
   # Weather temperature sensor
   - platform: homeassistant
@@ -244,9 +247,12 @@ sensor:
     entity_id: media_player.YOUR_MEDIA_PLAYER_ENTITY  # Replace with your actual media player entity ID
     attribute: volume_level
     on_value:
+      # Set flag to prevent feedback loop
+      - lambda: 'id(updating_media_from_ha) = true;'
       - lvgl.slider.update:
           id: media_volume_slider
           value: !lambda 'return x * 100.0;'
+      - lambda: 'id(updating_media_from_ha) = false;'
 
 time:
   - platform: homeassistant
@@ -974,6 +980,14 @@ globals:
     type: bool
     restore_value: no
     initial_value: "false"
+  - id: updating_light_from_ha
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: updating_media_from_ha
+    type: bool
+    restore_value: no
+    initial_value: 'false'
 
 # Images removed - using LVGL instead
 
@@ -1162,11 +1176,15 @@ lvgl:
                   pad_all: 8
                   # Instant update - changes brightness as you move the slider
                   on_value:
-                    - homeassistant.action:
-                        action: light.turn_on
-                        data:
-                          entity_id: light.YOUR_LIGHT_ENTITY  # Replace with your actual light entity ID
-                          brightness_pct: !lambda 'return (int) x;'
+                    - if:
+                        condition:
+                          lambda: 'return !id(updating_light_from_ha);'
+                        then:
+                          - homeassistant.action:
+                              action: light.turn_on
+                              data:
+                                entity_id: light.YOUR_LIGHT_ENTITY  # Replace with your actual light entity ID
+                                brightness_pct: !lambda 'return (int) x;'
                     - lvgl.label.update:
                         id: brightness_value_label
                         text: !lambda |-
@@ -1402,11 +1420,15 @@ lvgl:
                   align: TOP_MID
                   pad_all: 5
                   on_value:
-                    - homeassistant.action:
-                        action: media_player.volume_set
-                        data:
-                          entity_id: media_player.YOUR_MEDIA_PLAYER_ENTITY
-                          volume_level: !lambda 'return x / 100.0;'
+                    - if:
+                        condition:
+                          lambda: 'return !id(updating_media_from_ha);'
+                        then:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.YOUR_MEDIA_PLAYER_ENTITY
+                                volume_level: !lambda 'return x / 100.0;'
     
     # Weather Page
     - id: weather_page
