@@ -1,12 +1,12 @@
-# Ball V2 Configuration - Verification Report
+# Ball V3 Configuration - Verification Report
 
 ## Configuration Validation ✅
 
 ### ESPHome Validation
 ```bash
-$ esphome config Ball_v2.yaml
+$ esphome config Ball_v3.yaml
 INFO ESPHome 2025.9.3
-INFO Reading configuration Ball_v2.yaml...
+INFO Reading configuration Ball_v3.yaml...
 INFO Configuration is valid! ✅
 ```
 
@@ -94,8 +94,8 @@ All controls present:
 All required files present:
 
 ```
-✅ Ball_v2.yaml                        - Main config (1193 lines)
-✅ Ball_v2_spotpear_base.yaml.bak     - Base reference
+✅ Ball_v3.yaml                        - Main config (1193 lines)
+✅ Ball_v3_spotpear_base.yaml.bak     - Base reference
 ✅ README.md                           - User documentation
 ✅ CHANGES.md                          - Detailed changelog
 ✅ SUMMARY.md                          - Project overview
@@ -109,7 +109,7 @@ All required files present:
 
 ### Configuration Size
 - **Total Lines:** 1193
-- **Base (Spotpear V2):** 1114 lines
+- **Base (Spotpear V3):** 1114 lines
 - **New Features:** 79 lines
 - **Increase:** 7% for light control
 
@@ -194,9 +194,9 @@ All required files present:
 
 ### Warnings (Non-Breaking)
 ```
-⚠️  Underscore in hostname 'ball_v2'
+⚠️  Underscore in hostname 'ball_v3'
     → Cosmetic warning, doesn't affect functionality
-    → Can rename to 'ball-v2' if desired
+    → Can rename to 'ball-v3' if desired
 
 ⚠️  GPIO45/GPIO46 strapping pins
     → Hardware design limitation
@@ -270,25 +270,25 @@ All required files present:
 
 ### Configuration Check
 ```bash
-esphome config Ball_v2.yaml
+esphome config Ball_v3.yaml
 # Expected: "Configuration is valid!"
 ```
 
 ### Compilation Test
 ```bash
-esphome compile Ball_v2.yaml
+esphome compile Ball_v3.yaml
 # Expected: C++ generation successful
 ```
 
 ### Flash to Device
 ```bash
-esphome run Ball_v2.yaml
+esphome run Ball_v3.yaml
 # Expected: Flash successful
 ```
 
 ### OTA Update
 ```bash
-esphome run Ball_v2.yaml --device 192.168.1.xxx
+esphome run Ball_v3.yaml --device 192.168.1.xxx
 # Expected: OTA update successful
 ```
 
@@ -296,7 +296,7 @@ esphome run Ball_v2.yaml --device 192.168.1.xxx
 
 - **Configuration Version:** 1.0.0
 - **ESPHome Version:** 2025.9.3
-- **Base Version:** Spotpear V2 (1.07)
+- **Base Version:** Spotpear V3 (1.07)
 - **Created:** October 2025
 - **Status:** Validated ✅
 
@@ -314,7 +314,7 @@ esphome run Ball_v2.yaml --device 192.168.1.xxx
 
 ### v1.0.0 (October 2025)
 - ✅ Initial release
-- ✅ Based on Spotpear V2 configuration
+- ✅ Based on Spotpear V3 configuration
 - ✅ Added light control features
 - ✅ Added comprehensive documentation
 - ✅ Validated configuration
@@ -322,7 +322,7 @@ esphome run Ball_v2.yaml --device 192.168.1.xxx
 
 ---
 
-This configuration has been thoroughly verified and is ready for deployment to Ball V2 devices.
+This configuration has been thoroughly verified and is ready for deployment to Ball V3 devices.
 
 **Next Steps:**
 1. Replace `light.YOUR_LIGHT_ENTITY` with your light

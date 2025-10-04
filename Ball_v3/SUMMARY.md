@@ -1,8 +1,8 @@
-# Ball V2 LVGL with Light Control - Summary
+# Ball V3 LVGL with Light Control - Summary
 
 ## Mission Accomplished ✅
 
-Successfully created a new Ball V2 configuration with **LVGL-based Home Assistant light control** while maintaining full voice assistant functionality.
+Successfully created a new Ball V3 configuration with **LVGL-based Home Assistant light control** while maintaining full voice assistant functionality.
 
 ## What Was Created
 
@@ -165,8 +165,8 @@ number:
 ## Configuration Files
 
 ```
-Ball_v2/
-├── Ball_v2.yaml              # Main configuration with light control
+Ball_v3/
+├── Ball_v3.yaml              # Main configuration with light control
 ├── README.md                 # User documentation and setup guide
 ├── CHANGES.md                # Detailed changelog
 ├── SUMMARY.md                # This file
@@ -189,7 +189,7 @@ cp secrets.yaml.example secrets.yaml
 ```
 
 ### 3. Configure Light Entity
-Edit `Ball_v2.yaml` and replace `light.YOUR_LIGHT_ENTITY` with your actual Home Assistant light entity ID in 4 places:
+Edit `Ball_v3.yaml` and replace `light.YOUR_LIGHT_ENTITY` with your actual Home Assistant light entity ID in 4 places:
 - Home Assistant sensor (~line 207)
 - Slider on_release on Ready page (~line 1043)
 - Button on_click on Ready page (~line 1078)
@@ -199,7 +199,7 @@ Example: `light.living_room_floor`
 
 ### 4. Flash the device
 ```bash
-esphome run Ball_v2.yaml
+esphome run Ball_v3.yaml
 ```
 
 ### 5. Enable HA Actions (REQUIRED)
@@ -255,14 +255,14 @@ esphome run Ball_v2.yaml
 ## Validation
 
 ```bash
-$ esphome config Ball_v2.yaml
+$ esphome config Ball_v3.yaml
 INFO ESPHome 2025.9.3
-INFO Reading configuration Ball_v2.yaml...
+INFO Reading configuration Ball_v3.yaml...
 INFO Configuration is valid! ✅
 ```
 
 ```bash
-$ esphome compile Ball_v2.yaml
+$ esphome compile Ball_v3.yaml
 INFO Generating C++ source...
 INFO Compiling app...
 # Compilation starts successfully
@@ -390,7 +390,7 @@ This configuration is part of the espHome_LVGL repository.
 2. ✅ Copy secrets.yaml.example → secrets.yaml
 3. ✅ Edit WiFi credentials
 4. ✅ Replace `light.YOUR_LIGHT_ENTITY` with your light
-5. ✅ Flash device: `esphome run Ball_v2.yaml`
+5. ✅ Flash device: `esphome run Ball_v3.yaml`
 6. ✅ Enable HA actions in ESPHome device settings
 7. ✅ Reboot and test
 
