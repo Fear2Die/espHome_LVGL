@@ -1,0 +1,1083 @@
+substitutions:
+  name: smartring_v1
+  friendly_name: "SMARTRING V1"
+
+## SMARTRING V1 - Adapted from Ball V5.3 ##############################################################################################################################
+## ⚠️⚠️⚠️ CRITICAL HARDWARE COMPATIBILITY WARNINGS ⚠️⚠️⚠️
+##
+## This configuration is adapted from Ball V5.3 for SMARTRING hardware.
+## THERE ARE CRITICAL HARDWARE DIFFERENCES THAT MAKE THIS CONFIGURATION INCOMPLETE:
+##
+## 🔴 DISPLAY LIMITATION (BLOCKER):
+##    - SMARTRING uses QSPI display with CO5300 driver (466x466 resolution)
+##    - Ball V5.3 uses SPI display with GC9A01A driver (240x240 resolution)
+##    - ESPHome's ili9xxx platform DOES NOT support QSPI or CO5300
+##    - THE DISPLAY WILL NOT WORK with this configuration as-is
+##    - This requires custom ESPHome component development or Arduino framework
+##
+## 🟡 TOUCH CONTROLLER WARNING:
+##    - SMARTRING uses CST9217 touch controller
+##    - Ball V5.3 uses CST816 touch controller  
+##    - ESPHome cst816 platform may not work with CST9217
+##    - Touch may not respond or may need custom component
+##
+## 🟡 AUDIO CONFIGURATION UNCERTAIN:
+##    - SMARTRING I2S pins are different from Ball V5.3
+##    - SMARTRING may not have separate microphone input pin
+##    - SMARTRING may not have speaker enable pin
+##    - Audio functionality is untested and may not work
+##
+## 📋 WHAT THIS CONFIGURATION PROVIDES:
+##    - Correct pin mappings for SMARTRING hardware (where known)
+##    - Voice assistant framework (may not work without proper audio)
+##    - LVGL interface structure (will not display without working screen)
+##    - Home Assistant integration framework
+##    - Documentation of hardware differences
+##
+## 📋 WHAT YOU NEED TO DO:
+##    1. Read HARDWARE_COMPARISON.md for complete hardware analysis
+##    2. Test if display initializes (likely will fail)
+##    3. Test if touch responds (uncertain)
+##    4. Test if audio works (uncertain)
+##    5. Be prepared to develop custom components or switch to Arduino framework
+##    6. Consider using ESP32_Display_Panel library with Arduino instead
+##
+## 📋 TESTING REQUIREMENTS:
+##    - YOU MUST TEST EACH HARDWARE COMPONENT INDIVIDUALLY
+##    - Do not expect full functionality without hardware validation
+##    - Monitor serial output for initialization errors
+##    - Check ESPHome logs for driver errors
+##
+## Based on Ball V5.3 (Layout Fixes & Media Album Art) #################################################################################################################
+
+## ENTITY CONFIGURATION - SET YOUR HOME ASSISTANT ENTITIES HERE ##################################################################################################
+## Replace these with your actual Home Assistant entity IDs
+## These will be used throughout the entire configuration
+
+  # Light entity - the light you want to control
+  light_entity: "light.YOUR_LIGHT_ENTITY"  # Example: light.living_room_lamp
+  
+  # Media player entity - your media player device
+  media_player_entity: "media_player.YOUR_MEDIA_PLAYER_ENTITY"  # Example: media_player.living_room_speaker
+  
+  # Weather entity - your weather integration
+  weather_entity: "weather.YOUR_WEATHER_ENTITY"  # Example: weather.home or weather.forecast_home
+  
+  # Additional light entities (optional - leave as is if you only have one light)
+  # Uncomment and configure if you want to control multiple lights
+  # light_entity_2: "light.YOUR_SECOND_LIGHT"
+  # light_entity_3: "light.YOUR_THIRD_LIGHT"
+
+##################################################################################################################################################
+
+## SETTINGS ######################################################################################################################################
+
+  startup_sound: "Home_Connected" # (options are: available,Home_Connected,Computer_Ready)
+
+  # ⚠️ DISPLAY SETTINGS - THESE WILL NOT WORK AS-IS ⚠️
+  # SMARTRING has 466x466 QSPI display which is not supported by ESPHome ili9xxx platform
+  # These settings are placeholders - display will likely not initialize
+  imagewidth: "466" # SMARTRING native resolution (NOT WORKING with current driver)
+  imageheight: "466" # SMARTRING native resolution (NOT WORKING with current driver)
+  displaymodel: "GC9A01A" # ⚠️ WRONG DRIVER - SMARTRING uses CO5300, not supported by ESPHome
+  invertcolors: "true" # May need adjustment for SMARTRING
+
+  # Alternative lower resolution attempt (if you want to try forcing lower resolution)
+  # This will still fail because the driver doesn't support QSPI, but documents the attempt
+  # imagewidth: "240"
+  # imageheight: "240"
+
+##################################################################################################################################################
+
+  ## SMARTRING HARDWARE PIN MAPPINGS ##
+  ## Based on VIEWE-SMARTRING documentation and example code
+  ## Verified against: VIEWE-SMARTRING-og/examples/esp-idf/lvgl_squareline_port_15_175/main/example_qspi_main.c
+  
+  ## Touch Screen Pins (CST9217 - I2C) ##
+  # Note: CST9217 may not be compatible with ESPHome's cst816 driver
+  touch_sda_pin: "41"        # TP_SDA (Touch I2C Data)
+  touch_scl_pin: "45"        # TP_SCL (Touch I2C Clock)
+  touch_reset_pin: "46"      # TP_RST (Touch Reset)
+  touch_input_pin: "42"      # TP_INT (Touch Interrupt)
+
+  ## Display Pins (CO5300 - QSPI) ##
+  # ⚠️ CRITICAL: These are QSPI pins, not standard SPI
+  # ESPHome ili9xxx platform does not support QSPI
+  # Display will NOT work with these settings
+  lcd_qspi_cs_pin: "7"       # LCD_QSPI_CS (Chip Select)
+  lcd_qspi_sck_pin: "13"     # LCD_QSPI_SCL (Clock)
+  lcd_qspi_d0_pin: "12"      # LCD_QSPI_D0 (Data 0)
+  lcd_qspi_d1_pin: "8"       # LCD_QSPI_D1 (Data 1)
+  lcd_qspi_d2_pin: "14"      # LCD_QSPI_D2 (Data 2)
+  lcd_qspi_d3_pin: "9"       # LCD_QSPI_D3 (Data 3)
+  lcd_reset_pin: "11"        # LCD_RST (Reset)
+  lcd_te_pin: "10"           # LCD_TE (Tearing Effect - optional)
+  backlight_output_pin: "40" # LCD_VCIEN (Backlight/Power Enable)
+  
+  # Mapping QSPI pins to SPI equivalents for ESPHome (WILL NOT WORK)
+  # This is a placeholder attempt - display driver doesn't support QSPI
+  lcd_cs_pin: "7"            # Using QSPI CS as SPI CS
+  spi_clk_pin: "13"          # Using QSPI SCK as SPI CLK  
+  spi_mosi_pin: "12"         # Using QSPI D0 as SPI MOSI
+  lcd_dc_pin: "8"            # ⚠️ FAKE - Using QSPI D1 as DC (incorrect, QSPI has no DC pin)
+
+  ## I2S Audio Pins ##
+  # ⚠️ WARNING: Audio configuration uncertain
+  # SMARTRING documentation shows different pins than Ball V5.3
+  # May not have separate DIN/DOUT or may be combined
+  i2s_lrclk_pin: "16"        # I2S_DAC_LRCK/WS (Word Select)
+  i2s_bclk_pin: "18"         # I2S_DAC_BCK (Bit Clock)
+  i2s_dout_pin: "17"         # I2S_DAC_DIN (Data - may be bidirectional)
+  i2s_din_pin: "17"          # ⚠️ UNCERTAIN - Using same pin as DOUT (may be wrong)
+  i2s_mclk_pin: "-1"         # ⚠️ NOT AVAILABLE - SMARTRING has no MCLK pin listed
+  
+  # Speaker enable pin not documented for SMARTRING
+  speaker_enable_pin: "-1"   # ⚠️ UNKNOWN - May not exist or always enabled
+
+  ## LED Pin ##
+  led_pin: "39"              # RGB_DIN (WS2812 RGB LED)
+
+  ## Button Pin ##
+  left_top_button_pin: "0"   # BOOT button (GPIO0)
+
+  ## Battery Monitoring ##
+  # ⚠️ UNKNOWN - SMARTRING documentation doesn't specify battery ADC pin
+  # GPIO1 is used for SDMMC_D1 on SMARTRING, not battery ADC
+  battery_adc_pin: "-1"      # ⚠️ DISABLED - Battery monitoring pin unknown
+
+  ## Additional SMARTRING Hardware (not used in this config) ##
+  # GPIO1-6: SDMMC interface (SD Card)
+  # GPIO21: IMU_INT1 (Inertial Measurement Unit)
+  # GPIO38: IMU_INT2
+  # GPIO43/44: UART0 (RX/TX)
+  # GPIO15: XSMT (function unknown)
+
+  ## Pins NOT used on SMARTRING (Ball V5.3 specific) ##
+  # I2C Bus A (Ball V5.3): GPIO15 (SDA), GPIO14 (SCL) - Different on SMARTRING
+  # I2C Bus B (Ball V5.3): GPIO11 (SDA), GPIO7 (SCL) - Not available on SMARTRING
+
+##################################################################################################################################################
+
+  startup_sound_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/sounds/${startup_sound}.flac
+
+  voice_assist_idle_phase_id: "1"
+  voice_assist_listening_phase_id: "2"
+  voice_assist_thinking_phase_id: "3"
+  voice_assist_replying_phase_id: "4"
+  voice_assist_not_ready_phase_id: "10"
+  voice_assist_error_phase_id: "11"
+  voice_assist_muted_phase_id: "12"
+  voice_assist_timer_finished_phase_id: "20"
+
+  allowed_characters: " !#%'()+,-./0123456789:;<>?@ABCDEFGHIJKLMNOPQRSTUVWYZ[]_abcdefghijklmnopqrstuvwxyz{|}°²³µ¿ÁÂÄÅÉÖÚßàáâãäåæçèéêëìíîðñòóôõöøùúûüýþāăąćčďĐđēėęěğĮįıļľŁłńňőřśšťũūůűųźŻżŽžơưșțΆΈΌΐΑΒΓΔΕΖΗΘΚΜΝΠΡΣΤΥΦάέήίαβγδεζηθικλμνξοπρςστυφχψωϊόύώАБВГДЕЖЗИКЛМНОПРСТУХЦЧШЪЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяёђєіїјљњћאבגדהוזחטיכלםמןנסעפץצקרשת،ءآأإئابةتجحخدذرزسشصضطظعغفقكلمنهوىيٹپچڈکگںھہیےংকচতধনফবযরলশষস়ািু্చయలిెొ్ംഅആഇഈഉഎഓകഗങചജഞടഡണതദധനപഫബഭമയരറലളവശസഹാിീുൂെേൈ്ൺൻർൽൾაბგდევზთილმნოპრსტუფქყშჩცძჭხạảấầẩậắặẹẽếềểệỉịọỏốồổỗộớờởợụủứừửữựỳ—、一上不个中为主乾了些亮人任低佔何作供依侧係個側偵充光入全关冇冷几切到制前動區卧厅厨及口另右吊后吗启吸呀咗哪唔問啟嗎嘅嘛器圍在场執場外多大始安定客室家密寵对將小少左已帘常幫幾库度庫廊廚廳开式後恆感態成我戲戶户房所扇手打执把拔换掉控插摄整斯新明是景暗更最會有未本模機檯櫃欄次正氏水沒没洗活派温測源溫漏潮激濕灯為無煙照熱燈燥物狀玄现現瓦用發的盞目着睡私空窗立笛管節簾籬紅線红罐置聚聲脚腦腳臥色节著行衣解設調請謝警设调走路車车运連遊運過道邊部都量鎖锁門閂閉開關门闭除隱離電震霧面音頂題顏颜風风食餅餵가간감갔강개거게겨결경고공과관그금급기길깥꺼껐꼽나난내네놀누는능니다닫담대더데도동됐되된됨둡드든등디때떤뜨라래러렇렌려로료른를리림링마많명몇모무문물뭐바밝방배변보부불블빨뽑사산상색서설성세센션소쇼수스습시신실싱아안않알았애야어얼업없었에여연열옆오온완외왼요운움워원위으은을음의이인일임입있작잠장재전절정제져조족종주줄중줘지직진짐쪽차창천최추출충치침커컴켜켰쿠크키탁탄태탬터텔통트튼티파팬퍼폰표퓨플핑한함해했행혀현화활후휴힘，？"
+
+  font_glyphsets: "GF_Latin_Core"
+  font_family: Figtree
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2025.5.0
+  name_add_mac_suffix: false
+  on_boot:
+    priority: 600
+    then:
+      - script.execute: draw_display
+      # Battery monitoring disabled - pin unknown for SMARTRING
+      # - component.update: battery_voltage
+      # - component.update: battery_percentage
+      - delay: 30s
+      - if:
+          condition:
+            lambda: return id(init_in_progress);
+          then:
+            - lambda: id(init_in_progress) = false;
+            - script.execute: draw_display
+
+esp32:
+  board: esp32-s3-devkitc-1
+  flash_size: 16MB
+  cpu_frequency: 240MHz
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
+      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
+      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+api:
+  on_client_connected:
+    - script.execute: draw_display
+    - lambda: |-
+        if (!id(boot_sound_played)) {
+          id(boot_sound_played) = true;
+          if (id(startup_sound_switch).state) {
+            id(play_sound)->execute(true, id(ready_sound));
+          }
+        }
+  on_client_disconnected:
+    - script.execute: draw_display
+
+ota:
+  - platform: esphome
+    id: ota_esphome
+
+logger:
+  hardware_uart: USB_SERIAL_JTAG
+  level: DEBUG  # Set to DEBUG to see initialization errors
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "SMARTRING V1 Hotspot"
+
+captive_portal:
+
+external_components:
+  - source: github://pr#7046
+    components:
+      - online_image
+
+globals:
+  - id: boot_sound_played
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: init_in_progress
+    type: bool
+    restore_value: no
+    initial_value: "true"
+
+# ⚠️ SPI Configuration - WILL NOT WORK FOR QSPI DISPLAY ⚠️
+# This is standard SPI configuration
+# SMARTRING requires QSPI which is not supported by ESPHome
+spi:
+  - id: lcd_spi
+    clk_pin: GPIO${spi_clk_pin}
+    mosi_pin: GPIO${spi_mosi_pin}
+    interface: hardware
+
+# ⚠️ I2C Configuration for Touch - MAY NOT WORK ⚠️
+# CST9217 may not be compatible with cst816 driver
+i2c:
+  - id: touch_i2c
+    sda: GPIO${touch_sda_pin}
+    scl: GPIO${touch_scl_pin}
+    scan: true  # Enable scanning to see if touch controller is detected
+    frequency: 400kHz
+
+# ⚠️ I2S Audio Configuration - UNCERTAIN ⚠️
+# Pin configuration may be incorrect
+# Speaker enable pin unknown
+i2s_audio:
+  - id: i2s_audio_bus
+    i2s_lrclk_pin: GPIO${i2s_lrclk_pin}
+    i2s_bclk_pin: GPIO${i2s_bclk_pin}
+
+# Microphone configuration - may not work if pin is wrong
+microphone:
+  - platform: i2s_audio
+    id: i2s_mics
+    adc_type: external
+    i2s_din_pin: GPIO${i2s_din_pin}
+    pdm: false
+    channel: left
+    sample_rate: 16000
+    bits_per_sample: 16bit
+
+# Speaker configuration - may not work if pin is wrong
+speaker:
+  - platform: i2s_audio
+    id: i2s_audio_speaker
+    i2s_audio_id: i2s_audio_bus
+    dac_type: external
+    i2s_dout_pin: GPIO${i2s_dout_pin}
+    mode: mono
+    channel: left
+    sample_rate: 16000
+    bits_per_sample: 16bit
+
+# Audio DAC - ES8311 may not be present on SMARTRING
+# Configuration retained from Ball V5.3 but may not work
+es8311:
+  id: es8311_dac
+  address: 0x18
+
+# ⚠️ DISPLAY CONFIGURATION - WILL NOT WORK ⚠️
+# This uses ili9xxx platform which does not support QSPI or CO5300 driver
+# Display will likely fail to initialize
+display:
+  - platform: ili9xxx
+    id: s3_box_lcd
+    model: ${displaymodel}  # ⚠️ WRONG: GC9A01A used as placeholder, actual is CO5300
+    invert_colors: ${invertcolors}
+    data_rate: 40MHz
+    cs_pin: GPIO${lcd_cs_pin}
+    dc_pin: GPIO${lcd_dc_pin}  # ⚠️ FAKE: QSPI has no DC pin, using D1 pin as placeholder
+    reset_pin:
+      number: GPIO${lcd_reset_pin}
+    auto_clear_enabled: false
+    dimensions:
+        height: ${imageheight}  # 466 - May not work
+        width: ${imagewidth}    # 466 - May not work
+
+# ⚠️ TOUCHSCREEN CONFIGURATION - MAY NOT WORK ⚠️
+# CST9217 may not be compatible with cst816 driver
+touchscreen:
+  - platform: cst816
+    id: touch_dp
+    interrupt_pin:
+      number: GPIO${touch_input_pin}
+      inverted: false
+    reset_pin: GPIO${touch_reset_pin}
+    on_touch:
+      - lambda: |-
+          ESP_LOGI("Touch", "Touch detected at x=%d, y=%d", (int)touch.x, (int)touch.y);
+
+# Backlight control
+output:
+  - platform: ledc
+    id: display_backlight
+    pin: GPIO${backlight_output_pin}
+    frequency: 1000Hz
+
+light:
+  - platform: monochromatic
+    id: backlight
+    name: "Display Backlight"
+    output: display_backlight
+    restore_mode: RESTORE_DEFAULT_ON
+    default_transition_length: 250ms
+
+# WS2812 RGB LED
+  - platform: esp32_rmt_led_strip
+    id: led_ring
+    name: "LED Ring"
+    pin: GPIO${led_pin}
+    num_leds: 1
+    rmt_channel: 0
+    rgb_order: GRB
+    chipset: ws2812
+    default_transition_length: 0s
+    effects:
+      - pulse:
+          name: "Slow Pulse"
+          transition_length: 250ms
+          update_interval: 250ms
+          min_brightness: 50%
+          max_brightness: 100%
+      - pulse:
+          name: "Fast Pulse"
+          transition_length: 100ms
+          update_interval: 100ms
+          min_brightness: 50%
+          max_brightness: 100%
+
+# Main button
+binary_sensor:
+  - platform: gpio
+    id: top_button
+    name: "Button"
+    pin:
+      number: GPIO${left_top_button_pin}
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    on_multi_click:
+      - timing:
+          - ON for at most 1s
+          - OFF for at least 0.5s
+        then:
+          - lambda: |-
+              ESP_LOGD("Button", "Single click detected");
+              if (id(muted_switch).state) {
+                id(muted_switch).turn_off();
+              } else {
+                id(voice_assistant_id).start();
+              }
+      - timing:
+          - ON for at least 2s
+        then:
+          - lambda: |-
+              ESP_LOGD("Button", "Long press detected");
+              id(muted_switch).toggle();
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+
+# Battery monitoring disabled - pin unknown for SMARTRING
+# sensor:
+#   - platform: adc
+#     id: battery_voltage
+#     name: "Battery Voltage"
+#     pin: GPIO${battery_adc_pin}
+#     accuracy_decimals: 2
+#     update_interval: never
+#     attenuation: 11db
+#     filters:
+#       - multiply: 2.0
+#   
+#   - platform: template
+#     id: battery_percentage
+#     name: "Battery Percentage"
+#     unit_of_measurement: "%"
+#     accuracy_decimals: 0
+#     update_interval: never
+#     lambda: |-
+#       float voltage = id(battery_voltage).state;
+#       if (voltage >= 4.2) return 100.0;
+#       if (voltage <= 3.0) return 0.0;
+#       return ((voltage - 3.0) / (4.2 - 3.0)) * 100.0;
+
+# Home Assistant sensor for light brightness
+sensor:
+  - platform: homeassistant
+    id: ha_light_brightness
+    entity_id: ${light_entity}
+    attribute: brightness
+    on_value:
+      then:
+        - if:
+            condition:
+              lvgl.is_idle:
+            then:
+              - lvgl.widget.update:
+                  id: light_brightness_slider
+                  value: !lambda |-
+                    if (isnan(x) || x < 0) return 0;
+                    return (int)((x / 255.0) * 100.0);
+
+  - platform: homeassistant
+    id: ha_weather_temperature
+    entity_id: ${weather_entity}
+    attribute: temperature
+    on_value:
+      then:
+        - if:
+            condition:
+              lvgl.is_idle:
+            then:
+              - lvgl.label.update:
+                  id: weather_temperature
+                  text: !lambda |-
+                    if (isnan(x)) return std::string("--°");
+                    char buf[10];
+                    snprintf(buf, sizeof(buf), "%.0f°", x);
+                    return std::string(buf);
+
+# Media player state tracking
+text_sensor:
+  - platform: homeassistant
+    id: media_player_state
+    entity_id: ${media_player_entity}
+    on_value:
+      - lvgl.label.update:
+          id: media_state_label
+          text: !lambda |-
+            return x.c_str();
+
+  - platform: homeassistant
+    id: media_player_title
+    entity_id: ${media_player_entity}
+    attribute: media_title
+    on_value:
+      - lvgl.label.update:
+          id: media_title_label
+          text: !lambda |-
+            return x.c_str();
+
+  - platform: homeassistant
+    id: media_player_artist
+    entity_id: ${media_player_entity}
+    attribute: media_artist
+    on_value:
+      - lvgl.label.update:
+          id: media_artist_label
+          text: !lambda |-
+            return x.c_str();
+
+  - platform: homeassistant
+    id: media_player_album_art
+    entity_id: ${media_player_entity}
+    attribute: entity_picture
+    on_value:
+      - lvgl.image.update:
+          id: album_art_image
+          src: !lambda |-
+            if (x.empty()) {
+              return nullptr;
+            }
+            std::string full_url = "http://YOUR_HOME_ASSISTANT_IP:8123" + x;
+            return full_url.c_str();
+
+  - platform: homeassistant
+    id: ha_weather_condition
+    entity_id: ${weather_entity}
+    on_value:
+      then:
+        - if:
+            condition:
+              lvgl.is_idle:
+            then:
+              - lvgl.label.update:
+                  id: weather_condition
+                  text: !lambda |-
+                    return x.c_str();
+
+# Mute switch
+switch:
+  - platform: template
+    id: muted_switch
+    name: "Muted"
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      - script.execute: set_idle_or_mute_phase
+      - micro_wake_word.stop:
+      - voice_assistant.stop:
+    on_turn_off:
+      - script.execute: set_idle_or_mute_phase
+      - if:
+          condition:
+            - api.connected
+            - wifi.connected
+          then:
+            - micro_wake_word.start:
+
+  - platform: template
+    id: startup_sound_switch
+    name: "Startup Sound"
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+# Voice Assistant Configuration
+micro_wake_word:
+  models:
+    - model: okay_nabu
+    - model: hey_jarvis  
+    - model: alexa
+  on_wake_word_detected:
+    - voice_assistant.start:
+
+voice_assistant:
+  id: voice_assistant_id
+  microphone: i2s_mics
+  speaker: i2s_audio_speaker
+  on_listening:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
+    - script.execute: draw_display
+    - light.turn_on:
+        id: led_ring
+        brightness: 100%
+        red: 0%
+        green: 0%
+        blue: 100%
+        effect: "Fast Pulse"
+  on_stt_vad_start:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
+    - script.execute: draw_display
+  on_stt_vad_end:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_thinking_phase_id};
+    - script.execute: draw_display
+    - light.turn_on:
+        id: led_ring
+        brightness: 100%
+        red: 100%
+        green: 50%
+        blue: 0%
+        effect: "Fast Pulse"
+  on_tts_stream_start:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_replying_phase_id};
+    - script.execute: draw_display
+    - light.turn_on:
+        id: led_ring
+        brightness: 100%
+        red: 0%
+        green: 100%
+        blue: 0%
+        effect: none
+  on_tts_stream_end:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+    - script.execute: draw_display
+    - light.turn_off: led_ring
+    - if:
+        condition:
+          and:
+            - switch.is_on: muted_switch
+            - voice_assistant.is_running
+        then:
+          - voice_assistant.stop:
+  on_end:
+    - if:
+        condition:
+          and:
+            - api.connected
+            - wifi.connected
+            - switch.is_off: muted_switch
+        then:
+          - delay: 100ms
+          - wait_until:
+              not:
+                voice_assistant.is_running:
+          - script.execute: set_idle_or_mute_phase
+  on_error:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_error_phase_id};
+    - script.execute: draw_display
+    - delay: 1s
+    - if:
+        condition:
+          lambda: return id(voice_assistant_phase) == ${voice_assist_error_phase_id};
+        then:
+          - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+          - script.execute: draw_display
+    - light.turn_off: led_ring
+  on_timer_finished:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_timer_finished_phase_id};
+    - script.execute: draw_display
+    - delay: 5s
+    - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+    - script.execute: draw_display
+
+# Media Player
+media_player:
+  - platform: i2s_audio
+    id: external_media_player
+    name: "Media Player"
+    dac_type: external
+    i2s_audio_id: i2s_audio_bus
+    i2s_dout_pin: GPIO${i2s_dout_pin}
+    mode: mono
+
+# Sound Files
+http_request:
+  id: http_request_id
+
+file:
+  - id: ready_sound
+    file: ${startup_sound_file}
+
+script:
+  - id: draw_display
+    mode: restart
+    then:
+      - lambda: |-
+          int phase_id = id(voice_assistant_phase);
+          if (!id(api_connected)) {
+            phase_id = ${voice_assist_not_ready_phase_id};
+          } else if (!id(wifi_connected)) {
+            phase_id = ${voice_assist_not_ready_phase_id};
+          } else if (id(muted_switch).state) {
+            phase_id = ${voice_assist_muted_phase_id};
+          } else if (id(init_in_progress)) {
+            phase_id = ${voice_assist_not_ready_phase_id};
+          }
+          
+          switch(phase_id) {
+            case ${voice_assist_listening_phase_id}:
+              id(lvgl_id).show_page(listening_page);
+              break;
+            case ${voice_assist_thinking_phase_id}:
+              id(lvgl_id).show_page(thinking_page);
+              break;
+            case ${voice_assist_replying_phase_id}:
+              id(lvgl_id).show_page(replying_page);
+              break;
+            case ${voice_assist_error_phase_id}:
+              id(lvgl_id).show_page(error_page);
+              break;
+            case ${voice_assist_muted_phase_id}:
+              id(lvgl_id).show_page(muted_page);
+              break;
+            case ${voice_assist_not_ready_phase_id}:
+              id(lvgl_id).show_page(no_ha_page);
+              break;
+            case ${voice_assist_timer_finished_phase_id}:
+              id(lvgl_id).show_page(timer_finished_page);
+              break;
+            default:
+              id(lvgl_id).show_page(idle_page);
+              break;
+          }
+
+  - id: set_idle_or_mute_phase
+    mode: restart
+    then:
+      - lambda: |-
+          if (id(muted_switch).state) {
+            id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+          } else {
+            id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+          }
+      - script.execute: draw_display
+
+  - id: start_wake_word
+    mode: restart
+    then:
+      - if:
+          condition:
+            and:
+              - api.connected
+              - wifi.connected
+              - switch.is_off: muted_switch
+          then:
+            - micro_wake_word.start:
+
+  - id: stop_wake_word
+    mode: restart
+    then:
+      - micro_wake_word.stop:
+      - voice_assistant.stop:
+
+  - id: play_sound
+    mode: restart
+    parameters:
+      use_speaker: bool
+      file_id: file::File
+    then:
+      - if:
+          condition:
+            lambda: return use_speaker;
+          then:
+            - speaker.play:
+                file_id: !lambda return file_id;
+      - delay: 1s
+
+# LVGL Configuration - UI will not display properly without working display
+lvgl:
+  log_level: WARN
+  displays:
+    - s3_box_lcd
+  touchscreens:
+    - touch_dp
+  
+  color_depth: 16
+  bg_color: 0x000000
+  text_color: 0xFFFFFF
+  
+  default_font: montserrat_20
+  
+  # ⚠️ Note: All LVGL pages below will not display correctly without a working display driver
+  # The 466x466 resolution and page layouts may need adjustment if/when proper driver is available
+  
+  pages:
+    - id: idle_page
+      bg_color: 0x111111
+      widgets:
+        - obj:
+            height: size_content
+            width: size_content
+            align: center
+            y: -60
+            widgets:
+              - label:
+                  id: idle_label
+                  text: "SMARTRING\nReady"
+                  align: center
+                  text_align: center
+                  text_color: 0x00FF00
+                  text_font: montserrat_32
+        
+        # Light controls section
+        - obj:
+            height: size_content
+            width: 220
+            align: center
+            y: 40
+            widgets:
+              - slider:
+                  id: light_brightness_slider
+                  width: 200
+                  height: 20
+                  align: center
+                  y: -30
+                  value: 50
+                  min_value: 0
+                  max_value: 100
+                  on_release:
+                    - homeassistant.action:
+                        action: light.turn_on
+                        data:
+                          entity_id: ${light_entity}
+                          brightness: !lambda |-
+                            return (int)(x.get_value() * 2.55);
+              
+              - button:
+                  width: 80
+                  height: 40
+                  align: center
+                  y: 10
+                  widgets:
+                    - label:
+                        text: "Toggle"
+                        align: center
+                  on_click:
+                    - homeassistant.action:
+                        action: light.toggle
+                        data:
+                          entity_id: ${light_entity}
+        
+        # Navigation buttons (moved to avoid overlap)
+        - obj:
+            height: size_content
+            width: size_content
+            align: center
+            y: 120
+            widgets:
+              - button:
+                  id: nav_media_btn
+                  width: 80
+                  height: 30
+                  x: -45
+                  widgets:
+                    - label:
+                        text: "Media"
+                        align: center
+                  on_click:
+                    - lvgl.page.show: media_page
+              
+              - button:
+                  id: nav_weather_btn
+                  width: 80
+                  height: 30
+                  x: 45
+                  widgets:
+                    - label:
+                        text: "Weather"
+                        align: center
+                  on_click:
+                    - lvgl.page.show: weather_page
+
+    - id: media_page
+      bg_color: 0x1a1a1a
+      widgets:
+        - obj:
+            width: size_content
+            height: size_content
+            align: center
+            y: -80
+            widgets:
+              - label:
+                  text: "Media Player"
+                  align: center
+                  text_font: montserrat_24
+                  text_color: 0xFFFFFF
+        
+        # Album art
+        - image:
+            id: album_art_image
+            align: center
+            y: -20
+            width: 150
+            height: 150
+        
+        # Media info
+        - obj:
+            width: 220
+            height: size_content
+            align: center
+            y: 80
+            widgets:
+              - label:
+                  id: media_title_label
+                  text: "No Title"
+                  align: center
+                  width: 200
+                  text_align: center
+                  text_font: montserrat_16
+              
+              - label:
+                  id: media_artist_label
+                  text: "No Artist"
+                  align: center
+                  y: 25
+                  width: 200
+                  text_align: center
+                  text_font: montserrat_14
+                  text_color: 0x888888
+              
+              - label:
+                  id: media_state_label
+                  text: "idle"
+                  align: center
+                  y: 45
+                  text_font: montserrat_12
+                  text_color: 0x666666
+        
+        # Media controls
+        - obj:
+            width: size_content
+            height: size_content
+            align: center
+            y: 150
+            widgets:
+              - button:
+                  width: 50
+                  height: 40
+                  x: -60
+                  widgets:
+                    - label:
+                        text: "Prev"
+                        align: center
+                  on_click:
+                    - homeassistant.action:
+                        action: media_player.media_previous_track
+                        data:
+                          entity_id: ${media_player_entity}
+              
+              - button:
+                  width: 50
+                  height: 40
+                  x: 0
+                  widgets:
+                    - label:
+                        text: "Play"
+                        align: center
+                  on_click:
+                    - homeassistant.action:
+                        action: media_player.media_play_pause
+                        data:
+                          entity_id: ${media_player_entity}
+              
+              - button:
+                  width: 50
+                  height: 40
+                  x: 60
+                  widgets:
+                    - label:
+                        text: "Next"
+                        align: center
+                  on_click:
+                    - homeassistant.action:
+                        action: media_player.media_next_track
+                        data:
+                          entity_id: ${media_player_entity}
+        
+        # Back button
+        - button:
+            width: 60
+            height: 30
+            align: bottom_mid
+            y: -10
+            widgets:
+              - label:
+                  text: "Back"
+                  align: center
+            on_click:
+              - lvgl.page.show: idle_page
+
+    - id: weather_page
+      bg_color: 0x1a3a5a
+      widgets:
+        - obj:
+            width: size_content
+            height: size_content
+            align: center
+            y: -80
+            widgets:
+              - label:
+                  text: "Weather"
+                  align: center
+                  text_font: montserrat_24
+        
+        - obj:
+            width: size_content
+            height: size_content
+            align: center
+            y: 0
+            widgets:
+              - label:
+                  id: weather_temperature
+                  text: "--°"
+                  align: center
+                  text_font: montserrat_48
+                  text_color: 0xFFFFFF
+              
+              - label:
+                  id: weather_condition
+                  text: "Loading..."
+                  align: center
+                  y: 60
+                  text_font: montserrat_20
+                  text_color: 0xCCCCCC
+        
+        # Back button
+        - button:
+            width: 60
+            height: 30
+            align: bottom_mid
+            y: -10
+            widgets:
+              - label:
+                  text: "Back"
+                  align: center
+            on_click:
+              - lvgl.page.show: idle_page
+
+    - id: listening_page
+      bg_color: 0x0000FF
+      widgets:
+        - label:
+            text: "Listening..."
+            align: center
+            text_font: montserrat_32
+            text_color: 0xFFFFFF
+
+    - id: thinking_page
+      bg_color: 0xFF8800
+      widgets:
+        - label:
+            text: "Thinking..."
+            align: center
+            text_font: montserrat_32
+            text_color: 0xFFFFFF
+
+    - id: replying_page
+      bg_color: 0x00FF00
+      widgets:
+        - label:
+            text: "Replying..."
+            align: center
+            text_font: montserrat_32
+            text_color: 0x000000
+
+    - id: timer_finished_page
+      bg_color: 0xFF0000
+      widgets:
+        - label:
+            text: "Timer Finished!"
+            align: center
+            text_font: montserrat_32
+            text_color: 0xFFFFFF
+
+    - id: error_page
+      bg_color: 0xFF0000
+      widgets:
+        - label:
+            text: "Error"
+            align: center
+            text_font: montserrat_32
+            text_color: 0xFFFFFF
+
+    - id: no_ha_page
+      bg_color: 0x550000
+      widgets:
+        - label:
+            text: "No Connection"
+            align: center
+            text_font: montserrat_24
+            text_color: 0xFFAAAA
+
+    - id: muted_page
+      bg_color: 0x000000
+      widgets:
+        - label:
+            text: "Muted"
+            align: center
+            text_font: montserrat_32
+            text_color: 0xFF0000
