@@ -165,8 +165,9 @@ http_request:
 # The album art will update when the media changes
 online_image:
   - id: album_art_image
-    url: ""  # Will be set dynamically from entity_picture attribute
-    format: RGB565
+    url: "http://homeassistant.local:8123/"  # Placeholder - will be set dynamically from entity_picture attribute
+    type: RGB565
+    format: PNG
     resize: 60x60
     update_interval: never  # Updated manually when media changes
 
