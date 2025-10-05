@@ -67,14 +67,16 @@ Ball V5.3 fixes critical layout issues, removes the non-functional camera page, 
    ```yaml
    online_image:
      - id: album_art_image
-       url: ""  # Set dynamically from entity_picture
-       format: RGB565
+       url: "http://homeassistant.local:8123/"  # Placeholder - set dynamically from entity_picture
+       type: RGB565
+       format: PNG
        resize: 60x60
        update_interval: never  # Updated manually when media changes
    ```
    - Fetches album art from media player entity_picture
    - Resizes to 60x60 to fit media page layout
-   - Uses RGB565 format for memory efficiency
+   - Uses RGB565 internal color format for memory efficiency
+   - Supports PNG/JPEG album art images from Home Assistant
 
 3. **Text Sensor for Album Art URL** (line 1145)
    ```yaml
