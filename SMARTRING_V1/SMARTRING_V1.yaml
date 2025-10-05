@@ -8,12 +8,13 @@ substitutions:
 ## This configuration is adapted from Ball V5.3 for SMARTRING hardware.
 ## THERE ARE CRITICAL HARDWARE DIFFERENCES THAT MAKE THIS CONFIGURATION INCOMPLETE:
 ##
-## ✅ DISPLAY CONFIGURATION:
-##    - SMARTRING uses QSPI SPI display with CO5300 driver (466x466 resolution)
+## ✅ DISPLAY CONFIGURATION (Updated for QSPI support):
+##    - SMARTRING uses QSPI display with CO5300 driver (466x466 resolution)
 ##    - Ball V5.3 uses standard SPI display with GC9A01A driver (240x240 resolution)
-##    - ESPHome's mipi_spi platform DOES support QSPI displays
-##    - CO5300 is compatible with SH8601 driver (supported by mipi_spi)
-##    - Configuration updated to use mipi_spi platform with QSPI data pins
+##    - CO5300 is compatible with SH8601 driver (per VIEWE documentation)
+##    - Using mipi_spi platform which supports QSPI mode with data_pins configuration
+##    - Requires ESPHome 2024.11.0+ for mipi_spi platform support
+##    - See: https://esphome.io/components/display/mipi_spi/
 ##
 ## ✅ TOUCH CONTROLLER:
 ##    - SMARTRING uses CST820 touch controller (per VIEWE documentation)
@@ -169,7 +170,7 @@ substitutions:
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
-  min_version: 2025.5.0
+  min_version: 2024.11.0  # Requires mipi_spi platform support
   name_add_mac_suffix: false
   on_boot:
     priority: 600
