@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ball V5.3 fixes critical layout issues and adds live camera feed functionality. This release focuses on improving user experience and making the camera page actually functional.
+Ball V5.3 fixes critical layout issues, removes the non-functional camera page, and adds live album art functionality. This release focuses on improving user experience and implementing features that actually work on ESP32 hardware.
 
 ---
 
@@ -31,69 +31,112 @@ Ball V5.3 fixes critical layout issues and adds live camera feed functionality. 
 │   └───────────────┘     │
 │                         │
 │                         │
-│ [Media][Weather][Cam]   │  y=-10 (Proper spacing!)
+│   [Media]  [Weather]    │  y=-10 (Proper spacing!)
 └─────────────────────────┘
 ```
 
 **Changes**:
 - Navigation buttons moved from y=-45 to y=-10 (BOTTOM_MID alignment)
+- Removed camera button (camera page abandoned as non-functional)
+- Simplified to 2-button navigation (Media and Weather)
+- Button size increased to 90x35 for better touch accuracy
 - Provides better spacing on circular display
 - Eliminates accidental touches on wrong buttons
-- Improves overall touch accuracy
 
 **Files Modified**:
-- `Ball_v5.3.yaml` lines 1265-1320: Updated y positions for all 3 navigation buttons
+- `Ball_v5.3.yaml`: Updated navigation section with 2 buttons instead of 3
 
 ---
 
-### 2. Live Camera Feed Implementation ✅
+### 2. Live Album Art Implementation ✅
 
-**Problem**: Camera page only showed placeholder text "View in HA app" - no actual camera feed.
+**Problem**: Media page showed only a placeholder music note (♪) for album art.
 
-**Solution**: Added real camera image display with low FPS updates.
+**Solution**: Added live album art display that updates with media changes.
 
 **New Components Added**:
 
-1. **HTTP Request Component** (after line 160)
+1. **HTTP Request Component** (line 163)
    ```yaml
    http_request:
      timeout: 10s
    ```
    Enables HTTP requests to Home Assistant API.
 
-2. **Online Image Component** (after line 163)
+2. **Online Image Component** (line 170)
    ```yaml
    image:
      - platform: online_image
-       id: camera_feed_image
-       url: !lambda |-
-         return "http://homeassistant.local:8123/api/camera_proxy/${camera_entity}";
+       id: album_art_image
+       url: ""  # Set dynamically from entity_picture
        format: RGB565
-       resize: 200x150
-       update_interval: 10s
+       resize: 60x60
+       update_interval: never  # Updated manually when media changes
    ```
-   - Fetches camera snapshots from Home Assistant
-   - Updates every 10 seconds (low FPS as requested)
-   - Resizes to 200x150 for display
+   - Fetches album art from media player entity_picture
+   - Resizes to 60x60 to fit media page layout
    - Uses RGB565 format for memory efficiency
 
-3. **Camera Page Widget Update** (lines 1633-1666)
-   - Replaced placeholder with actual image widget
-   - Added status label showing "Updating..."
-   - Displays entity name at bottom
+3. **Text Sensor for Album Art URL** (line 1145)
+   ```yaml
+   - platform: homeassistant
+     id: ha_media_picture
+     entity_id: ${media_player_entity}
+     attribute: entity_picture
+     on_value:
+       - lambda: |-
+           if (x.length() > 0 && x[0] == '/') {
+             auto url = "http://homeassistant.local:8123" + x;
+             id(album_art_image).set_url(url.c_str());
+           } else if (x.length() > 0) {
+             id(album_art_image).set_url(x.c_str());
+           }
+   ```
+   - Fetches entity_picture attribute from media player
+   - Converts relative URLs to absolute URLs
+   - Updates album art image when media changes
 
-**Camera Feed Features**:
-- ✅ Live updates every 10 seconds
-- ✅ Automatic refresh when page is active
+4. **Media Page Widget Update**
+   ```yaml
+   # Before (V5.2): Placeholder container with music note
+   - obj:
+       id: album_art_container
+       widgets:
+         - label:
+             text: "♪"
+   
+   # After (V5.3): Actual image widget
+   - image:
+       id: album_art_display
+       src: album_art_image
+   ```
+
+**Album Art Features**:
+- ✅ Live album art from media player
+- ✅ Automatic updates when media changes
 - ✅ Memory-efficient RGB565 format
-- ✅ Proper resolution (200x150 pixels)
-- ✅ Status indicator for user feedback
+- ✅ Proper resolution (60x60 pixels)
+- ✅ Works with Spotify, YouTube Music, etc.
 
 **Technical Details**:
-- Uses Home Assistant camera proxy API: `/api/camera_proxy/{entity_id}`
+- Uses Home Assistant media player entity_picture attribute
 - Requires ESPHome 2023.7.0+ for online_image platform
 - No authentication needed if on same network
-- Falls back gracefully if camera unavailable
+- Falls back to empty image if no album art available
+
+---
+
+### 3. Camera Page Removal ✅
+
+**Problem**: Camera page was not working properly and added unnecessary complexity.
+
+**Solution**: Removed camera page entirely to simplify navigation and focus on working features.
+
+**Changes Made**:
+- Removed camera navigation button from idle page
+- Removed entire camera_page from LVGL configuration
+- Removed camera_entity from substitutions
+- Repurposed http_request and online_image for album art instead
 
 ---
 
@@ -112,47 +155,49 @@ substitutions:
 
 ### LVGL Widget Changes
 
-**Navigation Buttons** (3 locations):
+**Navigation Buttons**:
 ```yaml
-# Before (V5.2)
-y: -45
+# Before (V5.2): 3 buttons at y=-45
+- button: { x: -80, y: -45, width: 70, height: 30 }  # Media
+- button: { x: 0, y: -45, width: 70, height: 30 }    # Weather
+- button: { x: 80, y: -45, width: 70, height: 30 }   # Camera
 
-# After (V5.3)  
-y: -10
+# After (V5.3): 2 buttons at y=-10
+- button: { x: -50, y: -10, width: 90, height: 35 }  # Media
+- button: { x: 50, y: -10, width: 90, height: 35 }   # Weather
 ```
 
-**Camera Page**:
+**Album Art Display**:
 ```yaml
-# Before (V5.2): Placeholder object with labels
+# Before (V5.2): Placeholder with label
 - obj:
-    id: camera_placeholder
+    id: album_art_container
     widgets:
-      - label: "Camera Feed"
-      - label: "View in HA app"
+      - label:
+          text: "♪"
 
 # After (V5.3): Actual image widget
 - image:
-    id: camera_feed_display
-    src: camera_feed_image
-- label:
-    id: camera_status_label
-    text: "Updating..."
+    id: album_art_display
+    src: album_art_image
 ```
 
 ---
 
 ## Breaking Changes
 
-**None!** V5.3 is fully backward compatible with V5.2 configurations.
+**Minor changes only** - V5.3 is mostly backward compatible with V5.2 configurations.
 
 ### Migration from V5.2
 
 1. Replace `Ball_v5.2.yaml` with `Ball_v5.3.yaml`
-2. Update substitutions if needed (same format)
+2. Remove `camera_entity` from substitutions (no longer needed)
 3. Flash to device
-4. Camera feed will start working automatically
+4. Album art will start displaying automatically when playing media
 
-**No configuration changes required!**
+**Configuration changes**:
+- Camera entity no longer needed
+- All other settings remain the same
 
 ---
 
@@ -163,10 +208,10 @@ y: -10
 - **Fix**: Moved buttons to y=-10 for proper spacing
 - **Impact**: Better touch accuracy, no more accidental presses
 
-### 2. Non-functional Camera Page ✅
-- **Issue**: Camera page showed only placeholder text
-- **Fix**: Added online_image component and real camera feed
-- **Impact**: Users can now view camera feed directly on device
+### 2. Album Art Not Displaying ✅
+- **Issue**: Media page showed only placeholder music note
+- **Fix**: Added online_image component and entity_picture text sensor
+- **Impact**: Users can now see album art for currently playing media
 
 ---
 
@@ -176,48 +221,48 @@ y: -10
 
 1. **Verify Home Assistant Access**
    - Ensure ESP32 can reach `homeassistant.local:8123`
-   - Test camera entity exists and is working
+   - Test media player entity has entity_picture attribute
 
 2. **Check ESPHome Version**
    - V5.3 requires ESPHome 2023.7.0+ for online_image
    - Update ESPHome if needed: `pip install -U esphome`
 
-3. **Camera Entity Configuration**
-   - Verify camera entity ID in substitutions
-   - Test camera works in Home Assistant first
+3. **Media Player Configuration**
+   - Verify media player entity ID in substitutions
+   - Test media player works in Home Assistant first
+   - Use media player with album art (Spotify, YouTube Music, etc.)
 
 ### After Flashing V5.3
 
 1. **Test Navigation Buttons**
    - Verify no overlap with toggle light
-   - Check all buttons respond correctly
+   - Check both buttons respond correctly
    - Test touch accuracy
 
-2. **Test Camera Feed**
-   - Navigate to camera page
-   - Wait 10 seconds for first update
+2. **Test Album Art Display**
+   - Navigate to media page
+   - Start playing media with album art
    - Verify image displays correctly
-   - Check status label updates
+   - Check updates when media changes
 
 3. **Monitor Logs**
    - Watch for HTTP request errors
    - Check memory usage (online_image uses RAM)
-   - Verify 10-second update interval
+   - Verify album art updates when media changes
 
 ---
 
 ## Known Limitations
 
-### Camera Feed
-- **Update Rate**: 10 seconds (by design for memory efficiency)
-- **Resolution**: 200x150 pixels (optimized for 240x240 display)
-- **Network**: Requires stable WiFi connection
+### Album Art Display
+- **Network**: Requires stable WiFi connection to Home Assistant
 - **Memory**: Uses more RAM than V5.2 (due to image buffering)
+- **Compatibility**: Only works with media players that provide entity_picture attribute
 
 ### Performance
-- First camera load may take 10-15 seconds
-- Image quality depends on camera resolution
-- Low light may show grainy images
+- First album art load may take 5-10 seconds
+- Image quality depends on source resolution
+- Album art updates when media changes (not real-time)
 
 ---
 
@@ -225,24 +270,29 @@ y: -10
 
 ### Modified Files
 1. `Ball_v5.3.yaml` - Main configuration
-   - Updated version info (lines 1-13)
-   - Added http_request component (line 162-163)
-   - Added online_image component (lines 165-176)
-   - Fixed navigation button positions (lines 1265-1320)
-   - Updated camera page layout (lines 1633-1676)
+   - Updated version info and comments
+   - Removed camera_entity from substitutions
+   - Repurposed http_request for album art
+   - Repurposed online_image for album art
+   - Added ha_media_picture text sensor
+   - Fixed navigation button positions (2 buttons instead of 3)
+   - Replaced album art placeholder with image widget
+   - Removed entire camera_page
 
 2. `README.md` - Documentation
    - Updated version number
-   - Added V5.3 features section
-   - Updated camera page description
-   - Added troubleshooting for camera feed
+   - Removed camera page references
+   - Added album art features
+   - Updated troubleshooting section
+   - Removed camera entity configuration
 
 3. `LAYOUT.md` - Layout specifications
-   - Updated navigation button positions
-   - Updated camera page layout diagram
-   - Added camera feed details
+   - Updated navigation button positions (2 buttons)
+   - Removed camera page layout diagram
+   - Updated album art display to show as image
+   - Updated navigation flow diagram
 
-4. `CHANGES_V5.3.md` - This file (NEW)
+4. `CHANGES_V5.3.md` - This file (UPDATED)
 
 ### Unchanged Files
 - `secrets.yaml.example` - No changes needed
@@ -257,12 +307,12 @@ y: -10
 ## Performance Impact
 
 ### Memory Usage
-- **Increase**: ~100-150KB for image buffering
-- **Total**: Should still work on ESP32-S3 with PSRAM
+- **Increase**: ~20-50KB for image buffering (smaller than camera feed)
+- **Total**: Should work fine on ESP32-S3 with PSRAM
 
 ### Network Usage
-- **Bandwidth**: ~20-50KB per update (depends on camera)
-- **Frequency**: Every 10 seconds = ~6 updates/minute
+- **Bandwidth**: ~5-20KB per update (depends on album art size)
+- **Frequency**: Only when media changes (not continuous)
 
 ### CPU Usage
 - **Minimal**: Image decoding handled by ESPHome
@@ -273,22 +323,21 @@ y: -10
 ## Future Improvements
 
 Potential enhancements for V5.4+:
-- [ ] Configurable refresh rate (5s/10s/30s)
-- [ ] Manual refresh button
-- [ ] Multiple camera support
-- [ ] Snapshot save to file
-- [ ] Camera pan/tilt controls (if supported)
-- [ ] Motion detection indicator
+- [ ] Fallback image when no album art available
+- [ ] Album art caching for offline playback
+- [ ] Album art animation/transition effects
+- [ ] Multiple media player support
+- [ ] Playlist display
 
 ---
 
 ## Credits
 
-Based on Ball V5.2 (easy configuration & camera page foundation).
+Based on Ball V5.2 (easy configuration foundation).
 
-Issue: "Ball_v5.3 Updates"
-- Fix button overlap with toggle light
-- Make camera page display actual feed
+Issue: "modify ball_v5.3"
+- Abandon the camera page since its not working
+- Fix the media page since its not displaying the image of the media playing
 
 ---
 
@@ -297,13 +346,14 @@ Issue: "Ball_v5.3 Updates"
 | Feature | V5.2 | V5.3 |
 |---------|------|------|
 | Navigation button position | y=-45 | y=-10 ✅ |
-| Camera page | Placeholder only | Live feed ✅ |
+| Navigation buttons | 3 (Media, Weather, Camera) | 2 (Media, Weather) ✅ |
+| Album art | Placeholder only | Live display ✅ |
+| Camera page | Placeholder | Removed ✅ |
 | http_request component | No | Yes ✅ |
-| online_image component | No | Yes ✅ |
-| Camera refresh rate | N/A | 10 seconds ✅ |
+| online_image component | No | Yes (for album art) ✅ |
 | Button spacing | Tight | Proper ✅ |
 
 ---
 
-**Ball V5.3** - Layout fixes and live camera feed  
+**Ball V5.3** - Layout fixes and live album art  
 Released: 2025-01-XX
