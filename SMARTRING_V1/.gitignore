@@ -1,0 +1,27 @@
+# ESPHome build artifacts
+.esphome/
+*.bin
+*.elf
+*.map
+
+# Secrets file - NEVER commit this!
+secrets.yaml
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+.DS_Store
+Thumbs.db
