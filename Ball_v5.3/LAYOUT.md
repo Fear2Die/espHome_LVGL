@@ -10,13 +10,12 @@
 
 ## Page Overview
 
-Ball V5.3 has 4 main pages plus voice assistant status pages:
+Ball V5.3 has 3 main pages plus voice assistant status pages:
 
 1. **Idle Page** (Main) - Light controls and navigation
-2. **Media Page** - Media player controls with album art
+2. **Media Page** - Media player controls with live album art
 3. **Weather Page** - Weather information
-4. **Camera Page** - Live camera feed (UPDATED in V5.3)
-5. Voice Assistant Pages (Listening, Thinking, Replying, etc.)
+4. Voice Assistant Pages (Listening, Thinking, Replying, etc.)
 
 ---
 
@@ -37,7 +36,7 @@ Ball V5.3 has 4 main pages plus voice assistant status pages:
 │                         │
 │                         │
 │                         │
-│  [Media][Weather][Cam]  │  y=-10 (Navigation - 3 buttons) FIXED IN V5.3
+│    [Media] [Weather]    │  y=-10 (Navigation - 2 buttons) FIXED IN V5.3
 └─────────────────────────┘
 ```
 
@@ -60,13 +59,12 @@ Ball V5.3 has 4 main pages plus voice assistant status pages:
 #### Bottom Section (Navigation - FIXED IN V5.3)
 | Widget | Position | Alignment | Size | Content |
 |--------|----------|-----------|------|---------|
-| Media Button | x=-80, y=-10 | BOTTOM_MID | 70x30 | "Media" |
-| Weather Button | x=0, y=-10 | BOTTOM_MID | 70x30 | "Weather" |
-| Camera Button | x=80, y=-10 | BOTTOM_MID | 70x30 | "Camera" |
+| Media Button | x=-50, y=-10 | BOTTOM_MID | 90x35 | "Media" |
+| Weather Button | x=50, y=-10 | BOTTOM_MID | 90x35 | "Weather" |
 
-**Change from V5.2**: Fixed overlap issue by moving buttons down (y=-10 instead of y=-45).
+**Change from V5.2**: Fixed overlap issue by moving buttons down (y=-10 instead of y=-45). Removed camera button for simplified navigation.
 
-**Change from V5.1**: Added 3rd button (Camera), made buttons smaller (70x30 instead of 90x35).
+**Change from V5.1**: Restored 2-button layout with improved button sizing (90x35).
 
 ### Colors
 - Background: Dark gray (#111111)
@@ -84,7 +82,7 @@ Ball V5.3 has 4 main pages plus voice assistant status pages:
 │ [Back]                  │  y=5 (Back button)
 │                         │
 │      ┌───────┐          │  y=40 (Album art 60x60)
-│      │   ♪   │          │
+│      │ IMAGE │          │  Live album art from entity_picture
 │      └───────┘          │
 │                         │
 │  Song Title Here        │  y=110 (Title)
@@ -104,12 +102,12 @@ Ball V5.3 has 4 main pages plus voice assistant status pages:
 | Widget | Position | Alignment | Size | Content |
 |--------|----------|-----------|------|---------| 
 | Back Button | x=10, y=5 | TOP_LEFT | 60x30 | "Back" |
-| Album Art Container | x=0, y=40 | TOP_MID | 60x60 | "♪" symbol |
+| Album Art Image | x=0, y=40 | TOP_MID | 60x60 | Live album artwork |
 | Title Label | x=0, y=110 | TOP_MID | 220 width | Song title |
 | Artist Label | x=0, y=135 | TOP_MID | 220 width | Artist name |
 | State Label | x=0, y=160 | TOP_MID | auto | "> Playing" / "|| Paused" / "[] Idle" |
 
-**NEW in V5.2**: Album art box added, all labels moved down to accommodate.
+**NEW in V5.3**: Live album art from entity_picture attribute, updates dynamically with media changes.
 
 #### Control Section
 | Widget | Position | Alignment | Size | Content |
@@ -188,51 +186,6 @@ Ball V5.3 has 4 main pages plus voice assistant status pages:
 - Humidity: White text
 
 ---
-
-## Camera Page Layout (UPDATED IN V5.3)
-
-```
-┌─────────────────────────┐
-│ [Back]                  │  y=5 (Back button)
-│                         │
-│   Security Camera       │  y=10 (Title)
-│                         │
-│   ┌───────────────┐     │
-│   │               │     │  y=60
-│   │  [Live Feed]  │     │  (Camera Image 200x150)
-│   │   Updates     │     │
-│   │   every 10s   │     │
-│   │               │     │
-│   └───────────────┘     │
-│      Updating...        │  y=215 (Status)
-│  camera.front_door      │  y=-10 (Entity ID)
-└─────────────────────────┘
-```
-
-### Widget Positions
-
-| Widget | Position | Alignment | Size | Content |
-|--------|----------|-----------|------|---------| 
-| Back Button | x=10, y=5 | TOP_LEFT | 60x30 | "Back" |
-| Title | x=0, y=10 | TOP_MID | auto | "Security Camera" |
-| Camera Feed Image | x=0, y=60 | TOP_MID | 200x150 | Live camera feed |
-| Status Label | y=215 | TOP_MID | 200 width | "Updating..." |
-| Entity Label | x=0, y=-10 | BOTTOM_MID | 220 width | Entity ID |
-
-### Colors
-- Background: Very dark gray (#0a0a0a)
-- Buttons: Dark gray (#333333)
-- Borders: Medium gray (#555555)
-- Title text: White
-- Status text: Medium gray (#888888)
-- Entity text: Dark gray (#888888)
-
-### Camera Feed Details
-- **Refresh Rate**: Every 10 seconds (low FPS mode)
-- **Resolution**: 200x150 pixels (resized from camera source)
-- **Format**: RGB565 for efficient memory usage
-- **Source**: Home Assistant camera API proxy endpoint
-- **Note**: Updates automatically when camera page is active
 
 ---
 
@@ -386,12 +339,12 @@ Bottom:  y=215 (Slider)
 
 ```
         Main (Idle) Page
-         ↙     ↓      ↘
-        ↙      ↓       ↘
-    Media   Weather   Camera  (NEW in V5.2)
-       ↓       ↓        ↓
-      Back    Back     Back
-       ↓       ↓        ↓
+            ↙      ↘
+           ↙        ↘
+       Media      Weather
+          ↓          ↓
+        Back        Back
+          ↓          ↓
         Main (Idle) Page
 
 Voice Assistant (from any page):
@@ -414,10 +367,6 @@ Voice Assistant (from any page):
 ### Weather Page
 - Used: ~185px (y=5 to y=175)
 - Free space: ~55px (bottom)
-
-### Camera Page
-- Used: ~220px (y=5 to y=-10)
-- Placeholder: 150px (most space)
 
 ---
 

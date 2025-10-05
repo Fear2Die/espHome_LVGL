@@ -2,16 +2,16 @@ substitutions:
   name: ball_v53
   friendly_name: "Ball V5.3"
 
-## v5.3 Ball V5.3 - Layout Fixes & Camera Feed #############################################################################################################################
+## v5.3 Ball V5.3 - Layout Fixes & Media Album Art #############################################################################################################################
 ## NEW in V5.3:
 ## - Fixed navigation button overlap with toggle light (moved buttons to y=-10)
-## - Added live camera feed display on camera page (low FPS, updates every 10 seconds)
+## - Removed non-functional camera page
+## - Added live album art display on media player page
 ## - Easy entity configuration at the top - set once, apply everywhere
 ## - Fixed media player button glyphs (using text instead of missing Unicode characters)
-## - Added album art display area on media player page
 ## - Fixed 'None' error handling for light entities
 ## - Support for multiple lights and devices through easy configuration
-## Based on Ball V5.2 (camera page & entity configuration) #############################################################################################################################
+## Based on Ball V5.2 (entity configuration) #############################################################################################################################
 
 ## ENTITY CONFIGURATION - SET YOUR HOME ASSISTANT ENTITIES HERE ##################################################################################################
 ## Replace these with your actual Home Assistant entity IDs
@@ -25,9 +25,6 @@ substitutions:
   
   # Weather entity - your weather integration
   weather_entity: "weather.YOUR_WEATHER_ENTITY"  # Example: weather.home or weather.forecast_home
-  
-  # Camera entity - your security camera (optional, for camera page)
-  camera_entity: "camera.YOUR_CAMERA_ENTITY"  # Example: camera.front_door
   
   # Additional light entities (optional - leave as is if you only have one light)
   # Uncomment and configure if you want to control multiple lights
@@ -159,23 +156,20 @@ wifi:
 
 captive_portal:
 
-# HTTP Request component for fetching camera images
+# HTTP Request component for fetching media album art
 http_request:
   timeout: 10s
 
-# Online image component for camera feed
+# Online image component for media player album art
 # Note: This requires ESPHome 2023.7.0+
-# The camera image will update every 10 seconds (low FPS as requested)
+# The album art will update when the media changes
 image:
   - platform: online_image
-    id: camera_feed_image
-    url: !lambda |-
-      // Construct URL to Home Assistant camera snapshot
-      // Format: http://homeassistant.local:8123/api/camera_proxy/{entity_id}
-      return "http://homeassistant.local:8123/api/camera_proxy/${camera_entity}";
+    id: album_art_image
+    url: ""  # Will be set dynamically from entity_picture attribute
     format: RGB565
-    resize: 200x150
-    update_interval: 10s
+    resize: 60x60
+    update_interval: never  # Updated manually when media changes
 
 button:
   - platform: factory_reset
@@ -1141,6 +1135,22 @@ text_sensor:
             }
             return x.c_str();
 
+  # Media player album art (entity_picture) sensor
+  - platform: homeassistant
+    id: ha_media_picture
+    entity_id: ${media_player_entity}
+    attribute: entity_picture
+    on_value:
+      - lambda: |-
+          if (x.length() > 0 && x[0] == '/') {
+            // Convert relative URL to absolute URL
+            auto url = "http://homeassistant.local:8123" + x;
+            id(album_art_image).set_url(url.c_str());
+          } else if (x.length() > 0) {
+            // Already an absolute URL
+            id(album_art_image).set_url(x.c_str());
+          }
+
 # Colors defined in LVGL section
 
 spi:
@@ -1280,13 +1290,13 @@ lvgl:
                         data:
                           entity_id: ${light_entity}
               
-              # Navigation buttons at bottom (3 buttons layout - moved to y=-10 to avoid overlap)
+              # Navigation buttons at bottom (2 buttons layout - moved to y=-10 to avoid overlap)
               - button:
                   id: nav_media_button
-                  x: -80
+                  x: -50
                   y: -10
-                  width: 70
-                  height: 30
+                  width: 90
+                  height: 35
                   align: BOTTOM_MID
                   bg_color: 0x444444
                   border_width: 1
@@ -1303,10 +1313,10 @@ lvgl:
               
               - button:
                   id: nav_weather_button
-                  x: 0
+                  x: 50
                   y: -10
-                  width: 70
-                  height: 30
+                  width: 90
+                  height: 35
                   align: BOTTOM_MID
                   bg_color: 0x444444
                   border_width: 1
@@ -1320,26 +1330,6 @@ lvgl:
                   on_click:
                     - lvgl.page.show:
                         id: weather_page
-              
-              - button:
-                  id: nav_camera_button
-                  x: 80
-                  y: -10
-                  width: 70
-                  height: 30
-                  align: BOTTOM_MID
-                  bg_color: 0x444444
-                  border_width: 1
-                  border_color: 0x666666
-                  widgets:
-                    - label:
-                        align: CENTER
-                        text: "Camera"
-                        text_color: 0xFFFFFF
-                        text_font: montserrat_16
-                  on_click:
-                    - lvgl.page.show:
-                        id: camera_page
     
     # Media Player Page
     - id: media_page
@@ -1373,23 +1363,13 @@ lvgl:
                     - lvgl.page.show:
                         id: idle_page
               
-              # Album art placeholder (60x60 box)
-              - obj:
-                  id: album_art_container
+              # Album art display (60x60 image)
+              - image:
+                  id: album_art_display
                   x: 0
                   y: 40
-                  width: 60
-                  height: 60
                   align: TOP_MID
-                  bg_color: 0x333344
-                  border_width: 2
-                  border_color: 0x666677
-                  widgets:
-                    - label:
-                        align: CENTER
-                        text: "♪"
-                        text_color: 0xFFCC66
-                        text_font: montserrat_20
+                  src: album_art_image
               
               # Media title
               - label:
@@ -1602,79 +1582,6 @@ lvgl:
                   text_align: CENTER
                   text_color: 0xFFFFFF
                   text_font: montserrat_20
-    
-    # Camera Page (Security Camera Feed)
-    - id: camera_page
-      bg_color: 0x0a0a0a
-      widgets:
-        - obj:
-            id: camera_container
-            width: 240
-            height: 240
-            bg_color: 0x0a0a0a
-            border_width: 0
-            widgets:
-              # Back button
-              - button:
-                  id: camera_back_button
-                  x: 10
-                  y: 5
-                  width: 60
-                  height: 30
-                  align: TOP_LEFT
-                  bg_color: 0x333333
-                  border_width: 1
-                  border_color: 0x555555
-                  widgets:
-                    - label:
-                        align: CENTER
-                        text: "Back"
-                        text_color: 0xFFFFFF
-                        text_font: montserrat_16
-                  on_click:
-                    - lvgl.page.show:
-                        id: idle_page
-              
-              # Camera title
-              - label:
-                  text: "Security Camera"
-                  align: TOP_MID
-                  y: 10
-                  text_align: CENTER
-                  text_color: 0xFFFFFF
-                  text_font: montserrat_20
-              
-              # Camera feed display
-              # Updates every 10 seconds (low FPS as requested)
-              # Note: Requires Home Assistant API access
-              - image:
-                  id: camera_feed_display
-                  x: 0
-                  y: 60
-                  align: TOP_MID
-                  src: camera_feed_image
-              
-              # Status label (shown below camera feed)
-              - label:
-                  id: camera_status_label
-                  text: "Updating..."
-                  align: TOP_MID
-                  y: 215
-                  width: 200
-                  text_align: CENTER
-                  text_color: 0x888888
-                  text_font: montserrat_16
-              
-              # Camera entity info
-              - label:
-                  id: camera_entity_label
-                  text: "${camera_entity}"
-                  align: BOTTOM_MID
-                  y: -10
-                  width: 220
-                  text_align: CENTER
-                  text_color: 0x888888
-                  text_font: montserrat_16
     
     - id: listening_page
       bg_color: 0x0000FF
