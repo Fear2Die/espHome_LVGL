@@ -1,10 +1,95 @@
-# Ball V5.2 - Implementation Summary
+# Ball V5.3 - Implementation Summary
 
 ## Overview
 
-Ball V5.2 is a **quality of life upgrade** from V5.1 that makes configuration easier and fixes several annoying issues while adding new features.
+Ball V5.3 is a **critical bug fix and feature enhancement** from V5.2 that fixes button overlap issues and adds live camera feed functionality.
 
-## What Was Implemented
+### Key Improvements in V5.3
+1. ✅ **Fixed Navigation Button Overlap** - Buttons moved from y=-45 to y=-10 for proper spacing
+2. ✅ **Live Camera Feed** - Added real camera image display with 10-second refresh rate
+3. ✅ **Better Touch Accuracy** - No more accidental button presses on circular display
+
+### V5.2 Features (Retained)
+Ball V5.3 builds upon V5.2's quality of life upgrades that made configuration easier and fixed several annoying issues.
+
+## What Was Implemented in V5.3
+
+### NEW: Fixed Navigation Button Overlap ⭐⭐⭐⭐⭐
+
+**Problem Solved**: Navigation buttons (Media, Weather, Camera) at y=-45 were too close to the toggle light button on the circular display, causing:
+- Accidental button presses
+- Poor touch accuracy
+- Buttons extending beyond visible circular area
+- User confusion and frustration
+
+**Solution Implemented**: Moved all 3 navigation buttons from y=-45 to y=-10:
+
+```yaml
+# Before (V5.2)
+- button:
+    id: nav_media_button
+    y: -45    # Too high up
+
+# After (V5.3)
+- button:
+    id: nav_media_button
+    y: -10    # Proper spacing
+```
+
+**Changes Made**:
+- Media button: y=-45 → y=-10
+- Weather button: y=-45 → y=-10
+- Camera button: y=-45 → y=-10
+
+**Impact**: Better touch accuracy, no overlap, improved user experience ⭐⭐⭐⭐⭐
+
+### NEW: Live Camera Feed ⭐⭐⭐⭐⭐
+
+**Problem Solved**: Camera page only showed placeholder text "View in HA app" with no actual camera feed, making the page nearly useless.
+
+**Solution Implemented**: 
+1. Added `http_request` component for API access
+2. Added `online_image` platform to fetch camera snapshots
+3. Replaced placeholder with real image widget
+4. Set 10-second refresh rate (low FPS as requested)
+
+**Components Added**:
+
+```yaml
+http_request:
+  timeout: 10s
+
+image:
+  - platform: online_image
+    id: camera_feed_image
+    url: !lambda |-
+      return "http://homeassistant.local:8123/api/camera_proxy/${camera_entity}";
+    format: RGB565
+    resize: 200x150
+    update_interval: 10s
+```
+
+**Camera Page Widget**:
+```yaml
+- image:
+    id: camera_feed_display
+    src: camera_feed_image
+```
+
+**Features**:
+- ✅ Live camera snapshots every 10 seconds
+- ✅ Automatic refresh when page active
+- ✅ Memory-efficient RGB565 format (200x150 resolution)
+- ✅ Status label showing "Updating..."
+- ✅ Uses Home Assistant camera proxy API
+
+**Impact**: Camera page now actually functional, provides security monitoring ⭐⭐⭐⭐⭐
+
+**Requirements**: ESPHome 2023.7.0+ for online_image platform support
+
+---
+
+## What Was Implemented in V5.2
 
 ### 1. ✅ Easy Entity Configuration (MAIN FEATURE)
 

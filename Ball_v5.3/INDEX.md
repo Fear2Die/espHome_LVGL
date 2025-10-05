@@ -1,10 +1,12 @@
-# Ball V5.2 - Documentation Index
+# Ball V5.3 - Documentation Index
 
 ## 📚 Start Here
 
 **New User?** Start with [QUICK_START.md](QUICK_START.md) (3-minute setup)
 
 **Experienced User?** Jump to [README.md](README.md) (full documentation)
+
+**Upgrading from V5.2?** See [CHANGES_V5.3.md](CHANGES_V5.3.md) (what's new)
 
 **Need step-by-step?** Follow [INSTALLATION.md](INSTALLATION.md) (detailed guide)
 
@@ -41,12 +43,17 @@
    - Troubleshooting section
    - **Start here for complete info**
 
-5. **[CHANGES.md](CHANGES.md)** (8.9KB, 10 min read)
-   - Detailed changelog
+5. **[CHANGES_V5.3.md](CHANGES_V5.3.md)** (8.5KB, 10 min read)
+   - V5.3 specific changes
+   - Button overlap fix details
+   - Live camera feed implementation
+   - **Read if upgrading from V5.2**
+
+6. **[CHANGES.md](CHANGES.md)** (8.9KB, 10 min read)
+   - V5.2 changelog (historical)
    - Technical implementation
-   - Migration guide
+   - Migration guide from V5.1
    - Breaking changes list
-   - **Read if upgrading from V5.1**
 
 ### 🔍 Reference Documentation
 
@@ -58,7 +65,7 @@
    - **Perfect for customization**
 
 7. **[COMPARISON.md](COMPARISON.md)** (11KB, 10 min read)
-   - V5.1 vs V5.2 comparison
+   - V5.2 vs V5.3 comparison
    - Feature tables
    - Use case scenarios
    - Upgrade decision guide
@@ -75,20 +82,20 @@
 
 ## 🎯 Documentation by Purpose
 
-### Purpose: "I want to install Ball V5.2"
+### Purpose: "I want to install Ball V5.3"
 **Path**: QUICK_START.md → INSTALLATION.md → QUICK_REFERENCE.md
 
 ### Purpose: "I have V5.1, should I upgrade?"
 **Path**: COMPARISON.md → CHANGES.md → README.md
 
 ### Purpose: "I need to customize the layout"
-**Path**: LAYOUT.md → README.md → Ball_v5.2.yaml
+**Path**: LAYOUT.md → README.md → Ball_v5.3.yaml
 
 ### Purpose: "Something's not working"
 **Path**: QUICK_REFERENCE.md → README.md → INSTALLATION.md
 
 ### Purpose: "I want to understand the code"
-**Path**: SUMMARY.md → CHANGES.md → Ball_v5.2.yaml
+**Path**: SUMMARY.md → CHANGES.md → Ball_v5.3.yaml
 
 ### Purpose: "Quick command reference"
 **Path**: QUICK_REFERENCE.md (print it!)
@@ -104,7 +111,7 @@
 | INSTALLATION.md | 12KB | 517 | Step-by-step | 10 min |
 | CHANGES.md | 8.9KB | 318 | Changelog | 10 min |
 | LAYOUT.md | 14KB | 459 | Visual ref | 12 min |
-| COMPARISON.md | 11KB | 492 | V5.1 vs V5.2 | 10 min |
+| COMPARISON.md | 11KB | 492 | V5.2 vs V5.3 | 10 min |
 | SUMMARY.md | 11KB | 351 | Tech details | 10 min |
 | QUICK_REFERENCE.md | 6.3KB | 237 | Cheat sheet | 2 min |
 | **Total** | **78KB** | **2,923** | **Complete** | **67 min** |
@@ -128,7 +135,7 @@
 1. SUMMARY.md (10 min) - Implementation
 2. CHANGES.md (10 min) - Technical details
 3. LAYOUT.md (12 min) - Structure
-4. Ball_v5.2.yaml (8 min) - Code review
+4. Ball_v5.3.yaml (8 min) - Code review
 
 ### Upgrader Path (20 minutes)
 1. COMPARISON.md (10 min) - Should I upgrade?
@@ -156,7 +163,7 @@
 ### Technical Details
 - **SUMMARY.md** - Implementation (entire file)
 - **CHANGES.md** - Technical changes (line 180-250)
-- **Ball_v5.2.yaml** - Actual code
+- **Ball_v5.3.yaml** - Actual code
 
 ### Migration
 - **COMPARISON.md** - Upgrade decision (entire file)
@@ -178,7 +185,7 @@
 ### Experienced ESPHome User
 ```
 1. Skim: README.md
-2. Configure entities in Ball_v5.2.yaml
+2. Configure entities in Ball_v5.3.yaml
 3. Flash and go
 4. Reference: QUICK_REFERENCE.md if needed
 ```
@@ -187,7 +194,7 @@
 ```
 1. Read: SUMMARY.md
 2. Review: CHANGES.md
-3. Study: Ball_v5.2.yaml
+3. Study: Ball_v5.3.yaml
 4. Customize: LAYOUT.md
 ```
 
@@ -211,7 +218,7 @@
 | QUICK_REFERENCE.md | One-page cheat sheet, print this |
 | CHANGES.md | Complete changelog, what's new in V5.2 |
 | LAYOUT.md | Visual layouts, for customization |
-| COMPARISON.md | V5.1 vs V5.2, upgrade decision |
+| COMPARISON.md | V5.2 vs V5.3, upgrade decision |
 | SUMMARY.md | Implementation details, for developers |
 | INDEX.md | This file, navigation guide |
 
@@ -220,10 +227,10 @@
 ## 🚀 Fastest Path to Success
 
 **5-Minute Setup:**
-1. Open Ball_v5.2.yaml
+1. Open Ball_v5.3.yaml
 2. Edit substitutions (line 20-31)
 3. Create secrets.yaml
-4. Run: `esphome run Ball_v5.2.yaml`
+4. Run: `esphome run Ball_v5.3.yaml`
 5. Done!
 
 **If you get stuck:**
@@ -279,7 +286,7 @@ Check logs + ask for help
 
 After reading appropriate docs, you should be able to:
 
-✅ Install Ball V5.2 in 10 minutes
+✅ Install Ball V5.3 in 10 minutes
 ✅ Configure all entities in 30 seconds
 ✅ Troubleshoot common issues
 ✅ Customize layouts and colors
@@ -290,7 +297,7 @@ After reading appropriate docs, you should be able to:
 
 ## 📅 Version Information
 
-- **Version**: Ball V5.2
+- **Version**: Ball V5.3
 - **Date**: January 2025
 - **ESPHome**: 2025.5.0+
 - **Hardware**: Ball V2 (ESP32-S3)
@@ -369,4 +376,4 @@ After installation:
 ---
 
 **This index last updated: 2025**
-**All documentation files current as of Ball V5.2**
+**All documentation files current as of Ball V5.3**

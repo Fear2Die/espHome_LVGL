@@ -1,16 +1,39 @@
-# Ball V5.2 vs V5.1 - Detailed Comparison
+# Ball Version Comparison
 
-## TL;DR - Should You Upgrade?
+## V5.3 vs V5.2 - Quick Summary
 
-### ✅ Upgrade to V5.2 if:
+### ✅ Upgrade to V5.3 if:
+- Navigation buttons overlap with toggle light in V5.2 ⭐⭐⭐⭐⭐
+- You want **live camera feed** (not just placeholder) ⭐⭐⭐⭐⭐
+- You experience accidental button presses
+- You want better touch accuracy on circular display
+- You have a camera and want to view it on the device
+
+### ⏸️ Stay on V5.2 if:
+- Buttons don't overlap for you (unlikely on circular display)
+- You don't have a camera or don't need the feed
+- You prefer placeholder text over actual camera images
+
+### V5.3 Changes:
+1. **Button Position Fix**: Moved navigation buttons from y=-45 to y=-10 (critical fix)
+2. **Live Camera Feed**: Added online_image component with 10-second refresh
+3. **Better Touch Accuracy**: No more accidental presses
+
+---
+
+## V5.2 vs V5.1 - Detailed Comparison
+
+### TL;DR - Should You Upgrade from V5.1?
+
+#### ✅ Upgrade to V5.2/V5.3 if:
 - You want **easier configuration** (5 seconds vs 5 minutes)
 - You're tired of **empty boxes** on media buttons
 - You see **"Can't convert 'None'"** errors in logs
-- You want a **camera page** for security monitoring
+- You want a **camera page** with live feed (V5.3)
 - You're setting up a **new device**
 - You want to control **multiple lights** easily
 
-### ⏸️ Stay on V5.1 if:
+#### ⏸️ Stay on V5.1 if:
 - Everything works perfectly
 - You don't want to reconfigure
 - You already updated all 16 entity locations
@@ -20,19 +43,25 @@
 
 ## Feature Comparison Table
 
-| Feature | V5.1 | V5.2 | Improvement |
-|---------|------|------|-------------|
-| **Configuration** | Update 16 locations | Update 1 location | ⭐⭐⭐⭐⭐ |
-| **Media Button Glyphs** | Unicode (broken) | Text symbols | ⭐⭐⭐⭐⭐ |
-| **Album Art** | ❌ None | ✅ Placeholder | ⭐⭐⭐ |
-| **Camera Page** | ❌ None | ✅ Added | ⭐⭐⭐⭐ |
-| **'None' Error Handling** | ❌ Crashes | ✅ Filtered | ⭐⭐⭐⭐⭐ |
-| **Multiple Lights** | Manual duplication | Easy substitutions | ⭐⭐⭐⭐ |
-| **Documentation** | Good | Excellent | ⭐⭐⭐⭐ |
-| **Light Control** | ✅ Perfect | ✅ Perfect | Same |
-| **Media Control** | ✅ Lag fixed | ✅ Lag fixed | Same |
-| **Voice Assistant** | ✅ Works | ✅ Works | Same |
-| **Weather Display** | ✅ Works | ✅ Works | Same |
+### V5.3 vs V5.2 vs V5.1
+
+| Feature | V5.1 | V5.2 | V5.3 | Latest Improvement |
+|---------|------|------|------|-------------------|
+| **Navigation Button Position** | y=-10 | y=-45 (overlap!) | y=-10 (fixed!) | ⭐⭐⭐⭐⭐ |
+| **Camera Feed** | ❌ None | ❌ Placeholder only | ✅ Live feed | ⭐⭐⭐⭐⭐ |
+| **Touch Accuracy** | Good | Poor (overlap) | Excellent | ⭐⭐⭐⭐⭐ |
+| **Camera Refresh** | N/A | N/A | Every 10s | ⭐⭐⭐⭐ |
+| **Configuration** | Update 16 locations | Update 1 location | Update 1 location | Same |
+| **Media Button Glyphs** | Unicode (broken) | Text symbols | Text symbols | Same |
+| **Album Art** | ❌ None | ✅ Placeholder | ✅ Placeholder | Same |
+| **Camera Page** | ❌ None | ✅ Basic | ✅ Functional | ⭐⭐⭐⭐⭐ |
+| **'None' Error Handling** | ❌ Crashes | ✅ Filtered | ✅ Filtered | Same |
+| **Multiple Lights** | Manual duplication | Easy substitutions | Easy substitutions | Same |
+| **Documentation** | Good | Excellent | Excellent | Same |
+| **Light Control** | ✅ Perfect | ✅ Perfect | ✅ Perfect | Same |
+| **Media Control** | ✅ Lag fixed | ✅ Lag fixed | ✅ Lag fixed | Same |
+| **Voice Assistant** | ✅ Works | ✅ Works | ✅ Works | Same |
+| **Weather Display** | ✅ Works | ✅ Works | ✅ Works | Same |
 
 ---
 
