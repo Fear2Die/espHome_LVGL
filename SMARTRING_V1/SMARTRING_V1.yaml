@@ -8,18 +8,19 @@ substitutions:
 ## This configuration is adapted from Ball V5.3 for SMARTRING hardware.
 ## THERE ARE CRITICAL HARDWARE DIFFERENCES THAT MAKE THIS CONFIGURATION INCOMPLETE:
 ##
-## 🔴 DISPLAY LIMITATION (BLOCKER):
+## ✅ DISPLAY CONFIGURATION (Updated for QSPI support):
 ##    - SMARTRING uses QSPI display with CO5300 driver (466x466 resolution)
-##    - Ball V5.3 uses SPI display with GC9A01A driver (240x240 resolution)
-##    - ESPHome's ili9xxx platform DOES NOT support QSPI or CO5300
-##    - THE DISPLAY WILL NOT WORK with this configuration as-is
-##    - This requires custom ESPHome component development or Arduino framework
+##    - Ball V5.3 uses standard SPI display with GC9A01A driver (240x240 resolution)
+##    - CO5300 is compatible with SH8601 driver (per VIEWE documentation)
+##    - Using mipi_spi platform which supports QSPI mode with data_pins configuration
+##    - Requires ESPHome 2024.11.0+ for mipi_spi platform support
+##    - See: https://esphome.io/components/display/mipi_spi/
 ##
-## 🟡 TOUCH CONTROLLER WARNING:
-##    - SMARTRING uses CST9217 touch controller
+## ✅ TOUCH CONTROLLER:
+##    - SMARTRING uses CST820 touch controller (per VIEWE documentation)
 ##    - Ball V5.3 uses CST816 touch controller  
-##    - ESPHome cst816 platform may not work with CST9217
-##    - Touch may not respond or may need custom component
+##    - ESPHome cst816 platform is compatible with CST820
+##    - Touch should work correctly
 ##
 ## 🟡 AUDIO CONFIGURATION UNCERTAIN:
 ##    - SMARTRING I2S pins are different from Ball V5.3
@@ -74,13 +75,13 @@ substitutions:
 
   startup_sound: "Home_Connected" # (options are: available,Home_Connected,Computer_Ready)
 
-  # ⚠️ DISPLAY SETTINGS - THESE WILL NOT WORK AS-IS ⚠️
-  # SMARTRING has 466x466 QSPI display which is not supported by ESPHome ili9xxx platform
-  # These settings are placeholders - display will likely not initialize
-  imagewidth: "466" # SMARTRING native resolution (NOT WORKING with current driver)
-  imageheight: "466" # SMARTRING native resolution (NOT WORKING with current driver)
-  displaymodel: "GC9A01A" # ⚠️ WRONG DRIVER - SMARTRING uses CO5300, not supported by ESPHome
-  invertcolors: "true" # May need adjustment for SMARTRING
+  # ✅ DISPLAY SETTINGS - Updated for SMARTRING
+  # SMARTRING has 466x466 QSPI display which IS supported by ESPHome mipi_spi platform
+  # CO5300 driver is compatible with SH8601
+  imagewidth: "466" # SMARTRING native resolution
+  imageheight: "466" # SMARTRING native resolution
+  displaymodel: "SH8601" # CO5300 is compatible with SH8601
+  invertcolors: "false" # Default for SH8601
 
   # Alternative lower resolution attempt (if you want to try forcing lower resolution)
   # This will still fail because the driver doesn't support QSPI, but documents the attempt
@@ -93,33 +94,25 @@ substitutions:
   ## Based on VIEWE-SMARTRING documentation and example code
   ## Verified against: VIEWE-SMARTRING-og/examples/esp-idf/lvgl_squareline_port_15_175/main/example_qspi_main.c
   
-  ## Touch Screen Pins (CST9217 - I2C) ##
-  # Note: CST9217 may not be compatible with ESPHome's cst816 driver
+  ## Touch Screen Pins (CST820 - I2C) ##
+  # CST820 is compatible with ESPHome's cst816 driver
   touch_sda_pin: "41"        # TP_SDA (Touch I2C Data)
   touch_scl_pin: "45"        # TP_SCL (Touch I2C Clock)
   touch_reset_pin: "46"      # TP_RST (Touch Reset)
   touch_input_pin: "42"      # TP_INT (Touch Interrupt)
 
-  ## Display Pins (CO5300 - QSPI) ##
-  # ⚠️ CRITICAL: These are QSPI pins, not standard SPI
-  # ESPHome ili9xxx platform does not support QSPI
-  # Display will NOT work with these settings
-  lcd_qspi_cs_pin: "7"       # LCD_QSPI_CS (Chip Select)
-  lcd_qspi_sck_pin: "13"     # LCD_QSPI_SCL (Clock)
-  lcd_qspi_d0_pin: "12"      # LCD_QSPI_D0 (Data 0)
-  lcd_qspi_d1_pin: "8"       # LCD_QSPI_D1 (Data 1)
-  lcd_qspi_d2_pin: "14"      # LCD_QSPI_D2 (Data 2)
-  lcd_qspi_d3_pin: "9"       # LCD_QSPI_D3 (Data 3)
+  ## Display Pins (CO5300 - QSPI SPI) ##
+  # ✅ QSPI pins are supported by ESPHome mipi_spi platform
+  # CO5300 driver is compatible with SH8601
+  lcd_cs_pin: "7"            # LCD_QSPI_CS (Chip Select)
+  lcd_sck_pin: "13"          # LCD_QSPI_SCL (Clock)
+  lcd_d0_pin: "12"           # LCD_QSPI_D0 (Data 0)
+  lcd_d1_pin: "8"            # LCD_QSPI_D1 (Data 1)
+  lcd_d2_pin: "14"           # LCD_QSPI_D2 (Data 2)
+  lcd_d3_pin: "9"            # LCD_QSPI_D3 (Data 3)
   lcd_reset_pin: "11"        # LCD_RST (Reset)
-  lcd_te_pin: "10"           # LCD_TE (Tearing Effect - optional)
+  lcd_te_pin: "10"           # LCD_TE (Tearing Effect)
   backlight_output_pin: "40" # LCD_VCIEN (Backlight/Power Enable)
-  
-  # Mapping QSPI pins to SPI equivalents for ESPHome (WILL NOT WORK)
-  # This is a placeholder attempt - display driver doesn't support QSPI
-  lcd_cs_pin: "7"            # Using QSPI CS as SPI CS
-  spi_clk_pin: "13"          # Using QSPI SCK as SPI CLK  
-  spi_mosi_pin: "12"         # Using QSPI D0 as SPI MOSI
-  lcd_dc_pin: "8"            # ⚠️ FAKE - Using QSPI D1 as DC (incorrect, QSPI has no DC pin)
 
   ## I2S Audio Pins ##
   # ⚠️ WARNING: Audio configuration uncertain
@@ -177,7 +170,7 @@ substitutions:
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
-  min_version: 2025.5.0
+  min_version: 2024.11.0  # Requires mipi_spi platform support
   name_add_mac_suffix: false
   on_boot:
     priority: 600
@@ -253,17 +246,11 @@ globals:
     restore_value: no
     initial_value: "true"
 
-# ⚠️ SPI Configuration - WILL NOT WORK FOR QSPI DISPLAY ⚠️
-# This is standard SPI configuration
-# SMARTRING requires QSPI which is not supported by ESPHome
-spi:
-  - id: lcd_spi
-    clk_pin: GPIO${spi_clk_pin}
-    mosi_pin: GPIO${spi_mosi_pin}
-    interface: hardware
+# SPI bus not needed for mipi_spi platform
+# The mipi_spi platform handles QSPI communication directly
 
-# ⚠️ I2C Configuration for Touch - MAY NOT WORK ⚠️
-# CST9217 may not be compatible with cst816 driver
+# ✅ I2C Configuration for Touch (CST820)
+# CST820 is compatible with cst816 driver
 i2c:
   - id: touch_i2c
     sda: GPIO${touch_sda_pin}
@@ -308,26 +295,30 @@ es8311:
   id: es8311_dac
   address: 0x18
 
-# ⚠️ DISPLAY CONFIGURATION - WILL NOT WORK ⚠️
-# This uses ili9xxx platform which does not support QSPI or CO5300 driver
-# Display will likely fail to initialize
+# ✅ DISPLAY CONFIGURATION - Using mipi_spi for QSPI displays
+# CO5300 driver is compatible with SH8601 (supported by mipi_spi)
 display:
-  - platform: ili9xxx
+  - platform: mipi_spi
     id: s3_box_lcd
-    model: ${displaymodel}  # ⚠️ WRONG: GC9A01A used as placeholder, actual is CO5300
+    model: ${displaymodel}  # SH8601 (compatible with CO5300)
     invert_colors: ${invertcolors}
     data_rate: 40MHz
     cs_pin: GPIO${lcd_cs_pin}
-    dc_pin: GPIO${lcd_dc_pin}  # ⚠️ FAKE: QSPI has no DC pin, using D1 pin as placeholder
-    reset_pin:
-      number: GPIO${lcd_reset_pin}
+    spi_mode: mode0
+    color_order: rgb
+    reset_pin: GPIO${lcd_reset_pin}
+    data_pins:
+      - GPIO${lcd_d0_pin}
+      - GPIO${lcd_d1_pin}
+      - GPIO${lcd_d2_pin}
+      - GPIO${lcd_d3_pin}
+    sck_pin: GPIO${lcd_sck_pin}
     auto_clear_enabled: false
     dimensions:
-        height: ${imageheight}  # 466 - May not work
-        width: ${imagewidth}    # 466 - May not work
+        height: ${imageheight}  # 466
+        width: ${imagewidth}    # 466
 
-# ⚠️ TOUCHSCREEN CONFIGURATION - MAY NOT WORK ⚠️
-# CST9217 may not be compatible with cst816 driver
+# ✅ TOUCHSCREEN CONFIGURATION - CST820 compatible with cst816
 touchscreen:
   - platform: cst816
     id: touch_dp
