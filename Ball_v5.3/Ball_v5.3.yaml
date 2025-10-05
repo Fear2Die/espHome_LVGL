@@ -1290,7 +1290,7 @@ lvgl:
                         data:
                           entity_id: ${light_entity}
               
-              # Navigation buttons at bottom (3 buttons layout - moved to y=-10 to avoid overlap)
+              # Navigation buttons at bottom (2 buttons layout - moved to y=-10 to avoid overlap)
               - button:
                   id: nav_media_button
                   x: -50
