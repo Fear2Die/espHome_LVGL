@@ -121,9 +121,8 @@ http_request:
   timeout: 10s
 
 # 2. Online image for camera feed
-image:
-  - platform: online_image
-    id: camera_feed_image
+online_image:
+  - id: camera_feed_image
     url: !lambda |-
       return "http://homeassistant.local:8123/api/camera_proxy/${camera_entity}";
     format: RGB565

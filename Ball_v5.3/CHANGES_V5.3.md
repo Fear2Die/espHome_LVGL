@@ -63,11 +63,10 @@ Ball V5.3 fixes critical layout issues, removes the non-functional camera page, 
    ```
    Enables HTTP requests to Home Assistant API.
 
-2. **Online Image Component** (line 170)
+2. **Online Image Component** (line 166)
    ```yaml
-   image:
-     - platform: online_image
-       id: album_art_image
+   online_image:
+     - id: album_art_image
        url: ""  # Set dynamically from entity_picture
        format: RGB565
        resize: 60x60
