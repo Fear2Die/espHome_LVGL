@@ -1,20 +1,25 @@
-# ESPHome Xiaozhi Ball V5.2 - Enhanced Configuration
+# ESPHome Xiaozhi Ball V5.3 - Layout Fixes & Camera Feed
 
-## What's New in V5.2?
+## What's New in V5.3?
 
-### 🎯 Easy Entity Configuration
+### 🔧 Layout Fixes
+- **Fixed button overlap**: Navigation buttons moved to proper position (y=-10) to avoid overlap with toggle light
+- **Improved touch accuracy**: Buttons now positioned for better accessibility on circular display
+
+### 📷 Live Camera Feed
+- **Real camera feed**: Camera page now displays actual camera snapshots from Home Assistant
+- **Low FPS mode**: Updates every 10 seconds for memory efficiency (as requested)
+- **Automatic refresh**: Feed updates continuously when camera page is active
+
+### 🎯 Easy Entity Configuration (from V5.2)
 - **Set once, use everywhere**: Configure all your Home Assistant entities at the top of the YAML file
 - No more searching through 16 different locations to update entity IDs
 - Support for multiple lights and devices (just add more substitutions)
 
-### 🎵 Media Player Improvements
+### 🎵 Media Player Improvements (from V5.2)
 - **Fixed button glyphs**: Replaced missing Unicode characters with standard text symbols
 - **Album art display**: Added visual placeholder for currently playing media
 - **Better volume control**: Existing lag fix from V5.1 maintained
-
-### 📷 Camera Page
-- **New security camera page**: Quick access to your camera entity
-- **Easy navigation**: Added camera button to main page navigation
 
 ### 🐛 Bug Fixes
 - **Fixed 'None' error**: Light brightness sensor now handles None/null values gracefully
@@ -22,7 +27,7 @@
 
 ## Quick Setup
 
-### 1. Configure Your Entities (Top of Ball_v5.2.yaml)
+### 1. Configure Your Entities (Top of Ball_v5.3.yaml)
 
 At the very top of the YAML file (around line 20), you'll find:
 
@@ -55,7 +60,7 @@ Edit `secrets.yaml` with your WiFi and Home Assistant credentials.
 ### 3. Flash to Device
 
 ```bash
-esphome run Ball_v5.2.yaml
+esphome run Ball_v5.3.yaml
 ```
 
 ## Entity Requirements
@@ -66,7 +71,7 @@ esphome run Ball_v5.2.yaml
 - ✅ **Weather entity**: Any weather integration (Met.no works great)
 
 ### Optional Entities
-- 🔲 **Camera entity**: Security camera (page will show entity info even if camera doesn't stream)
+- ✅ **Camera entity**: Security camera (page will display live feed at ~0.1 FPS)
 
 ## Finding Your Entity IDs
 
@@ -118,12 +123,13 @@ esphome run Ball_v5.2.yaml
 - 🔙 Back button
 
 ### Camera Page
-- 📷 Security camera info
+- 📷 Live camera feed (updates every 10 seconds)
+- 🔄 Automatic refresh when page is active
 - ℹ️ Camera entity display
-- 💡 Instructions to view in HA app
+- 📊 Status label showing update state
 - 🔙 Back button
 
-*Note: ESP32 LVGL doesn't support live video streaming. The camera page provides camera entity information and quick reference. Use Home Assistant app for live camera view.*
+*Note: Camera feed updates every 10 seconds for memory efficiency (low FPS mode). For live high-FPS viewing, use Home Assistant app.*
 
 ### Voice Assistant Pages
 - 👂 Listening (blue screen)
@@ -168,9 +174,15 @@ Then duplicate the sensor and control sections in the YAML for each additional l
 2. ✅ Reflash device
 
 ### "Can't convert 'None' to number" error
-This is fixed in V5.2! The light brightness sensor now handles None values. If you still see this:
-1. ✅ Make sure you're using Ball_v5.2.yaml (not Ball_v5.yaml)
+This is fixed in V5.2/V5.3! The light brightness sensor now handles None values. If you still see this:
+1. ✅ Make sure you're using Ball_v5.3.yaml (not older versions)
 2. ✅ Check the light entity exists and is available in HA
+
+### Camera feed not showing
+1. ✅ Verify Home Assistant is accessible at `homeassistant.local:8123`
+2. ✅ Check camera entity is valid and streaming in HA
+3. ✅ Wait 10 seconds for first refresh
+4. ✅ Check ESPHome logs for HTTP request errors
 
 ### Glyph/font warnings in logs
 Fixed in V5.2! Media buttons now use standard text (<<, >, >>) instead of Unicode characters.
@@ -189,15 +201,24 @@ Fixed in V5.2! Media buttons now use standard text (<<, >, >>) instead of Unicod
 - Press physical button → Start listening
 - Works from any page
 
+## Changes from Ball V5.2
+
+- ✅ Fixed navigation button overlap with toggle light (moved buttons to y=-10)
+- ✅ Added live camera feed with 10-second refresh rate
+- ✅ Added http_request component for camera API access
+- ✅ Added online_image component for dynamic image fetching
+- ✅ Improved camera page layout with status indicator
+
 ## Changes from Ball V5.1
 
 - ✅ Centralized entity configuration (substitutions)
 - ✅ Fixed media player button glyphs (no more Unicode warnings)
 - ✅ Added album art display area
-- ✅ Added camera page for security camera
+- ✅ Added camera page with live feed
 - ✅ Fixed 'None' error for light brightness
 - ✅ Improved documentation
 - ✅ 3-button navigation on main page
+- ✅ Fixed button positioning for better touch accuracy
 
 All V5.1 features retained:
 - ✅ Light brightness feedback loop fix
@@ -214,12 +235,12 @@ All V5.1 features retained:
 
 ## Software Requirements
 
-- ESPHome 2025.5.0 or newer
+- ESPHome 2023.7.0 or newer (for online_image support)
 - Home Assistant with:
   - At least one light entity with brightness
   - At least one media player entity
   - Weather integration (Met.no recommended)
-  - (Optional) Camera entity
+  - (Optional) Camera entity for live feed
 
 ## Next Steps
 
@@ -237,7 +258,8 @@ Based on Ball V5.1 (flickering fix) and Ball V5 (multi-page interface).
 
 ## Version History
 
-- **V5.2** (Current): Easy configuration, camera page, fixed glyphs
+- **V5.3** (Current): Fixed button overlap, live camera feed
+- **V5.2**: Easy configuration, camera page, fixed glyphs
 - **V5.1**: Flickering fix for sliders
 - **V5.0**: Multi-page interface with media and weather
 - **V4.0**: Instant brightness updates

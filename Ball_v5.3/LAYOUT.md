@@ -1,4 +1,4 @@
-# Ball V5.2 Screen Layout
+# Ball V5.3 Screen Layout
 
 ## Display Specifications
 
@@ -10,12 +10,12 @@
 
 ## Page Overview
 
-Ball V5.2 has 4 main pages plus voice assistant status pages:
+Ball V5.3 has 4 main pages plus voice assistant status pages:
 
 1. **Idle Page** (Main) - Light controls and navigation
 2. **Media Page** - Media player controls with album art
 3. **Weather Page** - Weather information
-4. **Camera Page** - Security camera info (NEW in V5.2)
+4. **Camera Page** - Live camera feed (UPDATED in V5.3)
 5. Voice Assistant Pages (Listening, Thinking, Replying, etc.)
 
 ---
@@ -36,7 +36,8 @@ Ball V5.2 has 4 main pages plus voice assistant status pages:
 │                         │
 │                         │
 │                         │
-│  [Media][Weather][Cam]  │  y=-45 (Navigation - 3 buttons)
+│                         │
+│  [Media][Weather][Cam]  │  y=-10 (Navigation - 3 buttons) FIXED IN V5.3
 └─────────────────────────┘
 ```
 
@@ -56,14 +57,16 @@ Ball V5.2 has 4 main pages plus voice assistant status pages:
 | Brightness Label | x=0, y=90 | TOP_MID | auto | "XX%" |
 | Toggle Button | x=0, y=120 | TOP_MID | 140x35 | "Toggle Light" |
 
-#### Bottom Section (Navigation - NEW LAYOUT)
+#### Bottom Section (Navigation - FIXED IN V5.3)
 | Widget | Position | Alignment | Size | Content |
 |--------|----------|-----------|------|---------|
-| Media Button | x=-80, y=-45 | BOTTOM_MID | 70x30 | "Media" |
-| Weather Button | x=0, y=-45 | BOTTOM_MID | 70x30 | "Weather" |
-| Camera Button | x=80, y=-45 | BOTTOM_MID | 70x30 | "Camera" |
+| Media Button | x=-80, y=-10 | BOTTOM_MID | 70x30 | "Media" |
+| Weather Button | x=0, y=-10 | BOTTOM_MID | 70x30 | "Weather" |
+| Camera Button | x=80, y=-10 | BOTTOM_MID | 70x30 | "Camera" |
 
-**Change from V5.1**: Added 3rd button (Camera), made buttons smaller (70x30 instead of 90x35), moved up (y=-45 instead of y=-10).
+**Change from V5.2**: Fixed overlap issue by moving buttons down (y=-10 instead of y=-45).
+
+**Change from V5.1**: Added 3rd button (Camera), made buttons smaller (70x30 instead of 90x35).
 
 ### Colors
 - Background: Dark gray (#111111)
@@ -186,7 +189,7 @@ Ball V5.2 has 4 main pages plus voice assistant status pages:
 
 ---
 
-## Camera Page Layout (NEW IN V5.2)
+## Camera Page Layout (UPDATED IN V5.3)
 
 ```
 ┌─────────────────────────┐
@@ -196,13 +199,12 @@ Ball V5.2 has 4 main pages plus voice assistant status pages:
 │                         │
 │   ┌───────────────┐     │
 │   │               │     │  y=60
-│   │  Camera Feed  │     │  (Placeholder 200x150)
-│   │               │     │
-│   │  View in HA   │     │
-│   │     app       │     │
+│   │  [Live Feed]  │     │  (Camera Image 200x150)
+│   │   Updates     │     │
+│   │   every 10s   │     │
 │   │               │     │
 │   └───────────────┘     │
-│                         │
+│      Updating...        │  y=215 (Status)
 │  camera.front_door      │  y=-10 (Entity ID)
 └─────────────────────────┘
 ```
@@ -213,22 +215,24 @@ Ball V5.2 has 4 main pages plus voice assistant status pages:
 |--------|----------|-----------|------|---------| 
 | Back Button | x=10, y=5 | TOP_LEFT | 60x30 | "Back" |
 | Title | x=0, y=10 | TOP_MID | auto | "Security Camera" |
-| Placeholder Container | x=0, y=60 | TOP_MID | 200x150 | Info box |
-| Camera Feed Label | y=-20 | CENTER | auto | "Camera Feed" |
-| Instructions Label | y=10 | CENTER | 180 width | "View in HA app" |
+| Camera Feed Image | x=0, y=60 | TOP_MID | 200x150 | Live camera feed |
+| Status Label | y=215 | TOP_MID | 200 width | "Updating..." |
 | Entity Label | x=0, y=-10 | BOTTOM_MID | 220 width | Entity ID |
 
 ### Colors
 - Background: Very dark gray (#0a0a0a)
 - Buttons: Dark gray (#333333)
 - Borders: Medium gray (#555555)
-- Placeholder bg: Dark gray (#1a1a1a)
-- Placeholder border: Medium gray (#444444)
 - Title text: White
-- Accent: Yellow (#FFCC66)
+- Status text: Medium gray (#888888)
 - Entity text: Dark gray (#888888)
 
-**Note**: ESP32 LVGL doesn't support live video streaming. This page provides camera entity information and instructions.
+### Camera Feed Details
+- **Refresh Rate**: Every 10 seconds (low FPS mode)
+- **Resolution**: 200x150 pixels (resized from camera source)
+- **Format**: RGB565 for efficient memory usage
+- **Source**: Home Assistant camera API proxy endpoint
+- **Note**: Updates automatically when camera page is active
 
 ---
 

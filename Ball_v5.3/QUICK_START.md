@@ -1,10 +1,10 @@
-# Ball V5.2 - Quick Start Guide
+# Ball V5.3 - Quick Start Guide
 
 ## 3-Minute Setup
 
 ### Step 1: Configure Entities (1 min)
 
-Open `Ball_v5.2.yaml` and find the substitutions section (around line 20):
+Open `Ball_v5.3.yaml` and find the substitutions section (around line 20):
 
 ```yaml
 ## ENTITY CONFIGURATION - SET YOUR HOME ASSISTANT ENTITIES HERE
@@ -45,7 +45,7 @@ ota_password: "secure_password"
 ### Step 3: Flash Device (1 min)
 
 ```bash
-esphome run Ball_v5.2.yaml
+esphome run Ball_v5.3.yaml
 ```
 
 Choose your device and wait for flash to complete.
@@ -98,7 +98,17 @@ ha-cli state list | grep weather.
 ha-cli state list | grep camera.
 ```
 
-## What's Different from V5.1?
+## What's Different from Previous Versions?
+
+### 🎯 V5.3 Improvements (NEW!)
+
+1. **Fixed Button Overlap** ⭐
+   - V5.2: Navigation buttons too close to toggle light ❌
+   - V5.3: Proper spacing, no overlap ✅
+
+2. **Live Camera Feed** ⭐
+   - V5.2: Only placeholder text ❌
+   - V5.3: Real camera images, updates every 10s ✅
 
 ### ✨ V5.2 Improvements
 
@@ -111,9 +121,9 @@ ha-cli state list | grep camera.
    - V5.1: Empty boxes (missing glyphs) ❌
    - V5.2: `<<` `>` `>>` symbols ✅
 
-3. **Camera Page** (NEW)
+3. **Camera Page** (NEW in V5.2)
    - Quick access to security camera
-   - Entity info display
+   - Live feed in V5.3! ⭐
 
 4. **Album Art** (NEW)
    - Visual placeholder on media page
@@ -134,8 +144,9 @@ After flashing, test these:
 - [ ] Media buttons respond (<<, >, >>)
 - [ ] Volume slider works smoothly
 - [ ] Tap "Weather" → See temperature
-- [ ] Tap "Camera" → See camera entity
+- [ ] Tap "Camera" → See live camera feed (wait 10s for first image)
 - [ ] Tap "Back" → Return to main page
+- [ ] Verify navigation buttons don't overlap with toggle light
 - [ ] Press button → Voice assistant activates
 
 ## Troubleshooting (Quick Fixes)
@@ -143,7 +154,7 @@ After flashing, test these:
 ### Device won't flash
 ```bash
 # Hold boot button while connecting USB
-esphome run Ball_v5.2.yaml
+esphome run Ball_v5.3.yaml
 ```
 
 ### Wrong entity ID
@@ -152,10 +163,10 @@ esphome run Ball_v5.2.yaml
 3. Done! (No need to find 16 locations)
 
 ### Media buttons show boxes
-✅ Fixed in V5.2! Make sure you're using `Ball_v5.2.yaml`, not `Ball_v5.yaml`.
+✅ Fixed in V5.2! Make sure you're using `Ball_v5.3.yaml`, not `Ball_v5.yaml`.
 
 ### "Can't convert 'None'" error
-✅ Fixed in V5.2! Update to Ball_v5.2.yaml.
+✅ Fixed in V5.2! Update to Ball_v5.3.yaml.
 
 ### Light doesn't work
 1. Check entity exists: HA → Settings → Devices
@@ -239,7 +250,7 @@ Each device can control different lights/media players.
 ## Need Help?
 
 ### Check these first
-1. ✅ Using Ball_v5.2.yaml (not v5.yaml)?
+1. ✅ Using Ball_v5.3.yaml (not v5.yaml)?
 2. ✅ Substitutions configured correctly?
 3. ✅ secrets.yaml in same folder?
 4. ✅ ESPHome 2025.5.0+?
