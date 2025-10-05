@@ -59,9 +59,8 @@ Ball V5.3 builds upon V5.2's quality of life upgrades that made configuration ea
 http_request:
   timeout: 10s
 
-image:
-  - platform: online_image
-    id: camera_feed_image
+online_image:
+  - id: camera_feed_image
     url: !lambda |-
       return "http://homeassistant.local:8123/api/camera_proxy/${camera_entity}";
     format: RGB565

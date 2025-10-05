@@ -163,9 +163,8 @@ http_request:
 # Online image component for media player album art
 # Note: This requires ESPHome 2023.7.0+
 # The album art will update when the media changes
-image:
-  - platform: online_image
-    id: album_art_image
+online_image:
+  - id: album_art_image
     url: ""  # Will be set dynamically from entity_picture attribute
     format: RGB565
     resize: 60x60
