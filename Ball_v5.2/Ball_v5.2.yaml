@@ -1,0 +1,1791 @@
+substitutions:
+  name: ball_v52
+  friendly_name: "Ball V5.2"
+
+## v5.2 Ball V5.2 - Enhanced Configuration & Features #############################################################################################################################
+## NEW in V5.2:
+## - Easy entity configuration at the top - set once, apply everywhere
+## - Fixed media player button glyphs (using text instead of missing Unicode characters)
+## - Added album art display area on media player page
+## - Added camera page for live security camera feed
+## - Fixed 'None' error handling for light entities
+## - Support for multiple lights and devices through easy configuration
+## Based on Ball V5.1 (flickering fix) #############################################################################################################################
+
+## ENTITY CONFIGURATION - SET YOUR HOME ASSISTANT ENTITIES HERE ##################################################################################################
+## Replace these with your actual Home Assistant entity IDs
+## These will be used throughout the entire configuration
+
+  # Light entity - the light you want to control
+  light_entity: "light.YOUR_LIGHT_ENTITY"  # Example: light.living_room_lamp
+  
+  # Media player entity - your media player device
+  media_player_entity: "media_player.YOUR_MEDIA_PLAYER_ENTITY"  # Example: media_player.living_room_speaker
+  
+  # Weather entity - your weather integration
+  weather_entity: "weather.YOUR_WEATHER_ENTITY"  # Example: weather.home or weather.forecast_home
+  
+  # Camera entity - your security camera (optional, for camera page)
+  camera_entity: "camera.YOUR_CAMERA_ENTITY"  # Example: camera.front_door
+  
+  # Additional light entities (optional - leave as is if you only have one light)
+  # Uncomment and configure if you want to control multiple lights
+  # light_entity_2: "light.YOUR_SECOND_LIGHT"
+  # light_entity_3: "light.YOUR_THIRD_LIGHT"
+
+##################################################################################################################################################
+
+## SETTINGS ######################################################################################################################################
+
+  startup_sound: "Home_Connected" # (options are: available,Home_Connected,Computer_Ready)
+
+  imagewidth: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
+  imageheight: "240" # GC9A01A (Ball v2 & Muma & Puck) "240"
+  displaymodel: "GC9A01A" # GC9A01A (Ball v2 & Puck) or ST7789V (Muma)
+  invertcolors: "true" # GC9A01A/ST7789V (Ball v2 & Muma & Puck) "true"
+
+##################################################################################################################################################
+
+  # Hardware v2 pin mappings
+  sda_pin_bus_a: "15"        # I2C Bus A SDA
+  scl_pin_bus_a: "14"        # I2C BUS A SCL
+  sda_pin_bus_b: "11"        # I2C Bus B SDA
+  scl_pin_bus_b: "7"         # I2C BUS B SCL
+
+  i2s_lrclk_pin: "45"        # I2S LRCLK (Word Select)
+  i2s_bclk_pin: "9"          # I2S BCLK (Bit Clock)
+  i2s_mclk_pin: "16"         # I2S MCLK (Master Clock)
+  i2s_din_pin: "10"          # I2S Data In (Mic)
+  i2s_dout_pin: "8"          # I2S Data Out (Speaker)
+
+  speaker_enable_pin: "46"   # Speaker Enable
+  touch_input_pin: "12"      # Touch interrupt
+  touch_reset_pin: "6"       # Touch Reset
+
+  backlight_output_pin: "42" # Display Backlight
+  lcd_cs_pin: "5"            # Display CS (Chip Select)
+  lcd_dc_pin: "47"           # Display DC (Data/Command)
+  lcd_reset_pin: "38"        # Display Reset
+  spi_clk_pin: "4"           # SPI Clock
+  spi_mosi_pin: "2"          # SPI MOSI (Data Out)
+
+  left_top_button_pin: "0"   # Main Button
+  led_pin: "48"              # RGB LED (WS2812)
+  battery_adc_pin: "1"       # Battery Voltage ADC
+
+##################################################################################################################################################
+
+  startup_sound_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/sounds/${startup_sound}.flac
+
+  voice_assist_idle_phase_id: "1"
+  voice_assist_listening_phase_id: "2"
+  voice_assist_thinking_phase_id: "3"
+  voice_assist_replying_phase_id: "4"
+  voice_assist_not_ready_phase_id: "10"
+  voice_assist_error_phase_id: "11"
+  voice_assist_muted_phase_id: "12"
+  voice_assist_timer_finished_phase_id: "20"
+
+  allowed_characters: " !#%'()+,-./0123456789:;<>?@ABCDEFGHIJKLMNOPQRSTUVWYZ[]_abcdefghijklmnopqrstuvwxyz{|}°²³µ¿ÁÂÄÅÉÖÚßàáâãäåæçèéêëìíîðñòóôõöøùúûüýþāăąćčďĐđēėęěğĮįıļľŁłńňőřśšťũūůűųźŻżŽžơưșțΆΈΌΐΑΒΓΔΕΖΗΘΚΜΝΠΡΣΤΥΦάέήίαβγδεζηθικλμνξοπρςστυφχψωϊόύώАБВГДЕЖЗИКЛМНОПРСТУХЦЧШЪЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяёђєіїјљњћאבגדהוזחטיכלםמןנסעפץצקרשת،ءآأإئابةتجحخدذرزسشصضطظعغفقكلمنهوىيٹپچڈکگںھہیےংকচতধনফবযরলশষস়ািু্చయలిెొ్ംഅആഇഈഉഎഓകഗങചജഞടഡണതദധനപഫബഭമയരറലളവശസഹാിീുൂെേൈ്ൺൻർൽൾაბგდევზთილმნოპრსტუფქყშჩცძჭხạảấầẩậắặẹẽếềểệỉịọỏốồổỗộớờởợụủứừửữựỳ—、一上不个中为主乾了些亮人任低佔何作供依侧係個側偵充光入全关冇冷几切到制前動區卧厅厨及口另右吊后吗启吸呀咗哪唔問啟嗎嘅嘛器圍在场執場外多大始安定客室家密寵对將小少左已帘常幫幾库度庫廊廚廳开式後恆感態成我戲戶户房所扇手打执把拔换掉控插摄整斯新明是景暗更最會有未本模機檯櫃欄次正氏水沒没洗活派温測源溫漏潮激濕灯為無煙照熱燈燥物狀玄现現瓦用發的盞目着睡私空窗立笛管節簾籬紅線红罐置聚聲脚腦腳臥色节著行衣解設調請謝警设调走路車车运連遊運過道邊部都量鎖锁門閂閉開關门闭除隱離電震霧面音頂題顏颜風风食餅餵가간감갔강개거게겨결경고공과관그금급기길깥꺼껐꼽나난내네놀누는능니다닫담대더데도동됐되된됨둡드든등디때떤뜨라래러렇렌려로료른를리림링마많명몇모무문물뭐바밝방배변보부불블빨뽑사산상색서설성세센션소쇼수스습시신실싱아안않알았애야어얼업없었에여연열옆오온완외왼요운움워원위으은을음의이인일임입있작잠장재전절정제져조족종주줄중줘지직진짐쪽차창천최추출충치침커컴켜켰쿠크키탁탄태탬터텔통트튼티파팬퍼폰표퓨플핑한함해했행혀현화활후휴힘，？"
+
+  font_glyphsets: "GF_Latin_Core"
+  font_family: Figtree
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2025.5.0
+  name_add_mac_suffix: false
+  on_boot:
+    priority: 600
+    then:
+      - script.execute: draw_display
+      - component.update: battery_voltage
+      - component.update: battery_percentage
+      - delay: 30s
+      - if:
+          condition:
+            lambda: return id(init_in_progress);
+          then:
+            - lambda: id(init_in_progress) = false;
+            - script.execute: draw_display
+
+esp32:
+  board: esp32-s3-devkitc-1
+  flash_size: 16MB
+  cpu_frequency: 240MHz
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
+      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
+      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+api:
+  on_client_connected:
+    - script.execute: draw_display
+    - lambda: |-
+        if (!id(boot_sound_played)) {
+          id(boot_sound_played) = true;
+          if (id(startup_sound_switch).state) {
+            id(play_sound)->execute(true, id(ready_sound));
+          }
+        }
+  on_client_disconnected:
+    - script.execute: draw_display
+
+ota:
+  - platform: esphome
+    id: ota_esphome
+
+logger:
+  hardware_uart: USB_SERIAL_JTAG
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Ball v2 Hotspot"
+    password: "RZ7D3EzJdPM6"
+  on_connect:
+    - script.execute: draw_display
+  on_disconnect:
+    - script.execute: draw_display
+
+captive_portal:
+
+button:
+  - platform: factory_reset
+    id: factory_reset_btn
+    internal: true
+
+sensor:
+  - platform: adc
+    pin: GPIO${battery_adc_pin}
+    name: "Battery Voltage"
+    id: battery_voltage
+    attenuation: 12db
+    accuracy_decimals: 2
+    update_interval: 1s
+    unit_of_measurement: "V"
+    icon: mdi:battery-medium
+    filters:
+      - multiply: 2.0
+      - median:
+          window_size: 7
+          send_every: 7
+          send_first_at: 7
+      - throttle: 1min
+    on_value:
+      then:
+        - component.update: battery_percentage
+      
+  - platform: template
+    id: battery_percentage
+    name: "Battery Percentage"
+    lambda: return id(battery_voltage).state;
+    accuracy_decimals: 0
+    unit_of_measurement: "%"
+    icon: mdi:battery-medium
+    filters:
+      - calibrate_linear:
+         method: exact
+         datapoints:
+          - 2.80 -> 0.0
+          - 3.10 -> 10.0
+          - 3.30 -> 20.0
+          - 3.45 -> 30.0
+          - 3.60 -> 40.0
+          - 3.70 -> 50.0
+          - 3.75 -> 60.0
+          - 3.80 -> 70.0
+          - 3.90 -> 80.0
+          - 4.00 -> 90.0
+          - 4.20 -> 100.0
+      - lambda: |-
+          if (x > 100) return 100;
+          if (x < 0) return 0;
+          return x;
+    on_value:
+      then:
+        - lambda: |-
+            int current = (int)x;
+            if (current != id(last_battery_percent)) {
+              id(last_battery_percent) = current;
+              id(draw_display).execute();
+            }
+
+  # Home Assistant light brightness sensor (now in percentage 0-100)
+  - platform: homeassistant
+    id: ha_light_brightness
+    entity_id: ${light_entity}
+    attribute: brightness
+    filters:
+      # Handle None values - if light returns None, set to 0
+      - lambda: |-
+          if (std::isnan(x)) return 0.0;
+          return x;
+    on_value:
+      # Convert 0-255 from HA to 0-100 percentage for slider
+      # Set flag to prevent feedback loop
+      - lambda: 'id(updating_light_from_ha) = true;'
+      - lvgl.slider.update:
+          id: my_light_slider
+          value: !lambda 'return (x / 255.0) * 100.0;'
+      - lvgl.label.update:
+          id: brightness_value_label
+          text: !lambda |-
+            char buf[20];
+            snprintf(buf, sizeof(buf), "%.0f%%", (x / 255.0) * 100.0);
+            return buf;
+      - lambda: 'id(updating_light_from_ha) = false;'
+
+  # Weather temperature sensor
+  - platform: homeassistant
+    id: ha_weather_temperature
+    entity_id: ${weather_entity}
+    attribute: temperature
+    on_value:
+      - lvgl.label.update:
+          id: weather_temp_label
+          text: !lambda |-
+            char buf[20];
+            snprintf(buf, sizeof(buf), "%.1f°C", x);
+            return buf;
+
+  # Weather humidity sensor
+  - platform: homeassistant
+    id: ha_weather_humidity
+    entity_id: ${weather_entity}
+    attribute: humidity
+    on_value:
+      - lvgl.label.update:
+          id: weather_humidity_label
+          text: !lambda |-
+            char buf[20];
+            snprintf(buf, sizeof(buf), "%.0f%%", x);
+            return buf;
+
+  # Media player volume sensor (0-100)
+  - platform: homeassistant
+    id: ha_media_volume
+    entity_id: ${media_player_entity}
+    attribute: volume_level
+    on_value:
+      # Set flag to prevent feedback loop
+      - lambda: 'id(updating_media_from_ha) = true;'
+      - lvgl.slider.update:
+          id: media_volume_slider
+          value: !lambda 'return x * 100.0;'
+      - lambda: 'id(updating_media_from_ha) = false;'
+
+time:
+  - platform: homeassistant
+    id: ha_time
+    on_time:
+      - seconds: 0
+        minutes: '*'
+        then:
+          - lvgl.label.update:
+              id: time_label
+              text: !lambda |-
+                char buf[10];
+                auto time = id(ha_time).now();
+                snprintf(buf, sizeof(buf), "%02d:%02d", time.hour, time.minute);
+                return buf;
+
+touchscreen:
+  - platform: cst816
+    i2c_id: bus_b
+    interrupt_pin: ${touch_input_pin}
+    reset_pin: ${touch_reset_pin}
+    id: touch_dp
+    on_touch:
+      then:
+        - binary_sensor.template.publish:
+            id: touch_input
+            state: ON
+    on_release:
+      then:
+        - binary_sensor.template.publish:
+            id: touch_input
+            state: OFF
+
+binary_sensor:
+  - platform: template
+    name: "Touch Button"
+    id: touch_input
+    on_multi_click:
+      # Single tap - Only dismiss timer, don't activate voice assistant
+      - timing:
+          - ON for 40ms to 400ms
+          - OFF for at least 330ms
+        then:
+          - if:
+              condition:
+                switch.is_on: timer_ringing
+              then:
+                - switch.turn_off: timer_ringing
+              # Removed voice assistant activation from touch
+
+      - timing:
+          - ON for at least 1s
+        then:
+          - switch.toggle: show_battery_status
+          - script.execute: draw_display
+
+  - platform: gpio
+    pin:
+      number: GPIO${left_top_button_pin}
+      mode: INPUT_PULLUP
+      ignore_strapping_warning: true
+      inverted: true
+    id: left_top_button
+    internal: true
+    on_multi_click:
+      - timing:
+          - ON for at least 50ms
+          - OFF for at least 50ms
+        then:
+          - if:
+              condition:
+                switch.is_on: timer_ringing
+              then:
+                - switch.turn_off: timer_ringing
+              else:
+                - if:
+                    condition:
+                      lambda: return id(wake_word_engine_location).state == "On device";
+                    then:
+                      - if:
+                          condition:
+                            not:
+                              voice_assistant.is_running:
+                          then:
+                            - voice_assistant.start:                     
+                          else:
+                            - voice_assistant.stop:  
+      - timing:
+          - ON for at least 10s
+        then:
+          - button.press: factory_reset_btn
+
+output:
+  - platform: ledc
+    pin: GPIO${backlight_output_pin}
+    id: backlight_output
+    inverted: true 
+
+light:
+  - platform: monochromatic
+    id: Sled
+    name: Screen
+    icon: "mdi:television"
+    entity_category: config
+    output: backlight_output
+    restore_mode: ALWAYS_ON
+    default_transition_length: 250ms
+  - platform: esp32_rmt_led_strip
+    id: led
+    name: none
+    disabled_by_default: false
+    entity_category: config
+    pin: GPIO${led_pin}
+    default_transition_length: 0s
+    chipset: WS2812
+    num_leds: 1
+    rgb_order: grb
+    effects:
+      - pulse:
+          name: "Slow Pulse"
+          transition_length: 250ms
+          update_interval: 250ms
+          min_brightness: 50%
+          max_brightness: 100%
+      - pulse:
+          name: "Fast Pulse"
+          transition_length: 100ms
+          update_interval: 100ms
+          min_brightness: 50%
+          max_brightness: 100%
+
+i2c:
+  - id: bus_a
+    sda: GPIO${sda_pin_bus_a}
+    scl: GPIO${scl_pin_bus_a}
+    scan: true
+  - id: bus_b
+    sda: GPIO${sda_pin_bus_b}
+    scl: GPIO${scl_pin_bus_b}
+    scan: true
+
+i2s_audio:
+  - id: i2s_audio_bus
+    i2s_lrclk_pin: GPIO${i2s_lrclk_pin}
+    i2s_bclk_pin: GPIO${i2s_bclk_pin}
+    i2s_mclk_pin: GPIO${i2s_mclk_pin}
+
+audio_dac:
+  - platform: es8311
+    i2c_id: bus_a 
+    id: es8311_dac
+    bits_per_sample: 16bit
+    sample_rate: 16000
+
+microphone:
+  - platform: i2s_audio
+    id: i2s_mics
+    sample_rate: 16000
+    i2s_din_pin: GPIO${i2s_din_pin}
+    bits_per_sample: 16bit
+    adc_type: external
+    channel: left
+
+speaker:
+  - platform: i2s_audio
+    id: i2s_audio_speaker
+    i2s_dout_pin: GPIO${i2s_dout_pin}
+    dac_type: external
+    sample_rate: 16000
+    bits_per_sample: 16bit
+    channel: left
+    audio_dac: es8311_dac
+    buffer_duration: 100ms
+
+media_player:
+  - platform: speaker
+    name: None
+    id: external_media_player
+    announcement_pipeline:
+      speaker: i2s_audio_speaker
+      format: FLAC
+      sample_rate: 16000
+      num_channels: 1  # S3 Box only has one output channel
+    files:
+      - id: timer_finished_sound
+        file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/timer_finished.flac
+      - id: wake_word_triggered_sound
+        file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/wake_word_triggered.flac
+      - id: ready_sound
+        file: ${startup_sound_file}
+    on_announcement:
+      - if:
+          condition:
+            - microphone.is_capturing:
+          then:
+            - script.execute: stop_wake_word
+            - if:
+                condition:
+                  - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+                then:
+                  - wait_until:
+                      - not:
+                          voice_assistant.is_running:
+      - if:
+          condition:
+            not:
+              voice_assistant.is_running:
+          then:
+            - if:
+                condition:
+                  lambda: 'return id(playing_internal_sound);'
+                then:
+                  - lambda: 'id(playing_internal_sound) = false;'
+                else:
+                  - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+                  - script.execute: draw_display
+    on_idle:
+      - if:
+          condition:
+            not:
+              voice_assistant.is_running:
+          then:
+            - script.execute: start_wake_word
+            - script.execute: set_idle_or_mute_phase
+            - script.execute: draw_display
+
+micro_wake_word:
+  id: mww
+  models:
+    - okay_nabu
+    - hey_jarvis
+    - alexa
+  on_wake_word_detected:
+    - if:
+        condition:
+          switch.is_on: wake_sound
+        then:
+          - script.execute:
+              id: play_sound
+              priority: true
+              sound_file: !lambda return id(wake_word_triggered_sound);
+          - delay: 300ms
+    - voice_assistant.start:
+        wake_word: !lambda return wake_word;
+
+voice_assistant:
+  id: va
+  microphone: i2s_mics
+  media_player: external_media_player
+  micro_wake_word: mww
+  noise_suppression_level: 2
+  auto_gain: 31dBFS
+  volume_multiplier: 2.0
+  on_listening:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
+    - text_sensor.template.publish:
+        id: text_request
+        state: "..."
+    - text_sensor.template.publish:
+        id: text_response
+        state: "..."
+    - script.execute: draw_display
+  on_stt_vad_end:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_thinking_phase_id};
+    - script.execute: draw_display
+  on_stt_end:
+    - text_sensor.template.publish:
+        id: text_request
+        state: !lambda return x;
+    - script.execute: draw_display
+  on_tts_start:
+    - text_sensor.template.publish:
+        id: text_response
+        state: !lambda return x;
+    - lambda: id(voice_assistant_phase) = ${voice_assist_replying_phase_id};
+    - script.execute: draw_display
+  on_end:
+    - wait_until:
+        condition:
+          - media_player.is_announcing:
+        timeout: 0.5s
+    - wait_until:
+        - and:
+            - not:
+                media_player.is_announcing:
+            - not:
+                speaker.is_playing:
+    - if:
+        condition:
+          - lambda: return id(wake_word_engine_location).state == "On device";
+        then:
+          - lambda: id(va).set_use_wake_word(false);
+          - micro_wake_word.start:
+    - script.execute: set_idle_or_mute_phase
+    - script.execute: draw_display
+    - text_sensor.template.publish:
+        id: text_request
+        state: ""
+    - text_sensor.template.publish:
+        id: text_response
+        state: ""
+  on_error:
+    - if:
+        condition:
+          lambda: return !id(init_in_progress);
+        then:
+          - lambda: id(voice_assistant_phase) = ${voice_assist_error_phase_id};
+          - script.execute: draw_display
+          - delay: 1s
+          - if:
+              condition:
+                switch.is_off: mute
+              then:
+                - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+              else:
+                - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+          - script.execute: draw_display
+  on_client_connected:
+    - lambda: id(init_in_progress) = false;
+    - script.execute: start_wake_word
+    - script.execute: set_idle_or_mute_phase
+    - script.execute: draw_display
+  on_client_disconnected:
+    - script.execute: stop_wake_word
+    - lambda: id(voice_assistant_phase) = ${voice_assist_not_ready_phase_id};
+    - script.execute: draw_display
+  on_timer_started:
+    - script.execute: draw_display
+  on_timer_cancelled:
+    - script.execute: draw_display
+  on_timer_updated:
+    - script.execute: draw_display
+  on_timer_tick:
+    - script.execute: draw_display
+  on_timer_finished:
+    - switch.turn_on: timer_ringing
+    - wait_until:
+        media_player.is_announcing:
+    - lambda: id(voice_assistant_phase) = ${voice_assist_timer_finished_phase_id};
+    - script.execute: draw_display
+
+script:
+  - id: draw_display
+    then:
+      - if:
+          condition:
+            lambda: return !id(init_in_progress);
+          then:
+            - if:
+                condition:
+                  wifi.connected:
+                then:
+                  - if:
+                      condition:
+                        api.connected:
+                      then:
+                        - if:
+                            condition:
+                              lambda: return id(voice_assistant_phase) == ${voice_assist_listening_phase_id};
+                            then:
+                              - lvgl.page.show: listening_page
+                            else:
+                              - if:
+                                  condition:
+                                    lambda: return id(voice_assistant_phase) == ${voice_assist_thinking_phase_id};
+                                  then:
+                                    - lvgl.page.show: thinking_page
+                                    - if:
+                                        condition:
+                                          lambda: return id(show_text).state;
+                                        then:
+                                          - lvgl.label.update:
+                                              id: request_label
+                                              text: !lambda return id(text_request).state.c_str();
+                                  else:
+                                    - if:
+                                        condition:
+                                          lambda: return id(voice_assistant_phase) == ${voice_assist_replying_phase_id};
+                                        then:
+                                          - lvgl.page.show: replying_page
+                                          - if:
+                                              condition:
+                                                lambda: return id(show_text).state;
+                                              then:
+                                                - lvgl.label.update:
+                                                    id: response_label
+                                                    text: !lambda return id(text_response).state.c_str();
+                                        else:
+                                          - if:
+                                              condition:
+                                                lambda: return id(voice_assistant_phase) == ${voice_assist_error_phase_id};
+                                              then:
+                                                - lvgl.page.show: error_page
+                                              else:
+                                                - if:
+                                                    condition:
+                                                      lambda: return id(voice_assistant_phase) == ${voice_assist_muted_phase_id};
+                                                    then:
+                                                      - lvgl.page.show: muted_page
+                                                    else:
+                                                      - if:
+                                                          condition:
+                                                            lambda: return id(voice_assistant_phase) == ${voice_assist_not_ready_phase_id};
+                                                          then:
+                                                            - lvgl.page.show: no_ha_page
+                                                          else:
+                                                            - if:
+                                                                condition:
+                                                                  lambda: return id(voice_assistant_phase) == ${voice_assist_timer_finished_phase_id};
+                                                                then:
+                                                                  - lvgl.page.show: timer_finished_page
+                                                                else:
+                                                                  - lvgl.page.show: idle_page
+                                                                  - if:
+                                                                      condition:
+                                                                        lambda: return id(show_battery_status).state;
+                                                                      then:
+                                                                        - lvgl.label.update:
+                                                                            id: battery_label
+                                                                            text: !lambda |-
+                                                                              char battery_text[16];
+                                                                              snprintf(battery_text, sizeof(battery_text), "%.0f%%", id(battery_percentage).state);
+                                                                              return battery_text;
+                                                                      else:
+                                                                        - lvgl.label.update:
+                                                                            id: battery_label
+                                                                            text: ""
+                      else:
+                        - lvgl.page.show: no_ha_page
+                else:
+                  - lvgl.page.show: no_wifi_page
+          else:
+            - lvgl.page.show: initializing_page
+
+  - id: fetch_first_active_timer
+    then:
+      - lambda: |
+          const auto timers = id(va).get_timers();
+          auto output_timer = timers.begin()->second;
+          for (auto &iterable_timer : timers) {
+            if (iterable_timer.second.is_active && iterable_timer.second.seconds_left <= output_timer.seconds_left) {
+              output_timer = iterable_timer.second;
+            }
+          }
+          id(global_first_active_timer) = output_timer;
+  - id: check_if_timers_active
+    then:
+      - lambda: |
+          const auto timers = id(va).get_timers();
+          bool output = false;
+          if (timers.size() > 0) {
+            for (auto &iterable_timer : timers) {
+              if(iterable_timer.second.is_active) {
+                output = true;
+              }
+            }
+          }
+          id(global_is_timer_active) = output;
+  - id: fetch_first_timer
+    then:
+      - lambda: |
+          const auto timers = id(va).get_timers();
+          auto output_timer = timers.begin()->second;
+          for (auto &iterable_timer : timers) {
+            if (iterable_timer.second.seconds_left <= output_timer.seconds_left) {
+              output_timer = iterable_timer.second;
+            }
+          }
+          id(global_first_timer) = output_timer;
+  - id: check_if_timers
+    then:
+      - lambda: |
+          const auto timers = id(va).get_timers();
+          bool output = false;
+          if (timers.size() > 0) {
+            output = true;
+          }
+          id(global_is_timer) = output;
+
+# Timer drawing scripts removed - LVGL handles display
+  - id: start_wake_word
+    then:
+      - if:
+          condition:
+            and:
+              - not:
+                  - voice_assistant.is_running:
+              - lambda: return id(wake_word_engine_location).state == "On device";
+          then:
+            - lambda: id(va).set_use_wake_word(false);
+            - micro_wake_word.start:
+      - if:
+          condition:
+            and:
+              - not:
+                  - voice_assistant.is_running:
+              - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+          then:
+            - lambda: id(va).set_use_wake_word(true);
+            - voice_assistant.start_continuous:
+  - id: stop_wake_word
+    then:
+      - if:
+          condition:
+            lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+          then:
+            - lambda: id(va).set_use_wake_word(false);
+            - voice_assistant.stop:
+      - if:
+          condition:
+            lambda: return id(wake_word_engine_location).state == "On device";
+          then:
+            - micro_wake_word.stop:
+  - id: set_idle_or_mute_phase
+    then:
+      - if:
+          condition:
+            switch.is_off: mute
+          then:
+            - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+          else:
+            - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+
+  # Script executed when we want to play sounds on the device.
+  - id: play_sound
+    parameters:
+      priority: bool
+      sound_file: "audio::AudioFile*"
+    then:
+      - lambda: |-
+          id(playing_internal_sound) = true;
+          if (priority) {
+            id(external_media_player)
+              ->make_call()
+              .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_STOP)
+              .set_announcement(true)
+              .perform();
+          }
+          if ( (id(external_media_player).state != media_player::MediaPlayerState::MEDIA_PLAYER_STATE_ANNOUNCING ) || priority) {
+            id(external_media_player)
+              ->play_file(sound_file, true, false);
+          }
+
+switch:
+  - platform: template
+    name: Mute
+    id: mute
+    icon: "mdi:microphone-off"
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config
+    on_turn_off:
+      - microphone.unmute:
+      - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+      - script.execute: draw_display
+    on_turn_on:
+      - microphone.mute:
+      - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+      - script.execute: draw_display
+  - platform: template
+    id: timer_ringing
+    optimistic: true
+    internal: true
+    restore_mode: ALWAYS_OFF
+    on_turn_off:
+      - lambda: |-
+              id(external_media_player)
+                ->make_call()
+                .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_OFF)
+                .set_announcement(true)
+                .perform();
+              id(external_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 0);
+      - media_player.stop:
+          announcement: true
+    on_turn_on:
+      - lambda: |-
+            id(external_media_player)
+              ->make_call()
+              .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_ONE)
+              .set_announcement(true)
+              .perform();
+            id(external_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 1000);
+      - media_player.speaker.play_on_device_media_file:
+          media_file: timer_finished_sound
+          announcement: true
+      - delay: 15min
+      - switch.turn_off: timer_ringing
+
+  - platform: gpio
+    name: Speaker Enable
+    icon: "mdi:speaker"
+    entity_category: config
+    pin: GPIO${speaker_enable_pin}
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: wake_sound
+    name: Wake sound
+    icon: "mdi:bullhorn"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: startup_sound_switch
+    name: Startup sound
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: show_text
+    name: Show Text
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: show_battery_status
+    name: Show Battery Status
+    icon: "mdi:card-text-outline"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - script.execute: draw_display
+    on_turn_off:
+      - script.execute: draw_display
+
+# Optional: Number entity for HA UI control (percentage-based)
+number:
+  - platform: template
+    name: "Ball V5.2 Light Brightness"
+    id: ball_light_slider_number
+    icon: "mdi:brightness-6"
+    min_value: 0
+    max_value: 100
+    step: 1
+    unit_of_measurement: "%"
+    mode: slider
+    optimistic: true
+    set_action:
+      - homeassistant.action:
+          action: light.turn_on
+          data:
+            entity_id: ${light_entity}
+            brightness_pct: !lambda 'return (int) x;'
+
+select:
+  - platform: template
+    entity_category: config
+    name: Wake word engine location
+    id: wake_word_engine_location
+    icon: "mdi:account-voice"
+    optimistic: true
+    restore_value: true
+    options:
+      - In Home Assistant
+      - On device
+    initial_option: On device
+    on_value:
+      - if:
+          condition:
+            lambda: return !id(init_in_progress);
+          then:
+            - wait_until:
+                lambda: return id(voice_assistant_phase) == ${voice_assist_muted_phase_id} || id(voice_assistant_phase) == ${voice_assist_idle_phase_id};
+            - if:
+                condition:
+                  lambda: return x == "In Home Assistant";
+                then:
+                  - micro_wake_word.stop
+                  - delay: 500ms
+                  - if:
+                      condition:
+                        switch.is_off: mute
+                      then:
+                        - lambda: id(va).set_use_wake_word(true);
+                        - voice_assistant.start_continuous:
+            - if:
+                condition:
+                  lambda: return x == "On device";
+                then:
+                  - lambda: id(va).set_use_wake_word(false);
+                  - voice_assistant.stop
+                  - delay: 500ms
+                  - if:
+                      condition:
+                        switch.is_off: mute
+                      then:
+                        - micro_wake_word.start
+
+globals:
+  - id: init_in_progress
+    type: bool
+    restore_value: false
+    initial_value: "true"
+  - id: voice_assistant_phase
+    type: int
+    restore_value: false
+    initial_value: ${voice_assist_not_ready_phase_id}
+  - id: global_first_active_timer
+    type: voice_assistant::Timer
+    restore_value: false
+  - id: global_is_timer_active
+    type: bool
+    restore_value: false
+  - id: global_first_timer
+    type: voice_assistant::Timer
+    restore_value: false
+  - id: global_is_timer
+    type: bool
+    restore_value: false
+  - id: last_battery_percent
+    type: int
+    restore_value: no
+    initial_value: '-1'
+  - id: playing_internal_sound
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: boot_sound_played
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: updating_light_from_ha
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: updating_media_from_ha
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+
+# Images removed - using LVGL instead
+
+# Fonts defined in LVGL section
+
+text_sensor:
+  - id: text_request
+    platform: template
+    on_value:
+      lambda: |-
+        if(id(text_request).state.length()>32) {
+          std::string name = id(text_request).state.c_str();
+          std::string truncated = esphome::str_truncate(name.c_str(),31);
+          id(text_request).state = (truncated+"...").c_str();
+        }
+
+  - id: text_response
+    platform: template
+    on_value:
+      lambda: |-
+        if(id(text_response).state.length()>32) {
+          std::string name = id(text_response).state.c_str();
+          std::string truncated = esphome::str_truncate(name.c_str(),31);
+          id(text_response).state = (truncated+"...").c_str();
+        }
+
+  # Light state sensor (on/off)
+  - platform: homeassistant
+    id: ha_light_state
+    entity_id: ${light_entity}
+    on_value:
+      - if:
+          condition:
+            lambda: 'return x == "on";'
+          then:
+            - lvgl.widget.update:
+                id: my_light_slider
+                bg_color: 0xFFCC66
+            - lvgl.widget.update:
+                id: my_light_button
+                bg_color: 0xFFCC66
+          else:
+            - lvgl.widget.update:
+                id: my_light_slider
+                bg_color: 0x555555
+            - lvgl.widget.update:
+                id: my_light_button
+                bg_color: 0x555555
+
+  # Weather condition sensor
+  - platform: homeassistant
+    id: ha_weather_condition
+    entity_id: ${weather_entity}
+    on_value:
+      - lvgl.label.update:
+          id: weather_condition_label
+          text: !lambda 'return x.c_str();'
+
+  # Media player state sensor
+  - platform: homeassistant
+    id: ha_media_state
+    entity_id: ${media_player_entity}
+    on_value:
+      - lvgl.label.update:
+          id: media_state_label
+          text: !lambda |-
+            if (x == "playing") return "> Playing";
+            else if (x == "paused") return "|| Paused";
+            else if (x == "idle") return "[] Idle";
+            else return x.c_str();
+      # Update play button label based on state
+      - lvgl.label.update:
+          id: media_play_label
+          text: !lambda |-
+            if (x == "playing") return "||";
+            else return ">";
+
+  # Media player title sensor
+  - platform: homeassistant
+    id: ha_media_title
+    entity_id: ${media_player_entity}
+    attribute: media_title
+    on_value:
+      - lvgl.label.update:
+          id: media_title_label
+          text: !lambda |-
+            if (x.length() > 25) {
+              return (x.substr(0, 22) + "...").c_str();
+            }
+            return x.c_str();
+
+  # Media player artist sensor
+  - platform: homeassistant
+    id: ha_media_artist
+    entity_id: ${media_player_entity}
+    attribute: media_artist
+    on_value:
+      - lvgl.label.update:
+          id: media_artist_label
+          text: !lambda |-
+            if (x.length() > 25) {
+              return (x.substr(0, 22) + "...").c_str();
+            }
+            return x.c_str();
+
+# Colors defined in LVGL section
+
+spi:
+  - id: spi_bus
+    clk_pin: GPIO${spi_clk_pin}
+    mosi_pin: GPIO${spi_mosi_pin}
+
+display:
+  - platform: ili9xxx
+    id: s3_box_lcd
+    model: ${displaymodel}
+    invert_colors: ${invertcolors}
+    data_rate: 40MHz
+    cs_pin: GPIO${lcd_cs_pin}
+    dc_pin: GPIO${lcd_dc_pin}
+    reset_pin:
+      number: GPIO${lcd_reset_pin}
+    auto_clear_enabled: false
+    dimensions:
+        height: ${imageheight}
+        width: ${imagewidth}
+
+lvgl:
+  log_level: WARN
+  displays:
+    - s3_box_lcd
+  touchscreens:
+    - touch_dp
+  
+  color_depth: 16
+  bg_color: 0x000000
+  text_color: 0xFFFFFF
+  
+  default_font: montserrat_20
+  
+  pages:
+    - id: idle_page
+      bg_color: 0x111111
+      widgets:
+        - obj:
+            id: idle_container
+            width: 240
+            height: 240
+            bg_color: 0x111111
+            border_width: 0
+            widgets:
+              - label:
+                  id: idle_label
+                  text: "Ready"
+                  align: TOP_MID
+                  y: 5
+                  text_align: CENTER
+                  text_color: 0x00FF00
+                  text_font: montserrat_20
+              
+              # Time display (HH:MM)
+              - label:
+                  id: time_label
+                  text: "--:--"
+                  align: TOP_LEFT
+                  x: 10
+                  y: 5
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_16
+                  text_align: LEFT
+              
+              - label:
+                  id: battery_label
+                  align: TOP_RIGHT
+                  x: -10
+                  y: 5
+                  text: ""
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_16
+              
+              # Brightness slider (0-100%)
+              - slider:
+                  id: my_light_slider
+                  x: 0
+                  y: 60
+                  width: 200
+                  height: 20
+                  min_value: 0
+                  max_value: 100
+                  value: 50
+                  align: TOP_MID
+                  pad_all: 8
+                  # Instant update - changes brightness as you move the slider
+                  on_value:
+                    - if:
+                        condition:
+                          lambda: 'return !id(updating_light_from_ha);'
+                        then:
+                          - homeassistant.action:
+                              action: light.turn_on
+                              data:
+                                entity_id: ${light_entity}
+                                brightness_pct: !lambda 'return (int) x;'
+                    - lvgl.label.update:
+                        id: brightness_value_label
+                        text: !lambda |-
+                          char buf[20];
+                          snprintf(buf, sizeof(buf), "%.0f%%", x);
+                          return buf;
+              
+              # Brightness value label
+              - label:
+                  id: brightness_value_label
+                  text: "50%"
+                  align: TOP_MID
+                  y: 90
+                  text_color: 0xCCCCCC
+                  text_font: montserrat_16
+                  text_align: CENTER
+              
+              # On/Off toggle button
+              - button:
+                  id: my_light_button
+                  x: 0
+                  y: 120
+                  width: 140
+                  height: 35
+                  align: TOP_MID
+                  checkable: true
+                  bg_color: 0x555555
+                  border_width: 2
+                  border_color: 0x888888
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: "Toggle Light"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_16
+                  on_click:
+                    - homeassistant.action:
+                        action: light.toggle
+                        data:
+                          entity_id: ${light_entity}
+              
+              # Navigation buttons at bottom (3 buttons layout)
+              - button:
+                  id: nav_media_button
+                  x: -80
+                  y: -45
+                  width: 70
+                  height: 30
+                  align: BOTTOM_MID
+                  bg_color: 0x444444
+                  border_width: 1
+                  border_color: 0x666666
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: "Media"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_16
+                  on_click:
+                    - lvgl.page.show:
+                        id: media_page
+              
+              - button:
+                  id: nav_weather_button
+                  x: 0
+                  y: -45
+                  width: 70
+                  height: 30
+                  align: BOTTOM_MID
+                  bg_color: 0x444444
+                  border_width: 1
+                  border_color: 0x666666
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: "Weather"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_16
+                  on_click:
+                    - lvgl.page.show:
+                        id: weather_page
+              
+              - button:
+                  id: nav_camera_button
+                  x: 80
+                  y: -45
+                  width: 70
+                  height: 30
+                  align: BOTTOM_MID
+                  bg_color: 0x444444
+                  border_width: 1
+                  border_color: 0x666666
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: "Camera"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_16
+                  on_click:
+                    - lvgl.page.show:
+                        id: camera_page
+    
+    # Media Player Page
+    - id: media_page
+      bg_color: 0x1a1a2e
+      widgets:
+        - obj:
+            id: media_container
+            width: 240
+            height: 240
+            bg_color: 0x1a1a2e
+            border_width: 0
+            widgets:
+              # Back button
+              - button:
+                  id: media_back_button
+                  x: 10
+                  y: 5
+                  width: 60
+                  height: 30
+                  align: TOP_LEFT
+                  bg_color: 0x333344
+                  border_width: 1
+                  border_color: 0x555566
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: "Back"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_16
+                  on_click:
+                    - lvgl.page.show:
+                        id: idle_page
+              
+              # Album art placeholder (60x60 box)
+              - obj:
+                  id: album_art_container
+                  x: 0
+                  y: 40
+                  width: 60
+                  height: 60
+                  align: TOP_MID
+                  bg_color: 0x333344
+                  border_width: 2
+                  border_color: 0x666677
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: "♪"
+                        text_color: 0xFFCC66
+                        text_font: montserrat_20
+              
+              # Media title
+              - label:
+                  id: media_title_label
+                  text: "No media"
+                  align: TOP_MID
+                  y: 110
+                  width: 220
+                  text_align: CENTER
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_16
+              
+              # Media artist
+              - label:
+                  id: media_artist_label
+                  text: ""
+                  align: TOP_MID
+                  y: 135
+                  width: 220
+                  text_align: CENTER
+                  text_color: 0xCCCCCC
+                  text_font: montserrat_16
+              
+              # Media state
+              - label:
+                  id: media_state_label
+                  text: "[] Idle"
+                  align: TOP_MID
+                  y: 160
+                  text_align: CENTER
+                  text_color: 0xFFCC66
+                  text_font: montserrat_16
+              
+              # Control buttons
+              - button:
+                  id: media_prev_button
+                  x: -80
+                  y: 185
+                  width: 50
+                  height: 50
+                  align: TOP_MID
+                  bg_color: 0x444455
+                  border_width: 2
+                  border_color: 0x666677
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: "<<"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_20
+                  on_click:
+                    - homeassistant.action:
+                        action: media_player.media_previous_track
+                        data:
+                          entity_id: ${media_player_entity}
+              
+              - button:
+                  id: media_play_button
+                  x: 0
+                  y: 185
+                  width: 50
+                  height: 50
+                  align: TOP_MID
+                  bg_color: 0x444455
+                  border_width: 2
+                  border_color: 0x666677
+                  widgets:
+                    - label:
+                        id: media_play_label
+                        align: CENTER
+                        text: ">"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_20
+                  on_click:
+                    - homeassistant.action:
+                        action: media_player.media_play_pause
+                        data:
+                          entity_id: ${media_player_entity}
+              
+              - button:
+                  id: media_next_button
+                  x: 80
+                  y: 185
+                  width: 50
+                  height: 50
+                  align: TOP_MID
+                  bg_color: 0x444455
+                  border_width: 2
+                  border_color: 0x666677
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: ">>"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_20
+                  on_click:
+                    - homeassistant.action:
+                        action: media_player.media_next_track
+                        data:
+                          entity_id: ${media_player_entity}
+              
+              # Volume label
+              - label:
+                  id: media_volume_label
+                  text: "Volume"
+                  align: TOP_MID
+                  y: 195
+                  text_color: 0xCCCCCC
+                  text_font: montserrat_16
+              
+              # Volume slider
+              - slider:
+                  id: media_volume_slider
+                  x: 0
+                  y: 215
+                  width: 200
+                  height: 15
+                  min_value: 0
+                  max_value: 100
+                  value: 50
+                  align: TOP_MID
+                  pad_all: 5
+                  on_value:
+                    - if:
+                        condition:
+                          lambda: 'return !id(updating_media_from_ha);'
+                        then:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: ${media_player_entity}
+                                volume_level: !lambda 'return x / 100.0;'
+    
+    # Weather Page
+    - id: weather_page
+      bg_color: 0x162447
+      widgets:
+        - obj:
+            id: weather_container
+            width: 240
+            height: 240
+            bg_color: 0x162447
+            border_width: 0
+            widgets:
+              # Back button
+              - button:
+                  id: weather_back_button
+                  x: 10
+                  y: 5
+                  width: 60
+                  height: 30
+                  align: TOP_LEFT
+                  bg_color: 0x1f4068
+                  border_width: 1
+                  border_color: 0x4a5a7a
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: "Back"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_16
+                  on_click:
+                    - lvgl.page.show:
+                        id: idle_page
+              
+              # Weather title
+              - label:
+                  text: "Weather"
+                  align: TOP_MID
+                  y: 10
+                  text_align: CENTER
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_20
+              
+              # Weather condition
+              - label:
+                  id: weather_condition_label
+                  text: "Loading..."
+                  align: TOP_MID
+                  y: 50
+                  width: 200
+                  text_align: CENTER
+                  text_color: 0xFFCC66
+                  text_font: montserrat_20
+              
+              # Temperature
+              - label:
+                  id: weather_temp_label
+                  text: "--°C"
+                  align: CENTER
+                  y: -10
+                  text_align: CENTER
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_32
+              
+              # Humidity label
+              - label:
+                  text: "Humidity:"
+                  align: TOP_MID
+                  y: 150
+                  text_color: 0xCCCCCC
+                  text_font: montserrat_16
+              
+              # Humidity value
+              - label:
+                  id: weather_humidity_label
+                  text: "--%"
+                  align: TOP_MID
+                  y: 175
+                  text_align: CENTER
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_20
+    
+    # Camera Page (Security Camera Feed)
+    - id: camera_page
+      bg_color: 0x0a0a0a
+      widgets:
+        - obj:
+            id: camera_container
+            width: 240
+            height: 240
+            bg_color: 0x0a0a0a
+            border_width: 0
+            widgets:
+              # Back button
+              - button:
+                  id: camera_back_button
+                  x: 10
+                  y: 5
+                  width: 60
+                  height: 30
+                  align: TOP_LEFT
+                  bg_color: 0x333333
+                  border_width: 1
+                  border_color: 0x555555
+                  widgets:
+                    - label:
+                        align: CENTER
+                        text: "Back"
+                        text_color: 0xFFFFFF
+                        text_font: montserrat_16
+                  on_click:
+                    - lvgl.page.show:
+                        id: idle_page
+              
+              # Camera title
+              - label:
+                  text: "Security Camera"
+                  align: TOP_MID
+                  y: 10
+                  text_align: CENTER
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_20
+              
+              # Camera stream info placeholder
+              # Note: LVGL ESP32 doesn't support streaming video directly
+              # This shows camera entity info and instructions
+              - obj:
+                  id: camera_placeholder
+                  x: 0
+                  y: 60
+                  width: 200
+                  height: 150
+                  align: TOP_MID
+                  bg_color: 0x1a1a1a
+                  border_width: 2
+                  border_color: 0x444444
+                  widgets:
+                    - label:
+                        align: CENTER
+                        y: -20
+                        text: "Camera Feed"
+                        text_color: 0xFFCC66
+                        text_font: montserrat_20
+                        text_align: CENTER
+                    - label:
+                        align: CENTER
+                        y: 10
+                        width: 180
+                        text: "View in HA app"
+                        text_color: 0xCCCCCC
+                        text_font: montserrat_16
+                        text_align: CENTER
+              
+              # Camera entity info
+              - label:
+                  id: camera_entity_label
+                  text: "${camera_entity}"
+                  align: BOTTOM_MID
+                  y: -10
+                  width: 220
+                  text_align: CENTER
+                  text_color: 0x888888
+                  text_font: montserrat_16
+    
+    - id: listening_page
+      bg_color: 0x0000FF
+      widgets:
+        - label:
+            id: listening_label
+            text: "Listening..."
+            align: CENTER
+            text_align: CENTER
+            text_color: 0xFFFFFF
+            text_font: montserrat_32
+    
+    - id: thinking_page
+      bg_color: 0xFF8800
+      widgets:
+        - obj:
+            width: 240
+            height: 240
+            bg_color: 0xFF8800
+            border_width: 0
+            widgets:
+              - label:
+                  text: "Thinking..."
+                  align: CENTER
+                  text_align: CENTER
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_32
+              - label:
+                  id: request_label
+                  align: BOTTOM_MID
+                  y: -20
+                  width: 200
+                  text: ""
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_16
+                  text_align: CENTER
+    
+    - id: replying_page
+      bg_color: 0x00AA00
+      widgets:
+        - obj:
+            width: 240
+            height: 240
+            bg_color: 0x00AA00
+            border_width: 0
+            widgets:
+              - label:
+                  text: "Replying..."
+                  align: CENTER
+                  text_align: CENTER
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_32
+              - label:
+                  id: response_label
+                  align: BOTTOM_MID
+                  y: -20
+                  width: 200
+                  text: ""
+                  text_color: 0xFFFFFF
+                  text_font: montserrat_16
+                  text_align: CENTER
+    
+    - id: timer_finished_page
+      bg_color: 0xFF0000
+      widgets:
+        - label:
+            text: "Timer Finished!"
+            align: CENTER
+            text_align: CENTER
+            text_color: 0xFFFFFF
+            text_font: montserrat_32
+    
+    - id: error_page
+      bg_color: 0xFF0000
+      widgets:
+        - label:
+            text: "Error"
+            align: CENTER
+            text_align: CENTER
+            text_color: 0xFFFFFF
+            text_font: montserrat_32
+    
+    - id: no_ha_page
+      bg_color: 0x660000
+      widgets:
+        - label:
+            text: "No Home Assistant"
+            align: CENTER
+            text_align: CENTER
+            text_color: 0xFFFFFF
+            text_font: montserrat_20
+    
+    - id: no_wifi_page
+      bg_color: 0x666600
+      widgets:
+        - label:
+            text: "No WiFi"
+            align: CENTER
+            text_align: CENTER
+            text_color: 0xFFFFFF
+            text_font: montserrat_32
+    
+    - id: initializing_page
+      bg_color: 0x333333
+      widgets:
+        - label:
+            text: "Initializing..."
+            align: CENTER
+            text_align: CENTER
+            text_color: 0xFFFFFF
+            text_font: montserrat_32
+    
+    - id: muted_page
+      bg_color: 0x000000
+      widgets:
+        - label:
+            text: "Muted"
+            align: CENTER
+            text_align: CENTER
+            text_color: 0xFF0000
+            text_font: montserrat_32
+    
+    # Light control page with slider and button
+
