@@ -36,3 +36,10 @@ MANIFEST
 # OS
 .DS_Store
 Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+
+# Vendor libraries (large reference material)
+VIEWE-SMARTRING-og/
