@@ -73,7 +73,7 @@ substitutions:
 
 ##################################################################################################################################################
 
-  startup_sound_file: https://github.com/Fear2Die/Esphome_Assistant/raw/main/sounds/${startup_sound}.flac
+  startup_sound_file: https://github.com/Fear2Die/ESPHome-Projects/blob/main/Xiaozhi%20Ball%20V2/Resources/nokia_startup_sound.mp3
 
   voice_assist_idle_phase_id: "1"
   voice_assist_listening_phase_id: "2"
