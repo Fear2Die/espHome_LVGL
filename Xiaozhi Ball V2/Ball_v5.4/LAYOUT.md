@@ -85,22 +85,23 @@ Ball V5.4 has 3 main pages plus voice assistant status pages:
 |--------|----------|------|---------------------|---------|------------------|
 | Light Slider | (0, 68) TOP_MID | 180x20 | ~80px edges | ✅ Safe | Width: 200→180, y: 60→68 |
 | Brightness Label | (0, 100) TOP_MID | auto | 20px | ✅ Safe | y: 90→100 |
-| Toggle Button | (0, 130) TOP_MID | 140x38 | ~70px edges | ✅ Safe | y: 120→130, height: 35→38 |
+| Toggle Button | (0, 112) TOP_MID | 140x33 | ~68px edges | ✅ Safe | y: 120→112, height: 35→33 (v5.4.1 fix) |
 
 **Key Changes**:
 - Slider narrowed from 200px to 180px to fit better in circular area
 - Vertical spacing adjusted for better balance
+- **v5.4.1 fix**: Toggle button moved up and made slightly shorter to prevent overlap
 
 #### Bottom Section (Navigation)
 | Widget | Position | Size | Distance from Center | Status | Change from V5.3 |
 |--------|----------|------|---------------------|---------|------------------|
-| Media Button | (-50, -25) BOTTOM_MID | 85x38 | ~88px | ✅ Safe | Width: 90→85, y: -10→-25 |
-| Weather Button | (50, -25) BOTTOM_MID | 85x38 | ~88px | ✅ Safe | Width: 90→85, y: -10→-25 |
+| Media Button | (-50, -61) BOTTOM_MID | 85x33 | ~92px | ✅ Safe | Width: 90→85, y: -10→-61 (v5.4.1 fix) |
+| Weather Button | (50, -61) BOTTOM_MID | 85x33 | ~92px | ✅ Safe | Width: 90→85, y: -10→-61 (v5.4.1 fix) |
 
 **Key Changes**:
-- Moved up from y=-10 to y=-25 to avoid bottom circular edge
+- Moved up significantly from y=-10 to avoid circular edge and overlap
 - Slightly narrower (90px → 85px) for better circular fit
-- Increased height (35px → 38px) for easier touch
+- **v5.4.1 fix**: Height reduced to 33px and moved to y=-61 to prevent overlap with toggle button (1px gap)
 
 ### Colors
 - Background: Dark gray (#111111)
@@ -143,38 +144,39 @@ Ball V5.4 has 3 main pages plus voice assistant status pages:
 | Widget | Position | Size | Distance from Center | Status | Change from V5.3 |
 |--------|----------|------|---------------------|---------|------------------|
 | Back Button | (0, 8) TOP_MID | 70x32 | 112px | ✅ Safe | Centered, was at (10,5) TOP_LEFT |
-| Album Art | (0, 50) TOP_MID | 60x60 | 70px | ✅ Safe | y: 40→50 |
-| Title Label | (0, 118) TOP_MID | 200 width | varies | ✅ Safe | Width: 220→200, y: 110→118 |
-| Artist Label | (0, 140) TOP_MID | 200 width | varies | ✅ Safe | Width: 220→200, y: 135→140 |
-| State Label | (0, 162) TOP_MID | auto | varies | ✅ Safe | y: 160→162 |
+| Album Art | (0, 45) TOP_MID | 60x60 | 67px | ✅ Safe | y: 40→45 (v5.4.1 fix) |
+| Title Label | (0, 112) TOP_MID | 200 width | varies | ✅ Safe | Width: 220→200, y: 110→112, font: 14 (v5.4.1 fix) |
+| Artist Label | (0, 128) TOP_MID | 200 width | varies | ✅ Safe | Width: 220→200, y: 135→128, font: 14 (v5.4.1 fix) |
+| State Label | (0, 144) TOP_MID | auto | varies | ✅ Safe | y: 160→144, font: 14 (v5.4.1 fix) |
 
 **Key Changes**:
 - Back button now centered at top instead of corner (much better for circular!)
 - Text width reduced from 220 to 200 pixels for circular safety
-- Adjusted vertical spacing for better balance
+- **v5.4.1 fix**: All elements repositioned to prevent overlaps, fonts changed to montserrat_14 for tighter layout
 
 #### Control Section
 | Widget | Position | Size | Distance from Center | Status | Change from V5.3 |
 |--------|----------|------|---------------------|---------|------------------|
-| Previous Button | (-70, 0) CENTER | 48x48 | 70px | ✅ Safe | x: -80→-70, size: 50→48, aligned to CENTER |
-| Play/Pause Button | (0, 0) CENTER | 48x48 | 24px | ✅ Safe | size: 50→48, aligned to CENTER |
-| Next Button | (70, 0) CENTER | 48x48 | 70px | ✅ Safe | x: 80→70, size: 50→48, aligned to CENTER |
+| Previous Button | (-60, 162) TOP_MID | 44x40 | varies | ✅ Safe | x: -70→-60, size: 48→44x40, y: 0→162 (v5.4.1 fix) |
+| Play/Pause Button | (0, 162) TOP_MID | 44x40 | varies | ✅ Safe | size: 48→44x40, y: 0→162 (v5.4.1 fix) |
+| Next Button | (60, 162) TOP_MID | 44x40 | varies | ✅ Safe | x: 70→60, size: 48→44x40, y: 0→162 (v5.4.1 fix) |
 
 **Key Changes**:
-- Buttons aligned to CENTER instead of TOP_MID y=185
-- Moved closer together (±80 → ±70) for better circular fit
-- Slightly smaller (50x50 → 48x48) for circular optimization
+- **v5.4.1 fix**: Changed from CENTER alignment to TOP_MID at y=162 to prevent overlap
+- Buttons brought closer together (±70 → ±60) for better circular fit
+- Size reduced to 44x40 pixels for tighter spacing
+- Now positioned below state label instead of overlapping with it
 
 #### Volume Section
 | Widget | Position | Size | Distance from Center | Status | Change from V5.3 |
 |--------|----------|------|---------------------|---------|------------------|
-| Volume Slider | (0, -30) BOTTOM_MID | 170x18 | ~82px edges | ✅ Safe | Width: 200→170, y: 215→-30, removed label |
+| Volume Slider | (0, -22) BOTTOM_MID | 170x16 | ~84px edges | ✅ Safe | Width: 200→170, y: -30→-22, height: 18→16 (v5.4.1 fix) |
 
 **Key Changes**:
 - Volume label removed (saves space on circular display)
 - Slider narrowed from 200 to 170 pixels
-- Positioned using BOTTOM_MID y=-30 instead of TOP_MID y=215
-- Moved up significantly to avoid circular edge
+- **v5.4.1 fix**: Moved up to y=-22 and reduced height to 16px to prevent overlap with controls
+- Positioned using BOTTOM_MID instead of TOP_MID
 
 ### Colors
 - Background: Dark blue-gray (#1a1a2e)
