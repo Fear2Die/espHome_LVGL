@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Version comparison guide
 - Complete index/navigator
 
-**Full Details:** [Ball_v5.3/CHANGES_V5.3.md](Ball_v5.3/CHANGES_V5.3.md)
+**Full Details:** [Xiaozhi Ball V2/Ball_v5.3/CHANGES_V5.3.md](Xiaozhi%20Ball%20V2/Ball_v5.3/CHANGES_V5.3.md)
 
 ---
 
@@ -71,7 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Audio pin configuration requires verification
 - Microphone input needs hardware testing
 
-**Full Details:** [SMARTRING_V1/README.md](SMARTRING_V1/README.md)
+**Full Details:** [SMARTRING/SMARTRING_V1/README.md](SMARTRING/SMARTRING_V1/README.md)
 
 ---
 
@@ -88,7 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Known button overlap issue (fixed in V5.3)
 - No album art support (added in V5.3)
 
-**Migration Path:** [Ball_v5.3/CHANGES_V5.3.md](Ball_v5.3/CHANGES_V5.3.md)
+**Migration Path:** [Xiaozhi Ball V2/Ball_v5.3/CHANGES_V5.3.md](Xiaozhi%20Ball%20V2/Ball_v5.3/CHANGES_V5.3.md)
 
 ---
 
@@ -129,35 +129,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-### Spotpear V2 - [2024-XX-XX] - STABLE
-
-#### Features
-- LVGL display system
-- Home Assistant voice assistant
-- Color-coded voice states
-- Battery monitoring
-- Touch screen support
-
-#### Status
-- ✅ Stable - Voice assistant only, no home control features
-
----
-
-### Mix V1 - MAINTENANCE MODE
-
-#### Status
-- ⚙️ Maintenance mode
-- ESP32 configuration for Mix V1 device
-- Minimal updates only
-
----
-
 ### WS-P4-Box - MAINTENANCE MODE
 
 #### Status
 - ⚙️ Maintenance mode
-- Waveshare P4 Panel configuration
+- WaveShare ESP32-P4 Smart 86 Box configuration
 - Minimal updates only
+
+#### Credits
+- Based on [nishad2m8/WaveShare-ESP32-P4-Smart-86-Box](https://github.com/nishad2m8/WaveShare-ESP32-P4-Smart-86-Box)
+
+**Full Details:** [WS-P4-Box/README.md](WS-P4-Box/README.md)
 
 ---
 
@@ -167,7 +149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 |---------|--------|---------|----------|-------------|
 | Ball V5.3 | ✅ Active | 240x240 | Full (Album Art) | ⭐ **YES** |
 | SMARTRING V1 | ⚠️ Beta | 466x466 | Full (Testing) | If you have hardware |
-| Spotpear V2 | ✅ Stable | 240x240 | Voice Only | For voice assistant |
+| WS-P4-Box | ⚙️ Maintenance | - | Voice & Control | If you have hardware |
 | Ball V5.2 | 📦 Legacy | 240x240 | Partial | No - use V5.3 |
 | Ball V5 | 📦 Legacy | 240x240 | Basic | No - use V5.3 |
 | Ball V4 | 📦 Legacy | 240x240 | Basic | No - use V5.3 |
@@ -178,7 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Migration Guides
 
 ### From Ball V5.2 to V5.3
-See [Ball_v5.3/CHANGES_V5.3.md](Ball_v5.3/CHANGES_V5.3.md)
+See [Xiaozhi Ball V2/Ball_v5.3/CHANGES_V5.3.md](Xiaozhi%20Ball%20V2/Ball_v5.3/CHANGES_V5.3.md)
 
 **Key Changes:**
 - Remove camera_entity from substitutions

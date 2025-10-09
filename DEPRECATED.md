@@ -5,24 +5,24 @@ This document lists deprecated/legacy projects in this repository. These configu
 ## ⚠️ Use Latest Versions Instead
 
 **If you're starting a new project, please use:**
-- **Ball V5.3** (Latest) - [Ball_v5.3/](Ball_v5.3/)
-- **SMARTRING V1** (New Hardware) - [SMARTRING_V1/](SMARTRING_V1/)
+- **Ball V5.3** (Latest) - [Xiaozhi Ball V2/Ball_v5.3/](Xiaozhi%20Ball%20V2/Ball_v5.3/)
+- **SMARTRING V1** (New Hardware) - [SMARTRING/SMARTRING_V1/](SMARTRING/SMARTRING_V1/)
 
 ---
 
 ## Legacy Ball Versions
 
 ### Ball V5.2 → Use Ball V5.3 Instead
-**Location:** `Ball_v5.2/`  
+**Location:** `Xiaozhi Ball V2/Older_Versions/Ball_v5.2/`  
 **Status:** 📦 Legacy  
 **Reason:** Superseded by V5.3 with better layout, album art, and bug fixes
 
-**Migration:** [Ball_v5.3/CHANGES_V5.3.md](Ball_v5.3/CHANGES_V5.3.md)
+**Migration:** [Xiaozhi Ball V2/Ball_v5.3/CHANGES_V5.3.md](Xiaozhi%20Ball%20V2/Ball_v5.3/CHANGES_V5.3.md)
 
 ---
 
 ### Ball V5 → Use Ball V5.3 Instead
-**Location:** `Ball_v5/`  
+**Location:** `Xiaozhi Ball V2/Older_Versions/Ball_v5/`  
 **Status:** 📦 Legacy  
 **Reason:** Multiple versions behind, missing many improvements
 
@@ -31,7 +31,7 @@ This document lists deprecated/legacy projects in this repository. These configu
 ---
 
 ### Ball V4 → Use Ball V5.3 Instead
-**Location:** `Ball_v4/`  
+**Location:** `Xiaozhi Ball V2/Older_Versions/Ball_v4/`  
 **Status:** 📦 Legacy  
 **Reason:** Missing media player page, weather, and layout fixes
 
@@ -40,7 +40,7 @@ This document lists deprecated/legacy projects in this repository. These configu
 ---
 
 ### Ball V3 → Use Ball V5.3 Instead
-**Location:** `Ball_v3/`  
+**Location:** `Xiaozhi Ball V2/Older_Versions/Ball_v3/`  
 **Status:** 📦 Legacy  
 **Reason:** Early version, limited features
 
@@ -86,4 +86,4 @@ Upgrading from any legacy Ball version to V5.3 gives you:
 
 ---
 
-**Questions?** Check [Ball_v5.3/README.md](Ball_v5.3/README.md) or open an issue.
+**Questions?** Check [Xiaozhi Ball V2/Ball_v5.3/README.md](Xiaozhi%20Ball%20V2/Ball_v5.3/README.md) or open an issue.

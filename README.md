@@ -24,7 +24,7 @@ Advanced voice assistant with LVGL interface featuring **live album art**, smart
 - 📱 **240x240 Round Display** - GC9A01A with CST816 touch
 - 🔋 **Battery Monitoring** - Real-time battery percentage
 
-**📚 Documentation:** [Ball_v5.3/README.md](Ball_v5.3/README.md) | [Quick Start](Ball_v5.3/QUICK_START.md) | [Installation Guide](Ball_v5.3/INSTALLATION.md)
+**📚 Documentation:** [Ball_v5.3/README.md](Xiaozhi%20Ball%20V2/Ball_v5.3/README.md) | [Quick Start](Xiaozhi%20Ball%20V2/Ball_v5.3/QUICK_START.md) | [Installation Guide](Xiaozhi%20Ball%20V2/Ball_v5.3/INSTALLATION.md)
 
 ---
 
@@ -41,22 +41,7 @@ Port of Ball V5.3 software to SMARTRING hardware with 466x466 QSPI AMOLED displa
 - 🎨 **LVGL Interface** - Adapted from Ball V5.3
 - 💪 **ESP32-S3-R8** - 8M PSRAM, 16M Flash
 
-**📚 Documentation:** [SMARTRING_V1/README.md](SMARTRING_V1/README.md) | [Hardware Comparison](SMARTRING_V1/HARDWARE_COMPARISON.md)
-
----
-
-### 🔊 Spotpear V2 - Voice Assistant
-> **Status:** ✅ Stable | **Hardware:** Spotpear ESP32-S3
-
-Voice assistant with LVGL display (no home control features).
-
-**✨ Key Features:**
-- 🎤 Voice Assistant only
-- 🎨 LVGL UI with color-coded states
-- 🔋 Battery monitoring
-- 📱 240x240 round display
-
-**📚 Documentation:** [Spotpear-v2/README.md](Spotpear-v2/README.md)
+**📚 Documentation:** [SMARTRING_V1/README.md](SMARTRING/SMARTRING_V1/README.md) | [Hardware Comparison](SMARTRING/SMARTRING_V1/HARDWARE_COMPARISON.md)
 
 ---
 
@@ -64,8 +49,7 @@ Voice assistant with LVGL display (no home control features).
 
 | Project | Status | Description |
 |---------|--------|-------------|
-| **Mix V1** | ⚙️ Maintenance | ESP32 configuration for Mix V1 device |
-| **WS-P4-Box** | ⚙️ Maintenance | Waveshare P4 Panel configuration |
+| **WS-P4-Box** | ⚙️ Maintenance | WaveShare ESP32-P4 Smart 86 Box configuration |
 | **Ball v5.2** | 📦 Legacy | Previous version (use v5.3 instead) |
 | **Ball v5** | 📦 Legacy | Older version (use v5.3 instead) |
 | **Ball v4** | 📦 Legacy | Older version (use v5.3 instead) |
@@ -85,7 +69,7 @@ Voice assistant with LVGL display (no home control features).
 ```bash
 # 1. Clone repository
 git clone https://github.com/Fear2Die/ESPHome-Projects.git
-cd ESPHome-Projects/Ball_v5.3
+cd ESPHome-Projects/"Xiaozhi Ball V2"/Ball_v5.3
 
 # 2. Copy and configure secrets
 cp secrets.yaml.example secrets.yaml
@@ -105,25 +89,25 @@ esphome run Ball_v5.3.yaml
 # ✓ Check "Allow the device to perform Home Assistant actions"
 ```
 
-**📖 Detailed Guide:** [Ball_v5.3/QUICK_START.md](Ball_v5.3/QUICK_START.md)
+**📖 Detailed Guide:** [Xiaozhi Ball V2/Ball_v5.3/QUICK_START.md](Xiaozhi%20Ball%20V2/Ball_v5.3/QUICK_START.md)
 
 ---
 
 ## 📊 Project Comparison
 
-| Feature | Ball V5.3 | SMARTRING V1 | Spotpear V2 |
-|---------|-----------|--------------|-------------|
-| **Status** | ✅ Active | ⚠️ Beta | ✅ Stable |
+| Feature | Ball V5.3 | SMARTRING V1 | WS-P4-Box |
+|---------|-----------|--------------|-----------|
+| **Status** | ✅ Active | ⚠️ Beta | ⚙️ Maintenance |
 | **Voice Assistant** | ✅ | ⚠️ | ✅ |
-| **Light Control** | ✅ | ✅ | ❌ |
+| **Light Control** | ✅ | ✅ | ✅ |
 | **Media Player** | ✅ | ✅ | ❌ |
 | **Album Art** | ✅ Live | ✅ Live | ❌ |
 | **Weather** | ✅ | ✅ | ❌ |
-| **Display Size** | 240x240 | 466x466 | 240x240 |
-| **Display Type** | LCD | AMOLED | LCD |
+| **Display Size** | 240x240 | 466x466 | - |
+| **Display Type** | LCD | AMOLED | - |
 | **Touch** | ✅ | ✅ | ✅ |
-| **Battery Monitor** | ✅ | ✅ | ✅ |
-| **Documentation** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Battery Monitor** | ✅ | ✅ | ❌ |
+| **Documentation** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
 
 ---
 
@@ -142,10 +126,9 @@ esphome run Ball_v5.3.yaml
 - ⚠️ Don't mind experimental/testing phase
 - ⚠️ Can help with audio configuration testing
 
-### Use Spotpear V2 if you want:
-- ✅ Simple voice assistant only
-- ✅ No home control features needed
-- ✅ Lightweight configuration
+### Use WS-P4-Box if you want:
+- ⚙️ WaveShare ESP32-P4 Smart 86 Box hardware support
+- ⚙️ Community-maintained configuration
 
 ---
 
@@ -153,32 +136,27 @@ esphome run Ball_v5.3.yaml
 
 ```
 ESPHome-Projects/
-├── Ball_v5.3/            ⭐ RECOMMENDED - Latest version
-│   ├── Ball_v5.3.yaml
-│   ├── README.md
-│   ├── QUICK_START.md
-│   ├── INSTALLATION.md
-│   ├── QUICK_REFERENCE.md
-│   ├── INDEX.md          # Documentation navigator
-│   └── secrets.yaml.example
+├── Xiaozhi Ball V2/      🎯 Xiaozhi Ball Projects
+│   ├── Ball_v5.3/        ⭐ RECOMMENDED - Latest version
+│   │   ├── Ball_v5.3.yaml
+│   │   ├── README.md
+│   │   ├── QUICK_START.md
+│   │   ├── INSTALLATION.md
+│   │   ├── QUICK_REFERENCE.md
+│   │   ├── INDEX.md      # Documentation navigator
+│   │   └── secrets.yaml.example
+│   └── Older_Versions/   📦 LEGACY versions (v5.2, v5, v4, v3)
 │
-├── SMARTRING_V1/         🆕 NEW HARDWARE PORT
-│   ├── SMARTRING_V1.yaml
-│   ├── README.md
-│   ├── HARDWARE_COMPARISON.md
-│   └── secrets.yaml.example
+├── SMARTRING/            🔴 SMARTRING Projects
+│   ├── SMARTRING_V1/     🆕 NEW HARDWARE PORT
+│   │   ├── SMARTRING_V1.yaml
+│   │   ├── README.md
+│   │   ├── HARDWARE_COMPARISON.md
+│   │   └── secrets.yaml.example
+│   └── VIEWE-SMARTRING/  📚 Original hardware documentation
 │
-├── Spotpear-v2/          ✅ STABLE
-│   ├── Spotpear_v2.yaml
-│   ├── README.md
-│   └── secrets.yaml.example
-│
-├── Mix_V1/               ⚙️ MAINTENANCE MODE
-├── WS-P4-Box/            ⚙️ MAINTENANCE MODE
-├── Ball_v5.2/            📦 LEGACY (use v5.3)
-├── Ball_v5/              📦 LEGACY (use v5.3)
-├── Ball_v4/              📦 LEGACY (use v5.3)
-└── Ball_v3/              📦 LEGACY (use v5.3)
+└── WS-P4-Box/            ⚙️ MAINTENANCE MODE
+    └── WS-P4-Box/        WaveShare ESP32-P4 configurations
 ```
 
 ---
@@ -198,18 +176,18 @@ ESPHome-Projects/
 ## 📚 Documentation
 
 ### Ball V5.3 Complete Documentation
-- **[README.md](Ball_v5.3/README.md)** - Main documentation and features
-- **[QUICK_START.md](Ball_v5.3/QUICK_START.md)** - 3-minute setup guide
-- **[INSTALLATION.md](Ball_v5.3/INSTALLATION.md)** - Step-by-step installation
-- **[QUICK_REFERENCE.md](Ball_v5.3/QUICK_REFERENCE.md)** - One-page cheat sheet
-- **[INDEX.md](Ball_v5.3/INDEX.md)** - Documentation navigator
-- **[CHANGES_V5.3.md](Ball_v5.3/CHANGES_V5.3.md)** - Version 5.3 changelog
-- **[LAYOUT.md](Ball_v5.3/LAYOUT.md)** - UI layout and customization
-- **[COMPARISON.md](Ball_v5.3/COMPARISON.md)** - Version comparison
+- **[README.md](Xiaozhi%20Ball%20V2/Ball_v5.3/README.md)** - Main documentation and features
+- **[QUICK_START.md](Xiaozhi%20Ball%20V2/Ball_v5.3/QUICK_START.md)** - 3-minute setup guide
+- **[INSTALLATION.md](Xiaozhi%20Ball%20V2/Ball_v5.3/INSTALLATION.md)** - Step-by-step installation
+- **[QUICK_REFERENCE.md](Xiaozhi%20Ball%20V2/Ball_v5.3/QUICK_REFERENCE.md)** - One-page cheat sheet
+- **[INDEX.md](Xiaozhi%20Ball%20V2/Ball_v5.3/INDEX.md)** - Documentation navigator
+- **[CHANGES_V5.3.md](Xiaozhi%20Ball%20V2/Ball_v5.3/CHANGES_V5.3.md)** - Version 5.3 changelog
+- **[LAYOUT.md](Xiaozhi%20Ball%20V2/Ball_v5.3/LAYOUT.md)** - UI layout and customization
+- **[COMPARISON.md](Xiaozhi%20Ball%20V2/Ball_v5.3/COMPARISON.md)** - Version comparison
 
 ### SMARTRING V1 Documentation
-- **[README.md](SMARTRING_V1/README.md)** - Setup and compatibility info
-- **[HARDWARE_COMPARISON.md](SMARTRING_V1/HARDWARE_COMPARISON.md)** - Hardware details
+- **[README.md](SMARTRING/SMARTRING_V1/README.md)** - Setup and compatibility info
+- **[HARDWARE_COMPARISON.md](SMARTRING/SMARTRING_V1/HARDWARE_COMPARISON.md)** - Hardware details
 
 ---
 
@@ -279,10 +257,16 @@ This project is open source. Individual configurations may have their own licens
 
 ## 🙏 Credits
 
+### Original Hardware Repositories
+- **Xiaozhi Ball** - Based on [RealDeco/xiaozhi-esphome](https://github.com/RealDeco/xiaozhi-esphome)
+- **SMARTRING** - Hardware and documentation from [VIEWESMART/VIEWE-SMARTRING](https://github.com/VIEWESMART/VIEWE-SMARTRING)
+- **WS-P4-Box** - Based on [nishad2m8/WaveShare-ESP32-P4-Smart-86-Box](https://github.com/nishad2m8/WaveShare-ESP32-P4-Smart-86-Box)
+
+### Community & Framework
 - **ESPHome Community** - Framework and support
 - **LVGL Developers** - Graphics library
 - **Home Assistant Community** - Integration and automation
-- **Device Manufacturers** - Xiaozhi Ball V2, VIEWE SMARTRING, Spotpear
+- **Device Manufacturers** - Xiaozhi Ball V2, VIEWE SMARTRING, WaveShare
 - **Contributors** - All project contributors
 
 ---
@@ -298,6 +282,6 @@ This project is open source. Individual configurations may have their own licens
 
 ---
 
-**⭐ Recommended:** Start with [Ball V5.3](Ball_v5.3/README.md) for the best experience!
+**⭐ Recommended:** Start with [Xiaozhi Ball V2/Ball_v5.3](Xiaozhi%20Ball%20V2/Ball_v5.3/README.md) for the best experience!
 
 **Last Updated:** January 2025

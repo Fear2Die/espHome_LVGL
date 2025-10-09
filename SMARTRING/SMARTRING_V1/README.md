@@ -283,6 +283,10 @@ SMARTRING_V1/
 
 ## Credits
 
+### Hardware & Original Repository
+- **Original Repository**: [VIEWESMART/VIEWE-SMARTRING](https://github.com/VIEWESMART/VIEWE-SMARTRING) - Hardware documentation, schematics, and examples
+
+### Software Adaptation
 **Adapted from**: Ball V5.3 (ESPHome LVGL Voice Assistant)  
 **Hardware**: VIEWE SMARTRING (ESP32-S3-R8)  
 **Based on**: Xiaozhi Ball V2 hardware design  
