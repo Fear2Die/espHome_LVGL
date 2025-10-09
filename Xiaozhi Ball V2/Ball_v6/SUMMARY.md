@@ -22,7 +22,7 @@ Ball V6 successfully implements all the high-priority features from SUGGESTED_IM
 
 3. **Color Theme Support** ⭐ Medium Priority
    - 5 built-in themes (dark, blue, purple, green, orange)
-   - HA-controlled via input_select
+   - Native ESPHome select entity (in Configuration tab)
    - Dynamic color updates
    - Applies to arcs, backgrounds, buttons
    - Theme persistence
@@ -139,7 +139,7 @@ Ball V6 successfully implements all the high-priority features from SUGGESTED_IM
 2. **Automation potential** - theme by time of day
 3. **User preference** - personalization
 4. **Room integration** - match lighting
-5. **Simple implementation** - input_select
+5. **Simple implementation** - native ESPHome select
 
 ---
 
@@ -347,7 +347,6 @@ From SUGGESTED_IMPROVEMENTS.md, these remain for future versions:
 ### Before Flashing
 
 - [ ] Update entity IDs in Ball_v6.yaml
-- [ ] Create input_select.ball_color_theme in HA
 - [ ] Copy secrets.yaml.example to secrets.yaml
 - [ ] Set WiFi credentials
 - [ ] Set API key

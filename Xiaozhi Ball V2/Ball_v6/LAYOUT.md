@@ -298,7 +298,7 @@ Each theme defines:
 
 ### Theme Application
 
-**Controlled by**: Home Assistant `input_select` entity
+**Controlled by**: Native ESPHome select entity (appears in Configuration tab)
 **Updates**: Real-time when changed
 **Persists**: Saved to flash memory
 
