@@ -224,6 +224,10 @@ After flashing:
 
 ## Credits
 
+### Hardware & Original Repository
+- **Original Repository**: [RealDeco/xiaozhi-esphome](https://github.com/RealDeco/xiaozhi-esphome) - Xiaozhi Ball hardware configuration and base implementation
+
+### Software Evolution
 Based on Ball V5.1 (flickering fix) and Ball V5 (multi-page interface).
 
 ## Version History
