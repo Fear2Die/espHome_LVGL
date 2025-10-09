@@ -19,6 +19,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Projects
 
+### Ball V5.4 - [2025-01-XX]
+
+#### Added
+- Circular display optimization (all elements within safe zone)
+- Improved layout for 240x240 circular screens
+- Better positioning of status bar elements
+- Centered navigation buttons
+
+#### Fixed
+- **CRITICAL**: Startup sound file URL and format issue
+  - Changed from `/blob/` to `/raw/` URL (was downloading HTML instead of audio)
+  - Converted startup sound from MP3 to FLAC format (matches announcement_pipeline configuration)
+  - Fixes `puremagic.main.PureError: Could not identify file` error during ESPHome validation
+
+#### Changed
+- Media player controls repositioned to center
+- Weather page layout optimized for circular display
+- Back buttons centered at top for better accessibility
+
+**Full Details:** [Xiaozhi Ball V2/Ball_v5.4/CHANGES_V5.4.md](Xiaozhi%20Ball%20V2/Ball_v5.4/CHANGES_V5.4.md)
+
+---
+
 ### Ball V5.3 - [2025-01-XX]
 
 #### Added
@@ -147,17 +170,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Status | Display | Features | Recommended |
 |---------|--------|---------|----------|-------------|
-| Ball V5.3 | ✅ Active | 240x240 | Full (Album Art) | ⭐ **YES** |
+| Ball V5.4 | ✅ Active | 240x240 Circular | Full (Optimized) | ⭐ **YES** - Best for circular displays |
+| Ball V5.3 | ✅ Active | 240x240 | Full (Album Art) | ⭐ **YES** - For rectangular displays |
 | SMARTRING V1 | ⚠️ Beta | 466x466 | Full (Testing) | If you have hardware |
 | WS-P4-Box | ⚙️ Maintenance | - | Voice & Control | If you have hardware |
-| Ball V5.2 | 📦 Legacy | 240x240 | Partial | No - use V5.3 |
-| Ball V5 | 📦 Legacy | 240x240 | Basic | No - use V5.3 |
-| Ball V4 | 📦 Legacy | 240x240 | Basic | No - use V5.3 |
-| Ball V3 | 📦 Legacy | 240x240 | Basic | No - use V5.3 |
+| Ball V5.2 | 📦 Legacy | 240x240 | Partial | No - use V5.4 |
+| Ball V5 | 📦 Legacy | 240x240 | Basic | No - use V5.4 |
+| Ball V4 | 📦 Legacy | 240x240 | Basic | No - use V5.4 |
+| Ball V3 | 📦 Legacy | 240x240 | Basic | No - use V5.4 |
 
 ---
 
 ## Migration Guides
+
+### From Ball V5.3 to V5.4
+**Recommended for circular displays**
+
+**Key Changes:**
+- Layout optimized for circular 240x240 displays
+- All UI elements positioned within circular safe zone
+- **No configuration changes needed** - just replace YAML file
+
+**Steps:**
+1. Copy your entity IDs from V5.3 substitutions section
+2. Replace with Ball_v5.4.yaml
+3. Paste entity IDs into V5.4 substitutions section
+4. Flash device
+5. Enjoy optimized circular layout!
 
 ### From Ball V5.2 to V5.3
 See [Xiaozhi Ball V2/Ball_v5.3/CHANGES_V5.3.md](Xiaozhi%20Ball%20V2/Ball_v5.3/CHANGES_V5.3.md)
