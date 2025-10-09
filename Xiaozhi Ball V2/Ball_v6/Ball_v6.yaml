@@ -341,39 +341,57 @@ touchscreen:
     on_release:
       then:
         - lambda: |-
+            // Store release position
+            id(swipe_end_x) = touch.x;
+            id(swipe_end_y) = touch.y;
+        - lambda: |-
             // Detect swipe gestures (horizontal swipes only for page navigation)
-            int dx = touch.x - id(swipe_start_x);
-            int dy = touch.y - id(swipe_start_y);
+            int dx = id(swipe_end_x) - id(swipe_start_x);
+            int dy = id(swipe_end_y) - id(swipe_start_y);
             
             // Only detect swipes if horizontal movement is dominant (>50px) and larger than vertical
             if (abs(dx) > 50 && abs(dx) > abs(dy) * 1.5) {
-              // Swipe right - go to previous page
+              // Store swipe direction for action execution
               if (dx > 0) {
-                int current_page = id(current_page_index);
-                if (current_page == 1) {
-                  // From media page to idle
-                  id(idle_page).show();
-                  id(current_page_index) = 0;
-                } else if (current_page == 2) {
-                  // From weather page to media
-                  id(media_page).show();
-                  id(current_page_index) = 1;
-                }
+                id(swipe_direction) = 1; // right
+              } else {
+                id(swipe_direction) = -1; // left
               }
-              // Swipe left - go to next page
-              else {
-                int current_page = id(current_page_index);
-                if (current_page == 0) {
-                  // From idle page to media
-                  id(media_page).show();
-                  id(current_page_index) = 1;
-                } else if (current_page == 1) {
-                  // From media page to weather
-                  id(weather_page).show();
-                  id(current_page_index) = 2;
-                }
-              }
+            } else {
+              id(swipe_direction) = 0; // no swipe
             }
+        - if:
+            condition:
+              lambda: 'return id(swipe_direction) == 1;'
+            then:
+              - if:
+                  condition:
+                    lambda: 'return id(current_page_index) == 1;'
+                  then:
+                    - lvgl.page.show: idle_page
+                    - lambda: 'id(current_page_index) = 0;'
+              - if:
+                  condition:
+                    lambda: 'return id(current_page_index) == 2;'
+                  then:
+                    - lvgl.page.show: media_page
+                    - lambda: 'id(current_page_index) = 1;'
+        - if:
+            condition:
+              lambda: 'return id(swipe_direction) == -1;'
+            then:
+              - if:
+                  condition:
+                    lambda: 'return id(current_page_index) == 0;'
+                  then:
+                    - lvgl.page.show: media_page
+                    - lambda: 'id(current_page_index) = 1;'
+              - if:
+                  condition:
+                    lambda: 'return id(current_page_index) == 1;'
+                  then:
+                    - lvgl.page.show: weather_page
+                    - lambda: 'id(current_page_index) = 2;'
         - binary_sensor.template.publish:
             id: touch_input
             state: OFF
@@ -1176,6 +1194,18 @@ globals:
     restore_value: no
     initial_value: '0'
   - id: swipe_start_y
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: swipe_end_x
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: swipe_end_y
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: swipe_direction
     type: int
     restore_value: no
     initial_value: '0'
