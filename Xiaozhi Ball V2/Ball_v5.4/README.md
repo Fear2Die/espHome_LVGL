@@ -1,8 +1,17 @@
-# ESPHome Xiaozhi Ball V5.4 - Circular Display Optimization
+# ESPHome Xiaozhi Ball V5.4.1 - Circular Display Optimization + Overlap Fix
 
-## 🎯 What's New in V5.4?
+## 🎯 What's New in V5.4.1?
 
-### Circular Display Optimization - The Major Update!
+### Critical Overlap Fix (V5.4.1)
+
+**V5.4.1 fixes overlap issues found in V5.4:**
+- ✅ Fixed main page toggle button overlapping with navigation buttons
+- ✅ Fixed media page state label overlapping with control buttons (82px overlap!)
+- ✅ All elements now properly spaced with verified no-overlap layout
+
+**If you're using V5.4, please upgrade to V5.4.1!** See [CHANGES_V5.4.1.md](CHANGES_V5.4.1.md) for details.
+
+### Circular Display Optimization - The Major Update! (V5.4)
 
 Ball V5.4 is **completely optimized for circular displays**. Unlike previous versions that treated the 240x240 screen as rectangular, V5.4 embraces the circular form factor with mathematically calculated positions ensuring every element fits perfectly within the circular boundaries.
 
