@@ -1271,9 +1271,9 @@ lvgl:
               - button:
                   id: my_light_button
                   x: 0
-                  y: 130
+                  y: 112
                   width: 140
-                  height: 38
+                  height: 33
                   align: TOP_MID
                   checkable: true
                   bg_color: 0x555555
@@ -1295,9 +1295,9 @@ lvgl:
               - button:
                   id: nav_media_button
                   x: -50
-                  y: -25
+                  y: -61
                   width: 85
-                  height: 38
+                  height: 33
                   align: BOTTOM_MID
                   bg_color: 0x444444
                   border_width: 2
@@ -1315,9 +1315,9 @@ lvgl:
               - button:
                   id: nav_weather_button
                   x: 50
-                  y: -25
+                  y: -61
                   width: 85
-                  height: 38
+                  height: 33
                   align: BOTTOM_MID
                   bg_color: 0x444444
                   border_width: 2
@@ -1368,7 +1368,7 @@ lvgl:
               - image:
                   id: album_art_display
                   x: 0
-                  y: 50
+                  y: 45
                   align: TOP_MID
                   src: album_art_image
               
@@ -1377,41 +1377,41 @@ lvgl:
                   id: media_title_label
                   text: "No media"
                   align: TOP_MID
-                  y: 118
+                  y: 112
                   width: 200
                   text_align: CENTER
                   text_color: 0xFFFFFF
-                  text_font: montserrat_16
+                  text_font: montserrat_14
               
               # Media artist
               - label:
                   id: media_artist_label
                   text: ""
                   align: TOP_MID
-                  y: 140
+                  y: 128
                   width: 200
                   text_align: CENTER
                   text_color: 0xCCCCCC
-                  text_font: montserrat_16
+                  text_font: montserrat_14
               
               # Media state
               - label:
                   id: media_state_label
                   text: "[] Idle"
                   align: TOP_MID
-                  y: 162
+                  y: 144
                   text_align: CENTER
                   text_color: 0xFFCC66
-                  text_font: montserrat_16
+                  text_font: montserrat_14
               
               # Control buttons - tighter spacing for circular display
               - button:
                   id: media_prev_button
-                  x: -70
-                  y: 0
-                  width: 48
-                  height: 48
-                  align: CENTER
+                  x: -60
+                  y: 162
+                  width: 44
+                  height: 40
+                  align: TOP_MID
                   bg_color: 0x444455
                   border_width: 2
                   border_color: 0x666677
@@ -1430,10 +1430,10 @@ lvgl:
               - button:
                   id: media_play_button
                   x: 0
-                  y: 0
-                  width: 48
-                  height: 48
-                  align: CENTER
+                  y: 162
+                  width: 44
+                  height: 40
+                  align: TOP_MID
                   bg_color: 0x444455
                   border_width: 2
                   border_color: 0x666677
@@ -1452,11 +1452,11 @@ lvgl:
               
               - button:
                   id: media_next_button
-                  x: 70
-                  y: 0
-                  width: 48
-                  height: 48
-                  align: CENTER
+                  x: 60
+                  y: 162
+                  width: 44
+                  height: 40
+                  align: TOP_MID
                   bg_color: 0x444455
                   border_width: 2
                   border_color: 0x666677
@@ -1476,9 +1476,9 @@ lvgl:
               - slider:
                   id: media_volume_slider
                   x: 0
-                  y: -30
+                  y: -22
                   width: 170
-                  height: 18
+                  height: 16
                   min_value: 0
                   max_value: 100
                   value: 50
