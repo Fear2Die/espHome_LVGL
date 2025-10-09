@@ -1225,50 +1225,77 @@ text_sensor:
     id: ha_color_theme
     entity_id: ${theme_selector_entity}
     on_value:
-      - lambda: |-
-          id(current_theme) = x;
-          // Apply theme colors dynamically
-          uint32_t bg_color = 0x111111;
-          uint32_t accent_color = 0xFFCC66;
-          
-          if (x == "blue") {
-            bg_color = 0x0a1929;
-            accent_color = 0x4fc3f7;
-          } else if (x == "purple") {
-            bg_color = 0x1a0a29;
-            accent_color = 0xce93d8;
-          } else if (x == "green") {
-            bg_color = 0x0a291a;
-            accent_color = 0x81c784;
-          } else if (x == "orange") {
-            bg_color = 0x291a0a;
-            accent_color = 0xffb74d;
-          }
-          
-          // Update page backgrounds
-          auto call_idle = id(idle_page).lvgl_update();
-          call_idle.set_bg_color(bg_color);
-          call_idle.perform();
-          
-          // Update arc colors
-          auto call_arc = id(brightness_arc).lvgl_update();
-          call_arc.set_arc_color(accent_color);
-          call_arc.perform();
-          
-          auto call_vol_arc = id(media_volume_arc).lvgl_update();
-          call_vol_arc.set_arc_color(accent_color);
-          call_vol_arc.perform();
-          
-          // Update brightness slider color when light is on
-          if (id(ha_light_state).state == "on") {
-            auto call_slider = id(my_light_slider).lvgl_update();
-            call_slider.set_bg_color(accent_color);
-            call_slider.perform();
-            
-            auto call_button = id(my_light_button).lvgl_update();
-            call_button.set_bg_color(accent_color);
-            call_button.perform();
-          }
+      - lambda: 'id(current_theme) = x;'
+      # Apply blue theme
+      - if:
+          condition:
+            lambda: 'return x == "blue";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0x0a1929
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0x4fc3f7
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0x4fc3f7
+      # Apply purple theme
+      - if:
+          condition:
+            lambda: 'return x == "purple";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0x1a0a29
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0xce93d8
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0xce93d8
+      # Apply green theme
+      - if:
+          condition:
+            lambda: 'return x == "green";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0x0a291a
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0x81c784
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0x81c784
+      # Apply orange theme
+      - if:
+          condition:
+            lambda: 'return x == "orange";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0x291a0a
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0xffb74d
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0xffb74d
+      # Apply dark theme (default)
+      - if:
+          condition:
+            lambda: 'return x == "dark";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0x111111
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0xFFCC66
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0xFFCC66
 
 # Colors defined in LVGL section
 
@@ -1362,7 +1389,6 @@ lvgl:
                   max_value: 100
                   arc_width: 8
                   arc_color: 0xFFCC66
-                  arc_opa: 50%
                   adjustable: true
                   on_value:
                     - if:
@@ -1430,7 +1456,6 @@ lvgl:
                   max_value: 100
                   arc_width: 6
                   arc_color: 0xFF6666
-                  arc_opa: 80%
                   adjustable: false
                   hidden: true
               
@@ -1673,7 +1698,6 @@ lvgl:
                   max_value: 100
                   arc_width: 10
                   arc_color: 0x4fc3f7
-                  arc_opa: 70%
                   adjustable: true
                   on_value:
                     - if:
