@@ -1,5 +1,23 @@
 # Changes from Ball V5.4 to Ball V6
 
+## Latest Update: Native ESPHome Theme Selection
+
+**Improvement:** Theme selection is now a native ESPHome entity that appears in the device's Configuration tab in Home Assistant.
+
+**Before:**
+- Required creating an `input_select` in Home Assistant's `configuration.yaml`
+- Required Home Assistant restart
+- Extra configuration step for users
+
+**After:**
+- Theme selector appears automatically in ESPHome device's Configuration tab
+- No Home Assistant configuration needed
+- Simpler setup process
+
+**Migration:** If upgrading from an earlier Ball V6 version, you can remove the `input_select.ball_color_theme` from your Home Assistant configuration.yaml (optional, it won't cause issues if left).
+
+---
+
 ## Overview
 
 Ball V6 is a major feature update that implements high-priority suggestions from the SUGGESTED_IMPROVEMENTS.md file. The focus is on enhanced user experience through swipe gestures, circular progress indicators, color themes, and a radial menu system.
@@ -83,9 +101,10 @@ touchscreen:
 | Orange | #291a0a | #ffb74d | Warm, vibrant |
 
 **Technical Implementation:**
-- New `input_select` entity in Home Assistant
-- Text sensor monitors theme changes
+- Native ESPHome `select` component with `entity_category: config`
+- Appears automatically in device's Configuration tab
 - Lambda applies colors dynamically to arcs, backgrounds, buttons
+- Theme state persists with `restore_value: true`
 
 **Why This Matters:**
 - Personalization and user preference
@@ -168,13 +187,20 @@ globals:
     initial_value: '0'
 ```
 
-### New Text Sensors
+### New Select Components
 
 ```yaml
-text_sensor:
-  - platform: homeassistant
-    id: ha_color_theme
-    entity_id: ${theme_selector_entity}
+select:
+  - platform: template
+    entity_category: config
+    name: Color Theme
+    id: color_theme_select
+    options:
+      - dark
+      - blue
+      - purple
+      - green
+      - orange
     on_value:
       - lambda: |-
           # Apply theme colors to all UI elements
@@ -308,29 +334,14 @@ text_sensor:
 
 1. **Backup your current V5.4 config**
 2. **Copy Ball_v6.yaml to your device**
-3. **Add theme selector to Home Assistant:**
-   ```yaml
-   input_select:
-     ball_color_theme:
-       name: Ball Color Theme
-       options:
-         - dark
-         - blue
-         - purple
-         - green
-         - orange
-       initial: dark
-   ```
-4. **Update entity in Ball_v6.yaml:**
-   ```yaml
-   theme_selector_entity: "input_select.ball_color_theme"
-   ```
-5. **Flash to device**
-6. **Test swipe gestures and arc controls**
-7. **Try different themes!**
+3. **Configure your entities** (light, media_player, weather) in the substitutions section
+4. **Flash to device**
+5. **Test swipe gestures and arc controls**
+6. **Try different themes from the Configuration tab!**
 
 ### Entity Changes:
-- Added: `theme_selector_entity`
+- Theme selection now appears as a native ESPHome entity in Configuration tab
+- No external Home Assistant entities needed
 - All other entities unchanged
 
 ### Secrets:
