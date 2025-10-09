@@ -13,30 +13,9 @@ Get up and running with Ball V6 in minutes!
 
 ---
 
-## 5-Minute Setup
+## 3-Minute Setup
 
-### Step 1: Create Theme Selector (2 minutes)
-
-Add to your Home Assistant `configuration.yaml`:
-
-```yaml
-input_select:
-  ball_color_theme:
-    name: Ball Color Theme
-    options:
-      - dark
-      - blue
-      - purple
-      - green
-      - orange
-    initial: dark
-```
-
-**Restart Home Assistant** to apply changes.
-
----
-
-### Step 2: Configure Entities (2 minutes)
+### Step 1: Configure Entities (1 minute)
 
 Edit `Ball_v6.yaml` at the top (around line 20):
 
@@ -46,12 +25,11 @@ substitutions:
   light_entity: "light.living_room"
   media_player_entity: "media_player.spotify"
   weather_entity: "weather.home"
-  theme_selector_entity: "input_select.ball_color_theme"
 ```
 
 ---
 
-### Step 3: Set WiFi Credentials (1 minute)
+### Step 2: Set WiFi Credentials (1 minute)
 
 Copy the example secrets file:
 
@@ -69,7 +47,7 @@ api_key: "your-32-character-api-key"
 
 ---
 
-### Step 4: Flash Device
+### Step 3: Flash Device
 
 ```bash
 esphome run Ball_v6.yaml
@@ -97,9 +75,9 @@ Follow prompts to flash via USB or OTA.
 ### 3. Change Theme
 
 In Home Assistant:
-1. Go to **Developer Tools** → **States**
-2. Find `input_select.ball_color_theme`
-3. Click on it
+1. Go to your Ball V6 device page
+2. Click on **Configuration** tab
+3. Find **Color Theme** selector
 4. Select a theme: blue, purple, green, or orange
 5. Watch colors change instantly!
 
@@ -114,14 +92,15 @@ On media page:
 
 ## Troubleshooting
 
-### Theme selector not found
+### Theme selector not appearing
 
-**Problem**: Error about missing entity
+**Problem**: Can't find the Color Theme selector
 
 **Solution**: 
-1. Check `input_select.ball_color_theme` exists in HA
-2. Verify entity name matches in YAML
-3. Restart device
+1. Check that device is online in Home Assistant
+2. Go to device page → Configuration tab
+3. The "Color Theme" dropdown should be visible there
+4. If not visible, restart the device
 
 ### Swipe not working
 
@@ -192,22 +171,36 @@ On media page:
 
 ### Custom Theme Colors
 
-Edit `Ball_v6.yaml` around line 1240 to add custom theme:
+Edit `Ball_v6.yaml` around line 1001 to add custom theme:
 
 ```yaml
-- if:
-    condition:
-      lambda: 'return x == "custom";'
-    then:
-      - lvgl.widget.update:
-          id: idle_container
-          bg_color: 0xYOUR_BG
-      - lvgl.widget.update:
-          id: brightness_arc
-          arc_color: 0xYOUR_ACCENT
+select:
+  - platform: template
+    name: Color Theme
+    id: color_theme_select
+    options:
+      - dark
+      - blue
+      - purple
+      - green
+      - orange
+      - custom  # Add your custom theme
+    on_value:
+      # Add after the existing themes
+      - if:
+          condition:
+            lambda: 'return x == "custom";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0xYOUR_BG
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0xYOUR_ACCENT
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0xYOUR_ACCENT
 ```
-
-Add "custom" to your `input_select` options in HA.
 
 ### Multiple Lights
 

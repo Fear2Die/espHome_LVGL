@@ -26,9 +26,6 @@ substitutions:
   # Weather entity - your weather integration
   weather_entity: "weather.YOUR_WEATHER_ENTITY"  # Example: weather.home or weather.forecast_home
   
-  # Color theme selector - input_select entity in HA for theme selection
-  theme_selector_entity: "input_select.ball_color_theme"  # Create this in HA with options: dark, blue, purple, green
-  
   # Additional light entities (optional - leave as is if you only have one light)
   # Uncomment and configure if you want to control multiple lights
   # light_entity_2: "light.YOUR_SECOND_LIGHT"
@@ -1001,6 +998,93 @@ number:
 select:
   - platform: template
     entity_category: config
+    name: Color Theme
+    id: color_theme_select
+    icon: "mdi:palette"
+    optimistic: true
+    restore_value: true
+    options:
+      - dark
+      - blue
+      - purple
+      - green
+      - orange
+    initial_option: dark
+    on_value:
+      - lambda: 'id(current_theme) = x;'
+      # Apply blue theme
+      - if:
+          condition:
+            lambda: 'return x == "blue";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0x0a1929
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0x4fc3f7
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0x4fc3f7
+      # Apply purple theme
+      - if:
+          condition:
+            lambda: 'return x == "purple";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0x1a0a29
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0xce93d8
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0xce93d8
+      # Apply green theme
+      - if:
+          condition:
+            lambda: 'return x == "green";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0x0a291a
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0x81c784
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0x81c784
+      # Apply orange theme
+      - if:
+          condition:
+            lambda: 'return x == "orange";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0x291a0a
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0xffb74d
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0xffb74d
+      # Apply dark theme (default)
+      - if:
+          condition:
+            lambda: 'return x == "dark";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0x111111
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0xFFCC66
+            - lvgl.widget.update:
+                id: media_volume_arc
+                arc_color: 0xFFCC66
+
+  - platform: template
+    entity_category: config
     name: Wake word engine location
     id: wake_word_engine_location
     icon: "mdi:account-voice"
@@ -1219,83 +1303,6 @@ text_sensor:
             // Already an absolute URL
             id(album_art_image).set_url(x.c_str());
           }
-
-  # Color theme selector from Home Assistant
-  - platform: homeassistant
-    id: ha_color_theme
-    entity_id: ${theme_selector_entity}
-    on_value:
-      - lambda: 'id(current_theme) = x;'
-      # Apply blue theme
-      - if:
-          condition:
-            lambda: 'return x == "blue";'
-          then:
-            - lvgl.widget.update:
-                id: idle_container
-                bg_color: 0x0a1929
-            - lvgl.widget.update:
-                id: brightness_arc
-                arc_color: 0x4fc3f7
-            - lvgl.widget.update:
-                id: media_volume_arc
-                arc_color: 0x4fc3f7
-      # Apply purple theme
-      - if:
-          condition:
-            lambda: 'return x == "purple";'
-          then:
-            - lvgl.widget.update:
-                id: idle_container
-                bg_color: 0x1a0a29
-            - lvgl.widget.update:
-                id: brightness_arc
-                arc_color: 0xce93d8
-            - lvgl.widget.update:
-                id: media_volume_arc
-                arc_color: 0xce93d8
-      # Apply green theme
-      - if:
-          condition:
-            lambda: 'return x == "green";'
-          then:
-            - lvgl.widget.update:
-                id: idle_container
-                bg_color: 0x0a291a
-            - lvgl.widget.update:
-                id: brightness_arc
-                arc_color: 0x81c784
-            - lvgl.widget.update:
-                id: media_volume_arc
-                arc_color: 0x81c784
-      # Apply orange theme
-      - if:
-          condition:
-            lambda: 'return x == "orange";'
-          then:
-            - lvgl.widget.update:
-                id: idle_container
-                bg_color: 0x291a0a
-            - lvgl.widget.update:
-                id: brightness_arc
-                arc_color: 0xffb74d
-            - lvgl.widget.update:
-                id: media_volume_arc
-                arc_color: 0xffb74d
-      # Apply dark theme (default)
-      - if:
-          condition:
-            lambda: 'return x == "dark";'
-          then:
-            - lvgl.widget.update:
-                id: idle_container
-                bg_color: 0x111111
-            - lvgl.widget.update:
-                id: brightness_arc
-                arc_color: 0xFFCC66
-            - lvgl.widget.update:
-                id: media_volume_arc
-                arc_color: 0xFFCC66
 
 # Colors defined in LVGL section
 

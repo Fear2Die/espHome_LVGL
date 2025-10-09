@@ -7,10 +7,10 @@
 Ball V6 brings cutting-edge features designed specifically for circular displays:
 
 #### 🎨 **Color Theme Support**
-- **Multiple color themes** controllable from Home Assistant
+- **Multiple color themes** directly in ESPHome configuration
 - Themes: Dark (default), Blue, Purple, Green, Orange
 - Dynamic color updates for all UI elements
-- Create an `input_select` in Home Assistant to control themes
+- No Home Assistant configuration needed - appears in device's Configuration tab
 
 #### 👆 **Swipe Gesture Navigation**
 - **Natural touch interaction** - swipe left/right to navigate between pages
@@ -64,29 +64,9 @@ substitutions:
   
   # Weather entity
   weather_entity: "weather.YOUR_WEATHER_ENTITY"
-  
-  # Color theme selector (NEW in V6)
-  theme_selector_entity: "input_select.ball_color_theme"
 ```
 
-### 2. Create Theme Selector in Home Assistant
-
-Add this to your Home Assistant `configuration.yaml`:
-
-```yaml
-input_select:
-  ball_color_theme:
-    name: Ball Color Theme
-    options:
-      - dark
-      - blue
-      - purple
-      - green
-      - orange
-    initial: dark
-```
-
-### 3. Copy secrets.yaml
+### 2. Copy secrets.yaml
 
 ```bash
 cp secrets.yaml.example secrets.yaml
@@ -100,7 +80,7 @@ wifi_password: "YourWiFiPassword"
 api_key: "your-esphome-api-key"
 ```
 
-### 4. Flash to Device
+### 3. Flash to Device
 
 ```bash
 esphome run Ball_v6.yaml
@@ -161,10 +141,11 @@ esphome run Ball_v6.yaml
 - Accent colors throughout UI
 
 **Change Theme:**
-1. In Home Assistant, go to Developer Tools → States
-2. Find `input_select.ball_color_theme`
-3. Select your desired theme
-4. Changes apply immediately!
+1. In Home Assistant, go to your Ball V6 device page
+2. Click on the "Configuration" tab
+3. Select "Color Theme" dropdown
+4. Choose your desired theme (dark, blue, purple, green, or orange)
+5. Changes apply immediately!
 
 ### Radial Menu
 
@@ -196,13 +177,32 @@ esphome run Ball_v6.yaml
 
 ### Changing Theme Colors
 
-Edit the theme sensor in the YAML (around line 1228):
+To add custom themes, edit the `color_theme_select` component in the YAML (around line 1001):
 
 ```yaml
-if (x == "custom") {
-  bg_color = 0xYOUR_BG_COLOR;
-  accent_color = 0xYOUR_ACCENT_COLOR;
-}
+select:
+  - platform: template
+    name: Color Theme
+    id: color_theme_select
+    options:
+      - dark
+      - blue
+      - purple
+      - green
+      - orange
+      - custom  # Add your custom theme here
+    on_value:
+      # Add custom theme logic
+      - if:
+          condition:
+            lambda: 'return x == "custom";'
+          then:
+            - lvgl.widget.update:
+                id: idle_container
+                bg_color: 0xYOUR_BG_COLOR
+            - lvgl.widget.update:
+                id: brightness_arc
+                arc_color: 0xYOUR_ACCENT_COLOR
 ```
 
 ### Adjusting Arc Sizes
@@ -264,9 +264,10 @@ if (abs(dx) > 50 && abs(dx) > abs(dy) * 1.5) {
 ### Changing Theme
 
 1. Open Home Assistant
-2. Go to "input_select.ball_color_theme"
-3. Select theme: dark, blue, purple, green, or orange
-4. Changes apply instantly!
+2. Go to your Ball V6 device page
+3. Click on "Configuration" tab
+4. Select "Color Theme" from the dropdown: dark, blue, purple, green, or orange
+5. Changes apply instantly!
 
 ---
 
