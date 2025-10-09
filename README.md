@@ -282,6 +282,6 @@ This project is open source. Individual configurations may have their own licens
 
 ---
 
-**⭐ Recommended:** Start with [Ball V5.3](Ball_v5.3/README.md) for the best experience!
+**⭐ Recommended:** Start with [Xiaozhi Ball V2/Ball_v5.3](Xiaozhi%20Ball%20V2/Ball_v5.3/README.md) for the best experience!
 
 **Last Updated:** January 2025
