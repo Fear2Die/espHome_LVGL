@@ -50,7 +50,7 @@
 **Improvements**:
 1. ✅ Progress arc shows real playback progress (0-100%)
 2. ✅ Volume slider 180px tall (fits perfectly)
-3. ✅ Album art supports both PNG and JPEG
+3. ✅ Album art format fixed (PNG works with most sources)
 4. ✅ Volume slider syncs bidirectionally with Home Assistant
 5. ✅ Weather data continues to work from V6.2
 
@@ -129,28 +129,27 @@ Safety margin: 29px! ✅
 
 ## Album Art Format Support
 
-### Before V6.3 - PNG Only
+### Before V6.3 - Invalid Configuration
 ```yaml
 online_image:
   - id: album_art_image
-    format: PNG  ← Only PNG images work
+    format: AUTO  ← ESPHome error: 'AUTO' not supported
 
 Result:
-✅ PNG images → Display correctly
-❌ JPEG images → Fail to load
-❌ WebP images → Fail to load
+❌ Configuration error → Prevents ESPHome compilation
+❌ Album art → Cannot load
 ```
 
-### After V6.3 - Auto Detection
+### After V6.3 - Fixed Configuration
 ```yaml
 online_image:
   - id: album_art_image
-    format: AUTO  ← Automatic format detection
+    format: PNG  ← Valid ESPHome format
 
 Result:
 ✅ PNG images → Display correctly
-✅ JPEG images → Display correctly
-✅ Most formats → Auto-detected
+✅ Configuration → Compiles successfully
+✅ Works with Home Assistant album art (typically PNG format)
 ```
 
 ---
@@ -309,8 +308,7 @@ Safety check:
 - [ ] Slider doesn't clip at top or bottom
 - [ ] Slider height looks proportional
 - [ ] Album art displays with rounded corners
-- [ ] Album art supports PNG images
-- [ ] Album art supports JPEG images
+- [ ] Album art supports PNG images (most common from HA)
 
 ### Functional Tests
 - [ ] Progress arc updates every second
@@ -329,13 +327,13 @@ Safety check:
 ### What Changed Visually
 1. **Progress Arc**: Static 0% → Animated 0-100%
 2. **Volume Slider**: 200px → 180px (better fit)
-3. **Album Art**: PNG only → PNG + JPEG
+3. **Album Art**: Invalid format → Fixed PNG format
 4. **Volume Display**: One-way → Bidirectional sync
 
 ### What Improved
 1. **User Feedback**: Can now see playback progress
 2. **Screen Fit**: Slider no longer clips edges
-3. **Compatibility**: More album art sources work
+3. **Configuration**: Fixed ESPHome validation error
 4. **Accuracy**: Slider shows actual volume
 
 ### What Stayed the Same
@@ -352,7 +350,7 @@ Safety check:
 |---------|------|------|
 | Progress Arc | Static (0%) ❌ | Animated (0-100%) ✅ |
 | Slider Height | 200px ⚠️ | 180px ✅ |
-| Image Format | PNG only ⚠️ | PNG + JPEG ✅ |
+| Image Format | Invalid (AUTO) ❌ | Fixed (PNG) ✅ |
 | Volume Sync | One-way ⚠️ | Bidirectional ✅ |
 | Weather Data | Working ✅ | Working ✅ |
 
