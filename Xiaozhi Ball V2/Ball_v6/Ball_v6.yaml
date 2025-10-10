@@ -282,9 +282,11 @@ sensor:
           if (std::isnan(x)) return 0.5;
           return x;
     on_value:
+      - lambda: 'id(updating_volume_from_ha) = true;'
       - lvgl.slider.update:
           id: media_volume_slider
           value: !lambda 'return x * 100.0;'
+      - lambda: 'id(updating_volume_from_ha) = false;'
 
   # Media player position sensor
   - platform: homeassistant
@@ -342,6 +344,19 @@ time:
                 auto time = id(ha_time).now();
                 snprintf(buf, sizeof(buf), "%02d:%02d", time.hour, time.minute);
                 return buf;
+      # Update progress arc every second when media is playing
+      - seconds: '*'
+        then:
+          - lvgl.arc.update:
+              id: media_progress_arc
+              value: !lambda |-
+                float position = id(ha_media_position).state;
+                float duration = id(ha_media_duration).state;
+                if (duration > 0 && !std::isnan(position) && !std::isnan(duration)) {
+                  return (position / duration) * 100.0;
+                } else {
+                  return 0;
+                }
 
 touchscreen:
   - platform: cst816
@@ -1094,6 +1109,10 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  - id: updating_volume_from_ha
+    type: bool
+    restore_value: no
+    initial_value: 'false'
   - id: current_screen_index
     type: int
     restore_value: no
@@ -1435,7 +1454,7 @@ lvgl:
               - slider:
                   id: media_volume_slider
                   align: LEFT_MID
-                  x: 15
+                  x: 41
                   y: 0
                   width: 15
                   height: 180
@@ -1453,11 +1472,15 @@ lvgl:
                   on_release:
                     - lambda: 'id(slider_interaction) = false;'
                   on_value:
-                    - homeassistant.action:
-                        action: media_player.volume_set
-                        data:
-                          entity_id: ${media_player_entity}
-                          volume_level: !lambda 'return x / 100.0;'
+                    - if:
+                        condition:
+                          lambda: 'return !id(updating_volume_from_ha);'
+                        then:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: ${media_player_entity}
+                                volume_level: !lambda 'return x / 100.0;'
               
               # Control Buttons - Previous
               - button:
