@@ -6,9 +6,12 @@
 
 **Symptom**: Compilation fails with error about `touch` variable not being declared.
 
-**Cause**: Trying to access `touch.x` or `touch.y` outside of the immediate lambda block where they're available.
+**Cause**: Trying to access `touch.x` or `touch.y` in callbacks where they're not available. The `touch` variable is ONLY available in `on_touch` callbacks. The `on_release` callback does NOT provide touch coordinates.
 
-**Solution**: Store touch coordinates in global variables immediately when they're available:
+**Solution**: Use the correct callback for each scenario:
+- Use `on_touch` to capture the initial touch position (provides `touch` variable)
+- Use `on_update` to track the current position while touching (provides `touches` array)
+- Use `on_release` only for actions when touch ends (provides NO coordinate variables)
 
 ```yaml
 touchscreen:
@@ -16,16 +19,25 @@ touchscreen:
     on_touch:
       then:
         - lambda: |-
-            id(touch_x) = touch.x;  # Store immediately
-            id(touch_y) = touch.y;
+            id(start_x) = touch.x;  # Capture start position
+            id(start_y) = touch.y;
+            id(end_x) = touch.x;    # Initialize end position
+            id(end_y) = touch.y;
+    on_update:
+      then:
+        - lambda: |-
+            # Continuously track current position while touching
+            if (!touches.empty()) {
+              id(end_x) = touches[0].x;
+              id(end_y) = touches[0].y;
+            }
     on_release:
       then:
         - lambda: |-
-            id(release_x) = touch.x;  # Store immediately
-            id(release_y) = touch.y;
-        # Now use stored values in subsequent blocks
-        - lambda: |-
-            int dx = id(release_x) - id(touch_x);
+            # Calculate swipe using stored coordinates
+            # touch.x and touch.y are NOT available here!
+            int dx = id(end_x) - id(start_x);
+            int dy = id(end_y) - id(start_y);
 ```
 
 ### Error: 'class esphome::lvgl::LvPageType' has no member named 'show'
@@ -60,26 +72,38 @@ touchscreen:
 
 When implementing swipe gestures or complex touch interactions:
 
-1. **Capture**: Store coordinates immediately when touch events occur
-2. **Calculate**: Perform calculations in lambda using stored values
-3. **Decide**: Set flags/globals based on calculations
-4. **Act**: Use ESPHome actions based on flags
+1. **Capture Start**: Store initial coordinates in `on_touch`
+2. **Track Movement**: Update coordinates in `on_update` 
+3. **Calculate on Release**: Perform swipe calculations in `on_release` using stored values
+4. **Act**: Use ESPHome actions based on calculations
 
 ```yaml
-on_release:
+on_touch:
   then:
-    # 1. CAPTURE
     - lambda: |-
+        # 1. CAPTURE START
+        id(start_x) = touch.x;
+        id(start_y) = touch.y;
         id(end_x) = touch.x;
         id(end_y) = touch.y;
-    
-    # 2. CALCULATE
+
+on_update:
+  then:
     - lambda: |-
+        # 2. TRACK MOVEMENT
+        if (!touches.empty()) {
+          id(end_x) = touches[0].x;
+          id(end_y) = touches[0].y;
+        }
+
+on_release:
+  then:
+    - lambda: |-
+        # 3. CALCULATE (no touch coordinates available here!)
         int distance = sqrt(pow(id(end_x) - id(start_x), 2) + 
                           pow(id(end_y) - id(start_y), 2));
         id(swipe_detected) = (distance > 50);
     
-    # 3. DECIDE (implicit in if/then)
     # 4. ACT
     - if:
         condition:

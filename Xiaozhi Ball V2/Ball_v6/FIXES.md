@@ -18,27 +18,49 @@ ball_v6.yaml:372:27: error: 'class esphome::lvgl::LvPageType' has no member name
 
 ### 1. Touch Coordinate Access Issue (Line 345)
 
-**Problem**: The lambda attempted to access `touch.x` and `touch.y` directly within the action execution context. While these variables are available in the `on_touch` and `on_release` lambda expressions, they cannot be used across multiple lambda blocks or in conditional action contexts.
+**Problem**: The lambda attempted to access `touch.x` and `touch.y` in the `on_release` callback. However, ESPHome's touchscreen component does NOT provide touch coordinates in the `on_release` trigger. The `touch` variable is ONLY available in `on_touch`, and a `touches` array is available in `on_update`.
+
+**Root Cause**: According to ESPHome's touchscreen component implementation:
+- `on_touch` provides: `touch` (TouchPoint) and `touches` (array) 
+- `on_update` provides: `touches` (array only)
+- `on_release` provides: NO coordinate variables at all
 
 **Original Code**:
 ```yaml
 on_release:
   then:
     - lambda: |-
-        int dx = touch.x - id(swipe_start_x);  # Error: touch not in scope
+        id(swipe_end_x) = touch.x;  # ERROR: touch not available in on_release!
+        id(swipe_end_y) = touch.y;
+    - lambda: |-
+        int dx = id(swipe_end_x) - id(swipe_start_x);
 ```
 
-**Solution**: Store the touch coordinates in global variables during the initial lambda, then use those stored values in subsequent logic:
+**Solution**: Use `on_update` to track the current touch position while the user is touching, then use those stored values in `on_release`:
 
 ```yaml
+on_touch:
+  then:
+    - lambda: |-
+        // Store initial position
+        id(swipe_start_x) = touch.x;
+        id(swipe_start_y) = touch.y;
+        id(swipe_end_x) = touch.x;
+        id(swipe_end_y) = touch.y;
+
+on_update:
+  then:
+    - lambda: |-
+        // Continuously track current position while touching
+        if (!touches.empty()) {
+          id(swipe_end_x) = touches[0].x;
+          id(swipe_end_y) = touches[0].y;
+        }
+
 on_release:
   then:
     - lambda: |-
-        // Store release position first
-        id(swipe_end_x) = touch.x;
-        id(swipe_end_y) = touch.y;
-    - lambda: |-
-        // Now use stored values
+        // Use stored values (touch not available here!)
         int dx = id(swipe_end_x) - id(swipe_start_x);
 ```
 
@@ -97,17 +119,19 @@ globals:
     initial_value: '0'
 ```
 
-### Modified Section: touchscreen.on_release
+### Modified Section: touchscreen callbacks
 
-The `on_release` handler was completely restructured:
+The touchscreen event handlers were restructured to use the correct callbacks:
 
-1. **First lambda**: Store touch release coordinates
-2. **Second lambda**: Calculate swipe direction and store in global
-3. **Action blocks**: Use ESPHome if/then actions to trigger page changes based on swipe direction
+1. **on_touch**: Store initial touch coordinates using `touch.x` and `touch.y`
+2. **on_update** (NEW): Continuously track current position using `touches[0].x` and `touches[0].y`
+3. **on_release**: Calculate swipe direction using stored coordinates (no touch variables available!)
+4. **Action blocks**: Use ESPHome if/then actions to trigger page changes based on swipe direction
 
 This separation ensures:
-- Touch coordinates are captured when available
-- Logic is computed in lambda expressions
+- Touch coordinates are only accessed in callbacks where they're available
+- Current position is tracked throughout the gesture
+- Logic is computed in lambda expressions  
 - Actions (page navigation) use proper ESPHome syntax
 - Code follows ESPHome's declarative action framework
 
