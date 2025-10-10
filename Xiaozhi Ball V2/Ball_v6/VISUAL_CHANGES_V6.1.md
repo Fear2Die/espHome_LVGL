@@ -234,7 +234,7 @@ No changes to fonts in V6.1:
 | Song Title | y: 140 | y: 140 | None |
 | Artist Name | y: 158 | y: 158 | None |
 | Control Buttons | y: 176 | y: 176 | None |
-| Volume Arc | N/A | CENTER_RIGHT | NEW |
+| Volume Arc | N/A | RIGHT_MID | NEW |
 
 ---
 
