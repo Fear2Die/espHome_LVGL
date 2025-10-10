@@ -1081,11 +1081,13 @@ text_sensor:
           then:
             - lvgl.switch.update:
                 id: light_switch
-                state: true
+                state:
+                  checked: true
           else:
             - lvgl.switch.update:
                 id: light_switch
-                state: false
+                state:
+                  checked: false
 
   # Weather condition sensor
   - platform: homeassistant
@@ -1338,11 +1340,10 @@ lvgl:
                   value: 0
                   arc_width: 4
                   arc_color: 0x2A2A2A
+                  adjustable: false
                   indicator:
                     arc_width: 4
                     arc_color: 0x1DB954
-                  knob:
-                    hidden: true
               
               # Song Title
               - label:
