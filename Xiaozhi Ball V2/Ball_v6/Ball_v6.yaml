@@ -159,7 +159,7 @@ online_image:
   - id: album_art_image
     url: "http://homeassistant.local:8123/"
     type: RGB565
-    format: PNG
+    format: AUTO
     resize: 100x100
     update_interval: never
 
@@ -271,6 +271,62 @@ sensor:
             char buf[20];
             snprintf(buf, sizeof(buf), "%.0f%%", (int)x);
             return std::string(buf);
+
+  # Media player volume level sensor
+  - platform: homeassistant
+    id: ha_media_volume
+    entity_id: ${media_player_entity}
+    attribute: volume_level
+    filters:
+      - lambda: |-
+          if (std::isnan(x)) return 0.5;
+          return x;
+    on_value:
+      - lvgl.slider.update:
+          id: media_volume_slider
+          value: !lambda 'return x * 100.0;'
+
+  # Media player position sensor
+  - platform: homeassistant
+    id: ha_media_position
+    entity_id: ${media_player_entity}
+    attribute: media_position
+    filters:
+      - lambda: |-
+          if (std::isnan(x)) return 0.0;
+          return x;
+    on_value:
+      - lambda: |-
+          // Update progress arc when position changes
+          float position = x;
+          float duration = id(ha_media_duration).state;
+          if (duration > 0 && !std::isnan(position) && !std::isnan(duration)) {
+            float progress = (position / duration) * 100.0;
+            id(media_progress_arc).set_value(progress);
+          } else {
+            id(media_progress_arc).set_value(0);
+          }
+
+  # Media player duration sensor
+  - platform: homeassistant
+    id: ha_media_duration
+    entity_id: ${media_player_entity}
+    attribute: media_duration
+    filters:
+      - lambda: |-
+          if (std::isnan(x)) return 100.0;
+          return x;
+    on_value:
+      - lambda: |-
+          // Update progress arc when duration or position changes
+          float position = id(ha_media_position).state;
+          float duration = x;
+          if (duration > 0 && !std::isnan(position) && !std::isnan(duration)) {
+            float progress = (position / duration) * 100.0;
+            id(media_progress_arc).set_value(progress);
+          } else {
+            id(media_progress_arc).set_value(0);
+          }
 
 time:
   - platform: homeassistant
@@ -1382,7 +1438,7 @@ lvgl:
                   x: 15
                   y: 0
                   width: 15
-                  height: 200
+                  height: 180
                   min_value: 0
                   max_value: 100
                   value: 50
