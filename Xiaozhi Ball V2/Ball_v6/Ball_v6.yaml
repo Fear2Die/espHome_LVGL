@@ -307,7 +307,7 @@ touchscreen:
             state: OFF
         # Detect swipe gesture on release
         - lambda: |-
-            if (id(swipe_in_progress) && id(voice_assistant_phase) == ${voice_assist_idle_phase_id}) {
+            if (id(swipe_in_progress) && !id(slider_interaction) && id(voice_assistant_phase) == ${voice_assist_idle_phase_id}) {
               auto touch_point = id(touch_dp).get_touch();
               if (touch_point.has_value()) {
                 int end_x = touch_point.value().x;
@@ -1048,6 +1048,10 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  - id: slider_interaction
+    type: bool
+    restore_value: no
+    initial_value: 'false'
 
 text_sensor:
   - id: text_request
@@ -1197,16 +1201,6 @@ lvgl:
             border_width: 0
             pad_all: 0
             widgets:
-              # Title
-              - label:
-                  id: main_title
-                  text: "Light Control"
-                  align: TOP_MID
-                  y: 30
-                  text_align: CENTER
-                  text_color: 0xFFFFFF
-                  text_font: montserrat_18
-              
               # Time - top left
               - label:
                   id: time_label
@@ -1259,6 +1253,10 @@ lvgl:
                     bg_color: 0xFFFFFF
                     radius: 12
                     pad_all: 4
+                  on_press:
+                    - lambda: 'id(slider_interaction) = true;'
+                  on_release:
+                    - lambda: 'id(slider_interaction) = false;'
                   on_value:
                     - if:
                         condition:
@@ -1369,6 +1367,40 @@ lvgl:
                   text_font: montserrat_12
                   long_mode: SCROLL_CIRCULAR
               
+              # Volume Control - Half circle arc on right edge
+              - arc:
+                  id: media_volume_arc
+                  align: CENTER_RIGHT
+                  x: 0
+                  y: 0
+                  width: 80
+                  height: 240
+                  min_value: 0
+                  max_value: 100
+                  value: 50
+                  start_angle: 135
+                  end_angle: 45
+                  arc_width: 12
+                  arc_color: 0x2A2A2A
+                  bg_opa: TRANSP
+                  adjustable: true
+                  indicator:
+                    arc_width: 12
+                    arc_color: 0xFFB800
+                  knob:
+                    bg_color: 0xFFFFFF
+                    radius: 8
+                  on_press:
+                    - lambda: 'id(slider_interaction) = true;'
+                  on_release:
+                    - lambda: 'id(slider_interaction) = false;'
+                  on_value:
+                    - homeassistant.action:
+                        action: media_player.volume_set
+                        data:
+                          entity_id: ${media_player_entity}
+                          volume_level: !lambda 'return x / 100.0;'
+              
               # Control Buttons - Previous
               - button:
                   id: media_prev_button
@@ -1475,7 +1507,7 @@ lvgl:
               # Temperature - Large Display
               - label:
                   id: weather_temp_label
-                  text: "20°"
+                  text: "--°"
                   align: TOP_MID
                   y: 95
                   text_align: CENTER
@@ -1485,7 +1517,7 @@ lvgl:
               # Humidity Container
               - obj:
                   align: TOP_MID
-                  y: 165
+                  y: 155
                   width: 180
                   height: 50
                   radius: 15
@@ -1506,7 +1538,7 @@ lvgl:
                     # Humidity Value
                     - label:
                         id: weather_humidity_value
-                        text: "65%"
+                        text: "--%"
                         align: BOTTOM_MID
                         y: -2
                         text_align: CENTER
