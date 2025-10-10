@@ -282,11 +282,15 @@ sensor:
           if (std::isnan(x)) return 0.5;
           return x;
     on_value:
-      - lambda: 'id(updating_volume_from_ha) = true;'
-      - lvgl.slider.update:
-          id: media_volume_slider
-          value: !lambda 'return x * 100.0;'
-      - lambda: 'id(updating_volume_from_ha) = false;'
+      - if:
+          condition:
+            lambda: 'return !id(slider_interaction);'  # Only update if user is not interacting
+          then:
+            - lambda: 'id(updating_volume_from_ha) = true;'
+            - lvgl.slider.update:
+                id: media_volume_slider
+                value: !lambda 'return x * 100.0;'
+            - lambda: 'id(updating_volume_from_ha) = false;'
 
   # Media player position sensor
   - platform: homeassistant
@@ -330,6 +334,16 @@ sensor:
               return 0;
             }
 
+  # Media player position updated at timestamp
+  - platform: homeassistant
+    id: ha_media_position_updated_at
+    entity_id: ${media_player_entity}
+    attribute: media_position_updated_at
+    filters:
+      - lambda: |-
+          if (std::isnan(x)) return 0.0;
+          return x;
+
 time:
   - platform: homeassistant
     id: ha_time
@@ -350,10 +364,34 @@ time:
           - lvgl.arc.update:
               id: media_progress_arc
               value: !lambda |-
-                float position = id(ha_media_position).state;
+                // Get base position and other values
+                float base_position = id(ha_media_position).state;
                 float duration = id(ha_media_duration).state;
-                if (duration > 0 && !std::isnan(position) && !std::isnan(duration)) {
-                  return (position / duration) * 100.0;
+                float updated_at = id(ha_media_position_updated_at).state;
+                
+                // Check if media is playing
+                std::string state = id(ha_media_state).state;
+                bool is_playing = (state == "playing");
+                
+                // Calculate real-time position
+                float current_position = base_position;
+                if (is_playing && !std::isnan(updated_at) && updated_at > 0) {
+                  // Get current timestamp and calculate elapsed time
+                  auto now = id(ha_time).now();
+                  if (now.is_valid()) {
+                    time_t current_timestamp = now.timestamp;
+                    float elapsed = current_timestamp - updated_at;
+                    current_position = base_position + elapsed;
+                  }
+                }
+                
+                // Calculate and return percentage
+                if (duration > 0 && !std::isnan(current_position) && !std::isnan(duration)) {
+                  float percentage = (current_position / duration) * 100.0;
+                  // Clamp to 0-100 range
+                  if (percentage < 0) percentage = 0;
+                  if (percentage > 100) percentage = 100;
+                  return percentage;
                 } else {
                   return 0;
                 }
@@ -1455,7 +1493,7 @@ lvgl:
                   id: media_volume_slider
                   align: LEFT_MID
                   x: 41
-                  y: 0
+                  y: -15
                   width: 15
                   height: 180
                   min_value: 0
