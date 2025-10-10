@@ -1,86 +1,71 @@
-# Media Screen Layout - Ball V6.1
+# Media Screen Layout - Ball V6.2
 
 ## Overview
-The media screen now includes a half-circle volume control arc on the right edge of the screen.
+The media screen includes a vertical volume control slider on the left edge of the screen for intuitive volume adjustment.
 
 ## Layout Diagram
 
 ```
 ┌─────────────────────────┐ 240x240
-│                        ╱│ ← Volume Arc
-│      ┌────────┐      ╱ │   (right edge)
-│      │        │     │  │   start: 135°
-│      │ Album  │     │  │   end: 45°
-│      │  Art   │      ╲ │   width: 12px
-│      │ 100x100│       ╲│   color: orange
-│      └────────┘        │
-│                        │
-│    Song Title Here     │ y: 140
-│    Artist Name         │ y: 158
-│                        │
-│  [<<]   [>]   [>>]     │ y: 176
-│                        │
-│                        │
+│ │                       │ ← Volume Slider
+│ │   ┌────────┐          │   (left edge)
+│ │   │        │          │   x: 15, y: 0
+│ │   │ Album  │          │   width: 15px
+│ ╵   │  Art   │          │   height: 200px
+│     │ 100x100│          │   color: orange
+│     └────────┘          │
+│                         │
+│    Song Title Here      │ y: 140
+│    Artist Name          │ y: 158
+│                         │
+│  [<<]   [>]   [>>]      │ y: 176
+│                         │
+│                         │
 └─────────────────────────┘
 
 Legend:
 ┌────────┐  Album art (100x100, rounded corners)
 [<<][>]    Media control buttons (45x45, circular)
-╱│╲        Volume arc (curves along right edge)
+│ ╵        Volume slider (vertical on left edge)
 ```
 
 ## Widget Specifications
 
-### Volume Control Arc
+### Volume Control Slider
 | Property | Value | Description |
 |----------|-------|-------------|
-| **ID** | `media_volume_arc` | ESPHome component ID |
-| **Position** | RIGHT_MID | Aligned to right edge, vertically centered |
-| **Offset** | x: 0, y: 0 | No offset from edge |
-| **Size** | 80 x 240 | Width: 80px, Height: full screen |
+| **ID** | `media_volume_slider` | ESPHome component ID |
+| **Position** | LEFT_MID | Aligned to left edge, vertically centered |
+| **Offset** | x: 15, y: 0 | 15px from left edge |
+| **Size** | 15 x 200 | Width: 15px, Height: 200px |
 | **Range** | 0 - 100 | Internal value (converted to 0.0-1.0 for HA) |
-| **Start Angle** | 135° | Top of right edge |
-| **End Angle** | 45° | Bottom of right edge |
-| **Arc Width** | 12px | Track and indicator width |
-| **Track Color** | 0x2A2A2A | Dark gray (same as other sliders) |
+| **Orientation** | Vertical | Up = louder, Down = quieter |
+| **Track Color** | 0x2A2A2A | Dark gray (same as brightness slider) |
 | **Indicator Color** | 0xFFB800 | Orange (matches brightness slider) |
 | **Knob Color** | 0xFFFFFF | White |
-| **Knob Radius** | 8px | Circular knob |
-| **Background** | TRANSP | Transparent (no background fill) |
-| **Adjustable** | Yes | Touch to adjust |
+| **Knob Radius** | 10px | Circular knob |
+| **Adjustable** | Yes | Touch and drag to adjust |
 | **Gesture Block** | Yes | Prevents screen swipe during use |
 
-### Arc Angle Configuration
+### Slider Behavior
 
-The arc uses LVGL angle system where:
-- 0° = Right (3 o'clock)
-- 90° = Bottom (6 o'clock)
-- 180° = Left (9 o'clock)
-- 270° = Top (12 o'clock)
-
-Our configuration:
-- **135°** = Between left and bottom (7:30 position)
-- **45°** = Between right and bottom (4:30 position)
-- **Result**: A semi-circle on the right side of the screen
+The vertical slider works as follows:
+- **Top** (y: 0) = Maximum volume (100)
+- **Bottom** (y: 200) = Minimum volume (0)
+- **Center** (y: 100) = 50% volume
+- **Drag up** = Increase volume
+- **Drag down** = Decrease volume
 
 ### Visual Representation
 
 ```
-        0° →
+    Top (100%)
+        │
+        │ ← Knob position
+        │    indicates current
+        ╵    volume level
         
-270°    +    90°
-    ╱   │   ╲
-   │    │    │
-    ╲   │   ╱
-       180°
-
-Volume Arc Angles:
-       
-  135°  ╱     45°
-       │       
-       │       
-       │       
-       │       
+   Bottom (0%)
 ```
 
 ### Integration with Home Assistant
@@ -179,18 +164,19 @@ This prevents accidental screen switching while adjusting volume.
 ## Usage Tips
 
 1. **Volume Adjustment**:
-   - Touch anywhere on the arc and drag up/down
+   - Touch the slider and drag up to increase volume
+   - Drag down to decrease volume
    - No need to touch the knob specifically
    - Release to stop adjusting
 
 2. **Swipe Navigation**:
-   - Swipe from center or left area to navigate
-   - Don't start swipe on the volume arc
-   - Arc blocks swipes while adjusting
+   - Swipe from center or right area to navigate
+   - Don't start swipe on the volume slider
+   - Slider blocks swipes while adjusting
 
 3. **Visual Feedback**:
-   - Arc indicator shows current volume level
-   - White knob moves along arc
+   - Orange indicator shows current volume level
+   - White knob position indicates volume (top = max, bottom = min)
    - Changes reflect in Home Assistant immediately
 
 ## Technical Notes
@@ -203,25 +189,26 @@ The arc widget in LVGL is highly customizable:
 - Background can be colored or transparent
 - Works well for circular/semi-circular controls
 
-### Why Right Edge?
-- Natural position for volume control (away from main controls)
-- Thumb-friendly for right-handed use
+### Why Left Edge?
+- Intuitive vertical orientation (up = louder, down = quieter)
+- Easy to reach with thumb while viewing content
 - Doesn't interfere with album art or buttons
-- Visually balanced with centered content
-- Similar to iOS Control Center volume slider
+- Familiar paradigm from smartphone volume controls
+- More accessible than circular arc design
 
 ### Performance Considerations
-- Arc rendering is efficient in LVGL
+- Slider rendering is efficient in LVGL
 - Touch events are processed smoothly
 - No lag when adjusting volume
 - Updates to Home Assistant are throttled by ESPHome
+- Vertical sliders are more responsive than arc controls
 
 ## Troubleshooting
 
-### Volume arc not visible
-- Check `bg_opa: TRANSP` is set (background should be transparent)
-- Verify arc_color and indicator colors are different from black
-- Check start_angle and end_angle values
+### Volume slider not visible
+- Verify slider position (x: 15 from LEFT_MID)
+- Check bg_color and indicator colors are different from black
+- Ensure slider height (200px) fits within screen
 
 ### Volume not changing in HA
 - Verify media_player_entity is correct in substitutions
@@ -233,17 +220,18 @@ The arc widget in LVGL is highly customizable:
 - Check on_press and on_release handlers are present
 - Ensure touchscreen on_release checks slider_interaction flag
 
-### Arc knob hard to grab
-- Consider increasing knob radius (currently 8px)
-- Adjust arc_width if needed (currently 12px)
+### Slider knob hard to grab
+- Knob radius is 10px (larger than previous arc knob)
 - Ensure adjustable: true is set
+- Verify slider width (15px) provides adequate touch area
 
 ## Future Enhancements
 
 Possible improvements for future versions:
-- Add volume percentage label near arc
-- Animate arc indicator smoothly
+- Add volume percentage label near slider
+- Animate slider indicator smoothly
 - Add haptic feedback on volume change
-- Sync arc value with HA volume attribute
+- Sync slider value with HA volume attribute
 - Add mute button/gesture
 - Color-code volume level (red at high volume)
+- Add volume icon (speaker) above/below slider
