@@ -57,7 +57,7 @@ This update addresses several UI/UX improvements based on user feedback for Ball
 **Change**: Added a half-circle arc volume slider on the right edge of the media screen.
 
 **Implementation**:
-- Arc positioned at CENTER_RIGHT with x: 0, y: 0
+- Arc positioned at RIGHT_MID with x: 0, y: 0
 - Width: 80, Height: 240 (spans full screen height)
 - Arc angles: 135° to 45° (creates right-side half-circle)
 - Arc width: 12px with orange indicator (matches brightness slider color)

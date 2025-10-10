@@ -35,7 +35,7 @@ Legend:
 | Property | Value | Description |
 |----------|-------|-------------|
 | **ID** | `media_volume_arc` | ESPHome component ID |
-| **Position** | CENTER_RIGHT | Aligned to right edge, vertically centered |
+| **Position** | RIGHT_MID | Aligned to right edge, vertically centered |
 | **Offset** | x: 0, y: 0 | No offset from edge |
 | **Size** | 80 x 240 | Width: 80px, Height: full screen |
 | **Range** | 0 - 100 | Internal value (converted to 0.0-1.0 for HA) |
