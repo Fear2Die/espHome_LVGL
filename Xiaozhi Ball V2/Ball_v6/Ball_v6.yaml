@@ -335,17 +335,27 @@ touchscreen:
             // Store touch start position for swipe detection
             id(swipe_start_x) = touch.x;
             id(swipe_start_y) = touch.y;
+            // Also initialize end position in case on_update doesn't fire
+            id(swipe_end_x) = touch.x;
+            id(swipe_end_y) = touch.y;
         - binary_sensor.template.publish:
             id: touch_input
             state: ON
+    on_update:
+      then:
+        - lambda: |-
+            // Continuously update current touch position while touching
+            // The 'touches' variable is available in on_update
+            if (!touches.empty()) {
+              id(swipe_end_x) = touches[0].x;
+              id(swipe_end_y) = touches[0].y;
+            }
     on_release:
       then:
         - lambda: |-
-            // Store release position
-            id(swipe_end_x) = touch.x;
-            id(swipe_end_y) = touch.y;
-        - lambda: |-
             // Detect swipe gestures (horizontal swipes only for page navigation)
+            // Note: touch coordinates are NOT available in on_release
+            // We use the last stored position from on_update
             int dx = id(swipe_end_x) - id(swipe_start_x);
             int dy = id(swipe_end_y) - id(swipe_start_y);
             
