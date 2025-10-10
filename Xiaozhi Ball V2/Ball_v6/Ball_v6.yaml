@@ -249,9 +249,12 @@ sensor:
       - lvgl.label.update:
           id: weather_temp_label
           text: !lambda |-
+            if (isnan(x)) {
+              return std::string("--°");
+            }
             char buf[20];
             snprintf(buf, sizeof(buf), "%.0f°", (int)x);
-            return buf;
+            return std::string(buf);
 
   # Weather humidity sensor
   - platform: homeassistant
@@ -262,9 +265,12 @@ sensor:
       - lvgl.label.update:
           id: weather_humidity_value
           text: !lambda |-
+            if (isnan(x)) {
+              return std::string("--%");
+            }
             char buf[20];
             snprintf(buf, sizeof(buf), "%.0f%%", (int)x);
-            return buf;
+            return std::string(buf);
 
 time:
   - platform: homeassistant
@@ -1143,8 +1149,10 @@ text_sensor:
           if (x.length() > 0 && x[0] == '/') {
             auto url = "http://homeassistant.local:8123" + x;
             id(album_art_image).set_url(url.c_str());
+            id(album_art_image).update();
           } else if (x.length() > 0) {
             id(album_art_image).set_url(x.c_str());
+            id(album_art_image).update();
           }
 
 spi:
@@ -1367,29 +1375,23 @@ lvgl:
                   text_font: montserrat_12
                   long_mode: SCROLL_CIRCULAR
               
-              # Volume Control - Half circle arc on right edge
-              - arc:
-                  id: media_volume_arc
-                  align: RIGHT_MID
-                  x: 0
+              # Volume Control - Vertical slider on left edge
+              - slider:
+                  id: media_volume_slider
+                  align: LEFT_MID
+                  x: 15
                   y: 0
-                  width: 80
-                  height: 240
+                  width: 15
+                  height: 200
                   min_value: 0
                   max_value: 100
                   value: 50
-                  start_angle: 135
-                  end_angle: 45
-                  arc_width: 12
-                  arc_color: 0x2A2A2A
-                  bg_opa: TRANSP
-                  adjustable: true
+                  bg_color: 0x2A2A2A
                   indicator:
-                    arc_width: 12
-                    arc_color: 0xFFB800
+                    bg_color: 0xFFB800
                   knob:
                     bg_color: 0xFFFFFF
-                    radius: 8
+                    radius: 10
                   on_press:
                     - lambda: 'id(slider_interaction) = true;'
                   on_release:
