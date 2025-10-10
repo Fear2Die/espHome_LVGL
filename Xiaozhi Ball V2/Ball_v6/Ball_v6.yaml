@@ -296,16 +296,16 @@ sensor:
           if (std::isnan(x)) return 0.0;
           return x;
     on_value:
-      - lambda: |-
-          // Update progress arc when position changes
-          float position = x;
-          float duration = id(ha_media_duration).state;
-          if (duration > 0 && !std::isnan(position) && !std::isnan(duration)) {
-            float progress = (position / duration) * 100.0;
-            id(media_progress_arc).set_value(progress);
-          } else {
-            id(media_progress_arc).set_value(0);
-          }
+      - lvgl.arc.update:
+          id: media_progress_arc
+          value: !lambda |-
+            float position = x;
+            float duration = id(ha_media_duration).state;
+            if (duration > 0 && !std::isnan(position) && !std::isnan(duration)) {
+              return (position / duration) * 100.0;
+            } else {
+              return 0;
+            }
 
   # Media player duration sensor
   - platform: homeassistant
@@ -317,16 +317,16 @@ sensor:
           if (std::isnan(x)) return 100.0;
           return x;
     on_value:
-      - lambda: |-
-          // Update progress arc when duration or position changes
-          float position = id(ha_media_position).state;
-          float duration = x;
-          if (duration > 0 && !std::isnan(position) && !std::isnan(duration)) {
-            float progress = (position / duration) * 100.0;
-            id(media_progress_arc).set_value(progress);
-          } else {
-            id(media_progress_arc).set_value(0);
-          }
+      - lvgl.arc.update:
+          id: media_progress_arc
+          value: !lambda |-
+            float position = id(ha_media_position).state;
+            float duration = x;
+            if (duration > 0 && !std::isnan(position) && !std::isnan(duration)) {
+              return (position / duration) * 100.0;
+            } else {
+              return 0;
+            }
 
 time:
   - platform: homeassistant
