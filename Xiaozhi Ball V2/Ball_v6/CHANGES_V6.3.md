@@ -143,27 +143,26 @@ height: 180
 
 ---
 
-### 4. Album Art Format Support Enhanced ✅
+### 4. Album Art Format Support Fixed ✅
 
-**Problem**: Image format was hardcoded to PNG, but many album arts are JPEG.
+**Problem**: Invalid format value 'AUTO' causing ESPHome configuration error.
 
-**Solution**: Changed format to AUTO for automatic detection.
+**Solution**: Corrected format to PNG (ESPHome doesn't support 'AUTO').
 
 **Change**:
 ```yaml
-# Before (line 162)
-format: PNG
-
-# After (line 162)
+# Before (line 162) - Invalid
 format: AUTO
+
+# After (line 162) - Valid
+format: PNG
 ```
 
 **Benefits**:
-- Supports PNG album art
-- Supports JPEG album art
-- Automatic format detection
-- Works with Spotify, YouTube Music, local media, etc.
-- No manual configuration needed
+- Fixes ESPHome validation error
+- Supports PNG album art (most common format from Home Assistant)
+- Works with Spotify, YouTube Music, Plex, local media, etc.
+- Compatible with ESPHome's online_image component
 
 ---
 

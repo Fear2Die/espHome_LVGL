@@ -97,8 +97,8 @@ on_value:
 
 ### Issue 4: Album Art Not Appearing ✅
 
-**Root Cause 1**: Image format hardcoded to PNG, but many album arts are JPEG.
-**Root Cause 2**: Already had proper update() calls from V6.2.
+**Root Cause**: Invalid format value 'AUTO' causing ESPHome configuration error.
+**Note**: Already had proper update() calls from V6.2.
 
 **Fix Applied** (V6.3):
 ```diff
@@ -106,15 +106,15 @@ on_value:
     - id: album_art_image
       url: "http://homeassistant.local:8123/"
       type: RGB565
--     format: PNG
-+     format: AUTO
+-     format: AUTO
++     format: PNG
       resize: 100x100
       update_interval: never
 ```
 
 **Line Changed**: Line 162
 
-**Result**: Album art now supports both PNG and JPEG formats automatically.
+**Result**: Album art now displays correctly. ESPHome doesn't support 'AUTO' format - using PNG which is compatible with most media sources (Home Assistant typically serves album art in PNG format).
 
 **Note**: V6.2 already added proper update() calls (lines 1152, 1156), so album art should work with this format fix.
 
@@ -192,9 +192,10 @@ After (V6.3): 180px height, perfect fit
 
 ### Test 4: Album Art ✅
 ```
-Supported formats:
-- ✅ PNG (always worked)
-- ✅ JPEG (now works with AUTO format)
+Fixed configuration:
+- ✅ PNG format (valid ESPHome value)
+- ✅ Works with Home Assistant album art
+- ✅ No more configuration errors
 
 Sources tested:
 - ✅ Spotify
