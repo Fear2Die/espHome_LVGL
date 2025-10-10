@@ -37,10 +37,20 @@ Ball V6 is a major feature update that implements high-priority suggestions from
 **Technical Implementation:**
 ```yaml
 touchscreen:
+  on_touch:
+    - lambda: |-
+        id(swipe_start_x) = touch.x;
+        id(swipe_start_y) = touch.y;
+  on_update:
+    - lambda: |-
+        if (!touches.empty()) {
+          id(swipe_end_x) = touches[0].x;
+          id(swipe_end_y) = touches[0].y;
+        }
   on_release:
     - lambda: |-
-        int dx = touch.x - id(swipe_start_x);
-        int dy = touch.y - id(swipe_start_y);
+        int dx = id(swipe_end_x) - id(swipe_start_x);
+        int dy = id(swipe_end_y) - id(swipe_start_y);
         
         if (abs(dx) > 50 && abs(dx) > abs(dy) * 1.5) {
           // Navigate based on swipe direction
@@ -181,6 +191,14 @@ globals:
     type: int
     restore_value: no
     
+  - id: swipe_end_x
+    type: int
+    restore_value: no
+    
+  - id: swipe_end_y
+    type: int
+    restore_value: no
+    
   - id: current_page_index
     type: int
     restore_value: no
@@ -210,9 +228,10 @@ select:
 
 **Touchscreen:**
 - Added swipe detection logic
-- Stores touch start position
-- Calculates swipe distance and direction
-- Triggers page navigation on release
+- Stores touch start position in `on_touch`
+- Tracks current position in `on_update`
+- Calculates swipe distance and direction in `on_release`
+- Triggers page navigation based on swipe gesture
 
 **LVGL Widgets:**
 - Added arc widgets for brightness and volume
