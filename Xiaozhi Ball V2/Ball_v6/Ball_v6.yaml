@@ -232,6 +232,10 @@ sensor:
     id: ha_weather_temperature
     entity_id: ${weather_entity}
     attribute: temperature
+    filters:
+      - lambda: |-
+          if (std::isnan(x)) return 0.0;
+          return x;
     on_value:
       - lvgl.label.update:
           id: weather_temp_label
@@ -248,6 +252,10 @@ sensor:
     id: ha_weather_humidity
     entity_id: ${weather_entity}
     attribute: humidity
+    filters:
+      - lambda: |-
+          if (std::isnan(x)) return 0.0;
+          return x;
     on_value:
       - lvgl.label.update:
           id: weather_humidity_value
