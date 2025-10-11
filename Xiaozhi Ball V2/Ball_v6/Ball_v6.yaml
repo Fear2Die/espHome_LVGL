@@ -25,15 +25,6 @@ substitutions:
   # Weather entity - your weather integration
   weather_entity: "weather.YOUR_WEATHER_ENTITY"  # Example: weather.home or weather.forecast_home
 
-  # Home Assistant connection settings for album art
-  # Base URL of your Home Assistant instance
-  ha_base_url: "http://homeassistant.local:8123"  # Example: http://192.168.1.100:8123 or https://your-ha.duckdns.org
-  
-  # Long-lived access token for album art authentication (OPTIONAL - improves reliability)
-  # Generate token: Profile → Long-Lived Access Tokens → Create Token
-  # Leave empty ("") if you don't need authentication or if your HA is on local network without auth
-  ha_token: ""  # Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-
 ##############################################################################################################################################
 
 ## SETTINGS ##################################################################################################################################
@@ -158,19 +149,6 @@ wifi:
     - script.execute: draw_display
 
 captive_portal:
-
-# HTTP Request component for fetching media album art
-http_request:
-  timeout: 10s
-
-# Online image component for media player album art
-online_image:
-  - id: album_art_image
-    url: "${ha_base_url}/"
-    type: RGB565
-    format: PNG
-    resize: 100x100
-    update_interval: never
 
 button:
   - platform: factory_reset
@@ -345,10 +323,21 @@ sensor:
               return 0;
             }
 
+  # Media player position updated at timestamp sensor
+  - platform: homeassistant
+    id: ha_media_position_updated_at
+    entity_id: ${media_player_entity}
+    attribute: media_position_updated_at
+    filters:
+      - lambda: |-
+          if (std::isnan(x)) return 0.0;
+          return x;
+
 time:
   - platform: homeassistant
     id: ha_time
     on_time:
+      # Update clock every minute
       - seconds: 0
         minutes: '*'
         then:
@@ -359,6 +348,44 @@ time:
                 auto time = id(ha_time).now();
                 snprintf(buf, sizeof(buf), "%02d:%02d", time.hour, time.minute);
                 return buf;
+      
+      # Update progress arc every second for real-time animation
+      - seconds: '*'
+        then:
+          - lvgl.arc.update:
+              id: media_progress_arc
+              value: !lambda |-
+                // Get base position and other values
+                float base_position = id(ha_media_position).state;
+                float duration = id(ha_media_duration).state;
+                float updated_at = id(ha_media_position_updated_at).state;
+                
+                // Check if media is playing
+                std::string state = id(ha_media_state).state;
+                bool is_playing = (state == "playing");
+                
+                // Calculate real-time position
+                float current_position = base_position;
+                if (is_playing && !std::isnan(updated_at) && updated_at > 0) {
+                  // Get current timestamp and calculate elapsed time
+                  auto now = id(ha_time).now();
+                  if (now.is_valid()) {
+                    time_t current_timestamp = now.timestamp;
+                    float elapsed = current_timestamp - updated_at;
+                    current_position = base_position + elapsed;
+                  }
+                }
+                
+                // Calculate and return percentage
+                if (duration > 0 && !std::isnan(current_position) && !std::isnan(duration)) {
+                  float percentage = (current_position / duration) * 100.0;
+                  // Clamp to 0-100 range
+                  if (percentage < 0) percentage = 0;
+                  if (percentage > 100) percentage = 100;
+                  return percentage;
+                } else {
+                  return 0;
+                }
 
 touchscreen:
   - platform: cst816
@@ -1216,37 +1243,6 @@ text_sensor:
           id: media_artist_label
           text: !lambda 'return x.c_str();'
 
-  # Media player album art sensor
-  - platform: homeassistant
-    id: ha_media_picture
-    entity_id: ${media_player_entity}
-    attribute: entity_picture
-    on_value:
-      - lambda: |-
-          if (x.length() > 0 && x[0] == '/') {
-            // Construct full URL with token authentication
-            std::string base_url = "${ha_base_url}";
-            std::string token = "${ha_token}";
-            std::string url = base_url + x;
-            
-            // Add token to URL if provided
-            if (!token.empty()) {
-              // Check if URL already has query parameters
-              if (url.find('?') != std::string::npos) {
-                url += "&access_token=" + token;
-              } else {
-                url += "?access_token=" + token;
-              }
-            }
-            
-            id(album_art_image).set_url(url.c_str());
-            id(album_art_image).update();
-          } else if (x.length() > 0) {
-            // External URL (Spotify, etc.) - use as-is
-            id(album_art_image).set_url(x.c_str());
-            id(album_art_image).update();
-          }
-
 spi:
   - id: spi_bus
     clk_pin: GPIO${spi_clk_pin}
@@ -1416,17 +1412,7 @@ lvgl:
             border_width: 0
             pad_all: 0
             widgets:
-              # Album Art - centered with rounded corners
-              - image:
-                  id: album_art_display
-                  src: album_art_image
-                  align: TOP_MID
-                  y: 30
-                  radius: 10
-                  border_width: 2
-                  border_color: 0x666666
-              
-              # Progress Arc - around album art
+              # Progress Arc - centered
               - arc:
                   id: media_progress_arc
                   align: TOP_MID
@@ -1436,11 +1422,11 @@ lvgl:
                   min_value: 0
                   max_value: 100
                   value: 0
-                  arc_width: 4
+                  arc_width: 6
                   arc_color: 0x2A2A2A
                   adjustable: false
                   indicator:
-                    arc_width: 4
+                    arc_width: 6
                     arc_color: 0x1DB954
               
               # Song Title

@@ -216,28 +216,17 @@ void create_screen_media() {
             }
         }
         {
-            // Album Art Image - centered at top with rounded corners
-            lv_obj_t *obj = lv_img_create(parent_obj);
-            objects.media_img = obj;
-            lv_obj_set_pos(obj, 70, 30);
-            lv_obj_set_size(obj, 100, 100);
-            lv_obj_set_style_radius(obj, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_clip_corner(obj, true, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_border_width(obj, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_border_color(obj, lv_color_hex(0xff666666), LV_PART_MAIN | LV_STATE_DEFAULT);
-        }
-        {
-            // Progress arc - subtle and elegant
+            // Progress arc - centered and prominent (no album art)
             lv_obj_t *obj = lv_arc_create(parent_obj);
             objects.media_arc = obj;
             lv_obj_set_pos(obj, 60, 20);
             lv_obj_set_size(obj, 120, 120);
             lv_arc_set_range(obj, 0, 100);
-            lv_arc_set_value(obj, 25);
+            lv_arc_set_value(obj, 0);
             lv_arc_set_bg_angles(obj, 0, 360);
-            lv_obj_set_style_arc_width(obj, 4, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_arc_width(obj, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_arc_color(obj, lv_color_hex(0xff2a2a2a), LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_arc_width(obj, 4, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+            lv_obj_set_style_arc_width(obj, 6, LV_PART_INDICATOR | LV_STATE_DEFAULT);
             lv_obj_set_style_arc_color(obj, lv_color_hex(0xff1db954), LV_PART_INDICATOR | LV_STATE_DEFAULT);
             lv_obj_remove_style(obj, NULL, LV_PART_KNOB);
             lv_obj_clear_flag(obj, LV_OBJ_FLAG_CLICKABLE);
