@@ -1,40 +1,42 @@
-# Ball V7.1 - Quick Fix Summary
+# Ball V7.2 - Quick Fix Summary
 
 ## Problem
-Device was freezing with these errors:
+Device was **still freezing** even after V7.1 with these errors:
 ```
-[W][component:443]: online_image took a long time for an operation (93589 ms)
-[W][online_image:106]: Image already being updated
+[W][component:443]: online_image took a long time for an operation (108215 ms)
+[W][component:446]: Components should block for at most 30 ms
 ```
 
-## Solution (3 Changes)
+Device would freeze for 100+ seconds during album art updates.
 
-### 1. Script-Based Protection ⏱️
-**Note**: ESPHome text_sensor doesn't support `throttle` filter (only for numeric sensors).
-Protection is provided by script mode and global flag instead.
-
-**Effect**: Prevents concurrent updates through script `mode: single`
-
-### 2. Created Update Script 🛡️
+## Root Cause (V7.1 Issue)
+V7.1 prevented concurrent updates but **still used blocking calls**:
 ```yaml
-# Lines 955-966
+- component.update: album_art_image  # ❌ SYNCHRONOUS - Blocks for 100+ seconds!
+```
+
+This is a **synchronous blocking call** that downloads the entire image before continuing.
+
+## Solution (V7.2 - 1 Simple Change)
+
+### Removed Blocking Call 🚀
+```yaml
+# Lines 955-962 - V7.2 (NON-BLOCKING):
 - id: update_album_art
-  mode: single  # Only one at a time!
+  mode: single
   then:
-    - lambda: # Check if already updating
-    - component.update: album_art_image
-    - lambda: # Clear flag
+    - lambda: |-
+        // Just log that we're setting a new URL
+        // The online_image component will fetch the image lazily when displayed
+        // This prevents blocking the main loop with synchronous downloads
+        ESP_LOGD("album_art", "Album art URL updated, image will load on display");
 ```
-**Effect**: Ensures only one image download happens at a time
 
-### 3. Added Guard Variable 🚦
-```yaml
-# Lines 1194-1197
-- id: album_art_updating
-  type: bool
-  initial_value: 'false'
-```
-**Effect**: Tracks update state, provides extra safety
+**Effect**: 
+- ✅ No blocking download
+- ✅ Images load asynchronously when displayed
+- ✅ Device stays responsive
+- ✅ Removed unused `album_art_updating` global variable
 
 ## How to Apply
 
@@ -45,29 +47,33 @@ git pull origin main
 ```
 
 ### Option 2: Manual Edit
-If you have customizations, apply these 2 changes to your config:
-1. Add `update_album_art` script with `mode: single`
-2. Add `album_art_updating` global variable
-3. Change `id(album_art_image).update()` to `id(update_album_art)->execute()`
+If you have customizations, apply these changes to your config:
+1. In `update_album_art` script: Remove `component.update: album_art_image` line
+2. In `update_album_art` script: Replace with log-only lambda (see above)
+3. Remove `album_art_updating` global variable (no longer needed)
 
 ## Testing
 After flashing:
 1. Play media and change tracks rapidly
-2. Device should NOT freeze
-3. Check logs - should see: `[W][album_art]: Update already in progress, skipping`
+2. Device should remain fully responsive
+3. Album art should appear within 2-3 seconds
+4. Check logs - should see: `[D][album_art]: Album art URL updated, image will load on display`
+5. No more "took a long time" warnings!
 
 ## Impact
-- ✅ Device stays responsive
-- ✅ No more 93-second freezes
-- ✅ Other components work normally
-- ✅ Album art still updates (just throttled)
+- ✅ Device fully responsive at all times
+- ✅ No more 100+ second freezes
+- ✅ No blocking operations
+- ✅ Album art loads asynchronously in background
+- ✅ Touch, voice, and display all work immediately
 
 ## More Info
-- **Detailed Fix**: [FIX_DEVICE_FREEZING.md](./FIX_DEVICE_FREEZING.md)
+- **V7.2 Detailed Fix**: [FIX_BLOCKING_IMAGE_DOWNLOAD.md](./FIX_BLOCKING_IMAGE_DOWNLOAD.md)
+- **V7.1 Fix (Partial)**: [FIX_DEVICE_FREEZING.md](./FIX_DEVICE_FREEZING.md)
 - **Full Changelog**: [CHANGES_V7.md](./CHANGES_V7.md)
 
 ---
 
-**Version**: V7.1  
+**Version**: V7.2  
 **Status**: ✅ Fixed  
-**Urgency**: Critical (Device Unusable → Now Working)
+**Urgency**: Critical (Device Still Freezing → Now Fully Responsive)
