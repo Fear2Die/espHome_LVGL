@@ -100,7 +100,7 @@ When media changes:
 - **Album Art**: 100×100 pixels, centered at y: 30
 - **Progress Arc**: 120×120 pixels, centered at y: 20, wraps around album art
 - **Styling**: 10px rounded corners, 2px gray border (#666666)
-- **Format**: RGB565 (memory efficient), auto-detected format (PNG/JPEG)
+- **Format**: RGB565 (memory efficient), JPEG format (most common for streaming services)
 
 ---
 
@@ -189,7 +189,7 @@ online_image:
   - id: album_art_image
     url: "http://homeassistant.local:8123/"
     type: RGB565
-    format: PNG
+    format: JPEG
     resize: 100x100
     update_interval: never
 ```
