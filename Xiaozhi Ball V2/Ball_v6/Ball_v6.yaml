@@ -299,6 +299,12 @@ sensor:
           if (std::isnan(x)) return 0.0;
           return x;
     on_value:
+      - lambda: |-
+          // Record timestamp when position is updated from HA
+          auto now = id(ha_time).now();
+          if (now.is_valid()) {
+            id(media_position_updated_at) = now.timestamp;
+          }
       - lvgl.arc.update:
           id: media_progress_arc
           value: !lambda |-
@@ -346,6 +352,43 @@ time:
                 auto time = id(ha_time).now();
                 snprintf(buf, sizeof(buf), "%02d:%02d", time.hour, time.minute);
                 return buf;
+      # Update progress arc every second for real-time animation
+      - seconds: '*'
+        then:
+          - lvgl.arc.update:
+              id: media_progress_arc
+              value: !lambda |-
+                // Get base position and other values
+                float base_position = id(ha_media_position).state;
+                float duration = id(ha_media_duration).state;
+                time_t updated_at = id(media_position_updated_at);
+                
+                // Check if media is playing
+                std::string state = id(ha_media_state).state;
+                bool is_playing = (state == "playing");
+                
+                // Calculate real-time position
+                float current_position = base_position;
+                if (is_playing && updated_at > 0) {
+                  // Get current timestamp and calculate elapsed time
+                  auto now = id(ha_time).now();
+                  if (now.is_valid()) {
+                    time_t current_timestamp = now.timestamp;
+                    float elapsed = current_timestamp - updated_at;
+                    current_position = base_position + elapsed;
+                  }
+                }
+                
+                // Calculate and return percentage
+                if (duration > 0 && !std::isnan(current_position) && !std::isnan(duration)) {
+                  float percentage = (current_position / duration) * 100.0;
+                  // Clamp to 0-100 range
+                  if (percentage < 0) percentage = 0;
+                  if (percentage > 100) percentage = 100;
+                  return percentage;
+                } else {
+                  return 0;
+                }
 
 touchscreen:
   - platform: cst816
@@ -1122,6 +1165,10 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  - id: media_position_updated_at
+    type: time_t
+    restore_value: no
+    initial_value: '0'
 
 text_sensor:
   - id: text_request
