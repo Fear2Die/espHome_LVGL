@@ -12,6 +12,7 @@
 - [Ball_v7.yaml](Ball_v7.yaml) - Main ESPHome configuration file
 
 ### Fixes and Updates
+- [FIX_THROTTLE_ERROR.md](FIX_THROTTLE_ERROR.md) - **NEW**: Throttle filter error fix (Critical)
 - [QUICK_FIX_SUMMARY.md](QUICK_FIX_SUMMARY.md) - Quick reference for V7.1 fix
 - [FIX_DEVICE_FREEZING.md](FIX_DEVICE_FREEZING.md) - V7.1 device freezing fix (Critical)
 - [FIX_FLOW_DIAGRAM.md](FIX_FLOW_DIAGRAM.md) - Visual flow diagram of the fix
@@ -39,6 +40,7 @@ Ball v7/
 ├── CHANGES_V7.md              # Detailed changelog and technical details
 ├── VISUAL_LAYOUT.md           # Complete visual layout guide
 ├── QUICK_FIX_SUMMARY.md       # V7.1 quick fix reference
+├── FIX_THROTTLE_ERROR.md      # Throttle filter error fix (NEW)
 ├── FIX_DEVICE_FREEZING.md     # V7.1 device freezing fix (detailed)
 ├── FIX_FLOW_DIAGRAM.md        # V7.1 fix flow diagram (visual)
 ├── FIX_ALBUM_ART_FORMAT.md    # JPEG format fix
@@ -167,13 +169,14 @@ See [CHANGES_V7.md](CHANGES_V7.md) for implementation details
 
 ## Version History
 
-### V7.1 (2025-10-11) - Device Freezing Fix
-- **Critical Fix**: Resolved device freezing during album art downloads
-- Added 5-second throttle to prevent rapid updates
+### V7.1 (2025-10-11) - Critical Fixes
+- **Critical Fix**: Removed unsupported throttle filter from text_sensor
+- **Fix**: Resolved device freezing during album art downloads
 - Implemented single-mode script for concurrent update protection
 - Added global guard variable for extra safety
 - Device now remains responsive during image operations
-- See [FIX_DEVICE_FREEZING.md](FIX_DEVICE_FREEZING.md) for details
+- Configuration now compiles successfully with ESPHome 2025.5.0+
+- See [FIX_THROTTLE_ERROR.md](FIX_THROTTLE_ERROR.md) and [FIX_DEVICE_FREEZING.md](FIX_DEVICE_FREEZING.md)
 
 ### V7.0 (2025-10-11)
 - Initial release with album art support

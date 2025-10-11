@@ -9,13 +9,11 @@ Device was freezing with these errors:
 
 ## Solution (3 Changes)
 
-### 1. Added Throttle Filter ⏱️
-```yaml
-# Line ~1291
-filters:
-  - throttle: 5s
-```
-**Effect**: Prevents rapid-fire updates, max 1 update per 5 seconds
+### 1. Script-Based Protection ⏱️
+**Note**: ESPHome text_sensor doesn't support `throttle` filter (only for numeric sensors).
+Protection is provided by script mode and global flag instead.
+
+**Effect**: Prevents concurrent updates through script `mode: single`
 
 ### 2. Created Update Script 🛡️
 ```yaml
@@ -47,11 +45,10 @@ git pull origin main
 ```
 
 ### Option 2: Manual Edit
-If you have customizations, apply these 3 changes to your config:
-1. Add throttle filter to `ha_album_art_url` sensor
-2. Add `update_album_art` script
-3. Add `album_art_updating` global variable
-4. Change `id(album_art_image).update()` to `id(update_album_art)->execute()`
+If you have customizations, apply these 2 changes to your config:
+1. Add `update_album_art` script with `mode: single`
+2. Add `album_art_updating` global variable
+3. Change `id(album_art_image).update()` to `id(update_album_art)->execute()`
 
 ## Testing
 After flashing:

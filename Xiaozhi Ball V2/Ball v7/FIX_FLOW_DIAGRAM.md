@@ -44,15 +44,8 @@ Home Assistant Template Sensor Updates
          ↓
 ESPHome Receives New URL (ha_album_art_url)
          ↓
-╔══════════════════════════════════════╗
-║  🛡️ THROTTLE FILTER (5 seconds)     ║
-║                                      ║
-║  ⏱️  Check: Has 5 seconds passed?   ║
-║      No  → DROP UPDATE ✋            ║
-║      Yes → PASS THROUGH ✓           ║
-╚══════════════════════════════════════╝
-         ↓ (if passed throttle)
 on_value Lambda Triggered
+(Note: text_sensor doesn't support throttle filter)
          ↓
 set_url() Called
          ↓
@@ -107,17 +100,14 @@ set_url() Called
 
 ```
 ┌─────────────────────────────────────┐
-│ Layer 1: Throttle Filter            │  🛡️ 1st Defense
-│ └─ Max 1 update per 5 seconds       │
-│                                      │
-│ Layer 2: Script mode:single          │  🛡️ 2nd Defense  
+│ Layer 1: Script mode:single          │  🛡️ 1st Defense  
 │ └─ Only 1 script instance runs       │
 │                                      │
-│ Layer 3: Global Flag Check           │  🛡️ 3rd Defense
+│ Layer 2: Global Flag Check           │  🛡️ 2nd Defense
 │ └─ Manual check & early return      │
 └─────────────────────────────────────┘
          ↓
-    💪 Triple Protection!
+    💪 Double Protection!
     Device stays responsive
 ```
 
@@ -155,9 +145,9 @@ During this time:
 ✅ All components work
 
 Another track change at 2s:
-2s     ⚠️ Throttled! (Only 2s passed, need 5s)
+2s     ⚠️ Script already running (mode: single)
        ↓
-       Ignored ✋ No problem!
+       Skipped by ESPHome ✋ No problem!
 ```
 
 ## Rapid Track Changes Example
@@ -170,12 +160,12 @@ Time    Event                          V7.0 Result           V7.1 Result
 0s      Track 1                        Download starts       Download starts
                                        (blocks 93s!)         (flags set)
                                                              
-1s      Track 2 (user changed)         ❌ Tries again        ⚠️ Throttled
-                                       "Already updating"    "Wait 5s"
+1s      Track 2 (user changed)         ❌ Tries again        ⚠️ Script blocked
+                                       "Already updating"    mode:single
                                        Confusion!            Skipped safely
                                                              
-2s      Track 3 (user changed)         ❌ Tries again        ⚠️ Throttled
-                                       "Already updating"    "Wait 5s"  
+2s      Track 3 (user changed)         ❌ Tries again        ⚠️ Script blocked
+                                       "Already updating"    mode:single  
                                        More confusion!       Skipped safely
                                                              
 3s      Track 4 (user changed)         ❌ Still blocked      ⚠️ Throttled
@@ -202,7 +192,7 @@ Time    Event                          V7.0 Result           V7.1 Result
 
 ### Concurrent Protection
 - **V7.0**: None (multiple simultaneous attempts)
-- **V7.1**: Triple-layer protection
+- **V7.1**: Double-layer protection (script mode + global flag)
 
 ### User Experience
 - **V7.0**: Device freezes, must reboot 💥
@@ -210,17 +200,9 @@ Time    Event                          V7.0 Result           V7.1 Result
 
 ## Technical Advantages
 
-### 1. Throttle Filter (5s)
-```yaml
-filters:
-  - throttle: 5s
-```
-- ✅ Built-in ESPHome feature
-- ✅ Efficient (no CPU overhead)
-- ✅ Handles rapid sensor updates
-- ✅ Configurable (can adjust if needed)
+**Note**: Text sensors don't support throttle filter in ESPHome. Protection is achieved through script mode and global flag.
 
-### 2. Script mode:single
+### 1. Script mode:single
 ```yaml
 mode: single
 ```
@@ -229,7 +211,7 @@ mode: single
 - ✅ No race conditions
 - ✅ Thread-safe
 
-### 3. Global Flag
+### 2. Global Flag
 ```yaml
 id: album_art_updating
 type: bool
@@ -243,13 +225,13 @@ type: bool
 
 **Problem**: Device freezing due to 93-second blocking operations
 
-**Root Cause**: No throttling + concurrent updates
+**Root Cause**: Concurrent updates without protection
 
-**Solution**: Triple-layer protection system
+**Solution**: Double-layer protection system (script mode + global flag)
 
 **Result**: Device stays responsive, updates work smoothly
 
-**Trade-off**: Album art updates max every 5 seconds (reasonable for track changes)
+**Trade-off**: Only one update at a time (reasonable for album art downloads)
 
 ---
 

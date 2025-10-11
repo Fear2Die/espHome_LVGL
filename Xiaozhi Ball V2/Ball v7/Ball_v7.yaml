@@ -4,10 +4,10 @@ substitutions:
 
 ## v7.1 Ball V7 - Album Art Edition ######################################################################################################
 ## NEW in V7.1 (Device Freezing Fix):
-## - THROTTLING: 5-second throttle on album art sensor to prevent rapid updates
 ## - CONCURRENT PROTECTION: Single-mode script ensures only one update at a time
 ## - GUARD VARIABLE: Prevents multiple simultaneous image downloads
 ## - STABILITY: Device no longer freezes during long image operations
+## Note: text_sensor doesn't support throttle filter (only for numeric sensors)
 ## NEW in V7.0:
 ## - ALBUM ART DISPLAY: Album cover art displayed inside progress arc on media page
 ## - HA TEMPLATE SENSORS: Uses Home Assistant template sensors for album art URL, title, and artist
@@ -1293,8 +1293,6 @@ text_sensor:
   - platform: homeassistant
     id: ha_album_art_url
     entity_id: sensor.now_playing_album_art
-    filters:
-      - throttle: 5s
     on_value:
       - lambda: |-
           if (x.length() > 0) {
