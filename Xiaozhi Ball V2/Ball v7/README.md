@@ -189,7 +189,7 @@ online_image:
   - id: album_art_image
     url: "http://homeassistant.local:8123/"
     type: RGB565
-    format: AUTO
+    format: PNG
     resize: 100x100
     update_interval: never
 ```

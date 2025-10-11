@@ -56,7 +56,7 @@ online_image:
   - id: album_art_image
     url: "http://homeassistant.local:8123/"
     type: RGB565
-    format: AUTO
+    format: PNG
     resize: 100x100
     update_interval: never
 ```
@@ -64,7 +64,7 @@ online_image:
 **Why:**
 - Downloads and caches album art images
 - RGB565 format for memory efficiency on ESP32
-- AUTO format detection (PNG/JPEG/etc.)
+- PNG format (most common for album art)
 - 100×100 resolution fits perfectly inside 120×120 progress arc
 - Manual update (triggered by sensor changes)
 
