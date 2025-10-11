@@ -25,6 +25,15 @@ substitutions:
   # Weather entity - your weather integration
   weather_entity: "weather.YOUR_WEATHER_ENTITY"  # Example: weather.home or weather.forecast_home
 
+  # Home Assistant connection settings for album art
+  # Base URL of your Home Assistant instance
+  ha_base_url: "http://homeassistant.local:8123"  # Example: http://192.168.1.100:8123 or https://your-ha.duckdns.org
+  
+  # Long-lived access token for album art authentication (OPTIONAL - improves reliability)
+  # Generate token: Profile → Long-Lived Access Tokens → Create Token
+  # Leave empty ("") if you don't need authentication or if your HA is on local network without auth
+  ha_token: ""  # Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
 ##############################################################################################################################################
 
 ## SETTINGS ##################################################################################################################################
@@ -157,7 +166,7 @@ http_request:
 # Online image component for media player album art
 online_image:
   - id: album_art_image
-    url: "http://homeassistant.local:8123/"
+    url: "${ha_base_url}/"
     type: RGB565
     format: PNG
     resize: 100x100
@@ -1215,10 +1224,25 @@ text_sensor:
     on_value:
       - lambda: |-
           if (x.length() > 0 && x[0] == '/') {
-            auto url = "http://homeassistant.local:8123" + x;
+            // Construct full URL with token authentication
+            std::string base_url = "${ha_base_url}";
+            std::string token = "${ha_token}";
+            std::string url = base_url + x;
+            
+            // Add token to URL if provided
+            if (!token.empty()) {
+              // Check if URL already has query parameters
+              if (url.find('?') != std::string::npos) {
+                url += "&access_token=" + token;
+              } else {
+                url += "?access_token=" + token;
+              }
+            }
+            
             id(album_art_image).set_url(url.c_str());
             id(album_art_image).update();
           } else if (x.length() > 0) {
+            // External URL (Spotify, etc.) - use as-is
             id(album_art_image).set_url(x.c_str());
             id(album_art_image).update();
           }
