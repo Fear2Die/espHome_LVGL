@@ -66,6 +66,14 @@ Welcome to Ball V6 - the gesture-based smart display interface!
 - **[VISUAL_SUMMARY.md](VISUAL_SUMMARY.md)** - Visual overview of V6
 - **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Quick command reference
 
+### Troubleshooting & Error Guides
+
+- **[TROUBLESHOOTING_LIGHT_ERRORS.md](TROUBLESHOOTING_LIGHT_ERRORS.md)** - Comprehensive light entity error troubleshooting
+- **[QUICK_REFERENCE_NONE_ERROR.md](QUICK_REFERENCE_NONE_ERROR.md)** - Quick reference for "Can't convert 'None' to number!" errors
+- **[QUICK_FIX_V6.9.md](QUICK_FIX_V6.9.md)** - Quick fixes for common errors
+- **[FIX_NONE_CONVERSION_ERROR.md](FIX_NONE_CONVERSION_ERROR.md)** - Technical details on None conversion error fix
+- **[FILTER_STATUS.md](FILTER_STATUS.md)** - Current status of all sensor filters
+
 ## 🚀 Getting Started Path
 
 ### Path 1: New Installation
@@ -206,6 +214,9 @@ Total: ~1.5-2 hours
 | ...understand the code? | README_YAML.md | Technical Implementation |
 | ...see what changed? | VISUAL_COMPARISON_V6.md | Entire document |
 | ...troubleshoot issues? | QUICK_START_V6.md | Troubleshooting |
+| ...fix "None to number" errors? | TROUBLESHOOTING_LIGHT_ERRORS.md | Entire document |
+| ...fix light entity errors? | TROUBLESHOOTING_LIGHT_ERRORS.md | Entity-specific guides |
+| ...check filter status? | FILTER_STATUS.md | Protected Sensors |
 
 ### "What is..."
 
@@ -273,12 +284,24 @@ Total: ~1.5-2 hours
 ### Use Case: Troubleshooting
 **Goal:** Fix a specific issue  
 **Documents:**
-1. QUICK_START_V6.md → "Troubleshooting"
-2. MIGRATION_GUIDE_V5_TO_V6.md → "Troubleshooting Migration Issues"
-3. README_YAML.md → "Common Issues & Solutions"
-4. Check ESPHome logs
+1. QUICK_REFERENCE_NONE_ERROR.md → Quick diagnosis for "None to number" errors
+2. TROUBLESHOOTING_LIGHT_ERRORS.md → Detailed light entity troubleshooting
+3. QUICK_START_V6.md → "Troubleshooting"
+4. MIGRATION_GUIDE_V5_TO_V6.md → "Troubleshooting Migration Issues"
+5. README_YAML.md → "Common Issues & Solutions"
+6. Check ESPHome logs
 
 **Time:** Varies (5-30 minutes)
+
+### Use Case: Fixing "Can't convert 'None' to number!" Error
+**Goal:** Eliminate conversion warnings  
+**Documents:**
+1. QUICK_REFERENCE_NONE_ERROR.md (30-second diagnosis)
+2. TROUBLESHOOTING_LIGHT_ERRORS.md (if light entity)
+3. QUICK_FIX_V6.9.md (if weather/media entity)
+4. FILTER_STATUS.md (verify filters)
+
+**Time:** 5-15 minutes
 
 ### Use Case: Understanding Code
 **Goal:** Learn how it works  
