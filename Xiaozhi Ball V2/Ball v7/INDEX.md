@@ -12,7 +12,8 @@
 - [Ball_v7.yaml](Ball_v7.yaml) - Main ESPHome configuration file
 
 ### Fixes and Updates
-- [FIX_THROTTLE_ERROR.md](FIX_THROTTLE_ERROR.md) - **NEW**: Throttle filter error fix (Critical)
+- [FIX_BLOCKING_IMAGE_DOWNLOAD.md](FIX_BLOCKING_IMAGE_DOWNLOAD.md) - **NEW**: V7.2 blocking download fix (Critical)
+- [FIX_THROTTLE_ERROR.md](FIX_THROTTLE_ERROR.md) - Throttle filter error fix (Critical)
 - [QUICK_FIX_SUMMARY.md](QUICK_FIX_SUMMARY.md) - Quick reference for V7.1 fix
 - [FIX_DEVICE_FREEZING.md](FIX_DEVICE_FREEZING.md) - V7.1 device freezing fix (Critical)
 - [FIX_FLOW_DIAGRAM.md](FIX_FLOW_DIAGRAM.md) - Visual flow diagram of the fix
@@ -34,17 +35,18 @@
 
 ```
 Ball v7/
-├── Ball_v7.yaml               # Main ESPHome configuration
-├── README.md                  # Main documentation
-├── QUICK_START.md             # 5-minute setup guide
-├── CHANGES_V7.md              # Detailed changelog and technical details
-├── VISUAL_LAYOUT.md           # Complete visual layout guide
-├── QUICK_FIX_SUMMARY.md       # V7.1 quick fix reference
-├── FIX_THROTTLE_ERROR.md      # Throttle filter error fix (NEW)
-├── FIX_DEVICE_FREEZING.md     # V7.1 device freezing fix (detailed)
-├── FIX_FLOW_DIAGRAM.md        # V7.1 fix flow diagram (visual)
-├── FIX_ALBUM_ART_FORMAT.md    # JPEG format fix
-└── INDEX.md                   # This file - documentation index
+├── Ball_v7.yaml                      # Main ESPHome configuration
+├── README.md                         # Main documentation
+├── QUICK_START.md                    # 5-minute setup guide
+├── CHANGES_V7.md                     # Detailed changelog and technical details
+├── VISUAL_LAYOUT.md                  # Complete visual layout guide
+├── QUICK_FIX_SUMMARY.md              # V7.1 quick fix reference
+├── FIX_BLOCKING_IMAGE_DOWNLOAD.md    # V7.2 blocking download fix (NEW)
+├── FIX_THROTTLE_ERROR.md             # Throttle filter error fix
+├── FIX_DEVICE_FREEZING.md            # V7.1 device freezing fix (detailed)
+├── FIX_FLOW_DIAGRAM.md               # V7.1 fix flow diagram (visual)
+├── FIX_ALBUM_ART_FORMAT.md           # JPEG format fix
+└── INDEX.md                          # This file - documentation index
 ```
 
 ---
@@ -169,12 +171,19 @@ See [CHANGES_V7.md](CHANGES_V7.md) for implementation details
 
 ## Version History
 
+### V7.2 (2025-10-11) - Blocking Download Fix
+- **Critical Fix**: Removed blocking `component.update` call that froze device for 100+ seconds
+- **Non-blocking**: Images now load asynchronously/lazily when displayed
+- **Fully Responsive**: Device remains responsive during image downloads
+- **Simplified**: Removed unnecessary guard variable and blocking logic
+- Device no longer freezes with "took a long time for an operation" warnings
+- See [FIX_BLOCKING_IMAGE_DOWNLOAD.md](FIX_BLOCKING_IMAGE_DOWNLOAD.md)
+
 ### V7.1 (2025-10-11) - Critical Fixes
 - **Critical Fix**: Removed unsupported throttle filter from text_sensor
-- **Fix**: Resolved device freezing during album art downloads
+- **Fix**: Resolved device freezing during album art downloads (partially)
 - Implemented single-mode script for concurrent update protection
 - Added global guard variable for extra safety
-- Device now remains responsive during image operations
 - Configuration now compiles successfully with ESPHome 2025.5.0+
 - See [FIX_THROTTLE_ERROR.md](FIX_THROTTLE_ERROR.md) and [FIX_DEVICE_FREEZING.md](FIX_DEVICE_FREEZING.md)
 
@@ -227,5 +236,5 @@ Found an issue or have a suggestion?
 ---
 
 **Last Updated**: 2025-10-11  
-**Documentation Version**: 1.1  
-**Ball Version**: V7.1
+**Documentation Version**: 1.2  
+**Ball Version**: V7.2

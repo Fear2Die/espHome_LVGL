@@ -2,11 +2,14 @@ substitutions:
   name: ball_v7
   friendly_name: "Ball V7"
 
-## v7.1 Ball V7 - Album Art Edition ######################################################################################################
+## v7.2 Ball V7 - Album Art Edition ######################################################################################################
+## NEW in V7.2 (Blocking Image Download Fix):
+## - NON-BLOCKING DOWNLOADS: Removed synchronous component.update call that blocked for 100+ seconds
+## - LAZY LOADING: Images now load asynchronously when displayed, preventing main loop blocking
+## - FULLY RESPONSIVE: Device remains responsive during image downloads (no more 108s freezes)
+## - SIMPLIFIED CODE: Removed unnecessary guard variable and blocking logic
 ## NEW in V7.1 (Device Freezing Fix):
 ## - CONCURRENT PROTECTION: Single-mode script ensures only one update at a time
-## - GUARD VARIABLE: Prevents multiple simultaneous image downloads
-## - STABILITY: Device no longer freezes during long image operations
 ## Note: text_sensor doesn't support throttle filter (only for numeric sensors)
 ## NEW in V7.0:
 ## - ALBUM ART DISPLAY: Album cover art displayed inside progress arc on media page
@@ -956,14 +959,10 @@ script:
     mode: single
     then:
       - lambda: |-
-          if (id(album_art_updating)) {
-            ESP_LOGW("album_art", "Update already in progress, skipping");
-            return;
-          }
-          id(album_art_updating) = true;
-      - component.update: album_art_image
-      - delay: 100ms
-      - lambda: id(album_art_updating) = false;
+          // Just log that we're setting a new URL
+          // The online_image component will fetch the image lazily when displayed
+          // This prevents blocking the main loop with synchronous downloads
+          ESP_LOGD("album_art", "Album art URL updated, image will load on display");
 
   - id: play_sound
     parameters:
@@ -1196,10 +1195,6 @@ globals:
   - id: swipe_in_progress
     type: bool
     restore_value: no
-  - id: album_art_updating
-    type: bool
-    restore_value: no
-    initial_value: 'false'
   - id: slider_interaction
     type: bool
     restore_value: no

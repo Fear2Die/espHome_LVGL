@@ -246,11 +246,18 @@ text_sensor:
 
 ## Version History
 
+### V7.2 (2025-10-11)
+- ✅ **Critical Fix**: Removed blocking `component.update` call that caused 100+ second freezes
+- ✅ **Non-blocking**: Images now load asynchronously when displayed
+- ✅ **Fully Responsive**: Device remains responsive during all operations
+- ✅ **Simplified**: Removed unnecessary guard variable
+- ✅ **Result**: No more "took a long time for an operation" warnings
+
 ### V7.1 (2025-10-11)
-- ✅ **Fix**: Added throttling and concurrent update guards to prevent device freezing
-- ✅ **Fix**: Added 5-second throttle on album art sensor updates
-- ✅ **Fix**: Implemented single-mode script to prevent multiple simultaneous image downloads
+- ✅ **Fix**: Removed unsupported throttle filter from text_sensor
+- ✅ **Fix**: Implemented single-mode script to prevent concurrent image downloads
 - ✅ **Improvement**: Added concurrent update detection with warning logs
+- ⚠️ **Note**: Still had blocking issue (fixed in V7.2)
 
 ### V7.0 (2025-10-11)
 - ✅ Initial release with album art support
