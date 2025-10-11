@@ -56,7 +56,7 @@ online_image:
   - id: album_art_image
     url: "http://homeassistant.local:8123/"
     type: RGB565
-    format: PNG
+    format: JPEG
     resize: 100x100
     update_interval: never
 ```
@@ -64,7 +64,7 @@ online_image:
 **Why:**
 - Downloads and caches album art images
 - RGB565 format for memory efficiency on ESP32
-- PNG format (most common for album art)
+- JPEG format (most common for album art from streaming services like Spotify, Apple Music)
 - 100×100 resolution fits perfectly inside 120×120 progress arc
 - Manual update (triggered by sensor changes)
 
@@ -249,7 +249,7 @@ template:
 ### Memory Usage
 - RGB565 format: 20KB per 100×100 image (vs 30KB for RGB888)
 - Image caching: Reduces network requests
-- Auto format detection: Handles PNG/JPEG efficiently
+- JPEG format: Efficiently handles images from most streaming services
 
 ### Network Usage
 - Images fetched only on track change
