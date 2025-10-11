@@ -2,8 +2,13 @@ substitutions:
   name: ball_v7
   friendly_name: "Ball V7"
 
-## v7.0 Ball V7 - Album Art Edition ######################################################################################################
-## NEW in V7:
+## v7.1 Ball V7 - Album Art Edition ######################################################################################################
+## NEW in V7.1 (Device Freezing Fix):
+## - THROTTLING: 5-second throttle on album art sensor to prevent rapid updates
+## - CONCURRENT PROTECTION: Single-mode script ensures only one update at a time
+## - GUARD VARIABLE: Prevents multiple simultaneous image downloads
+## - STABILITY: Device no longer freezes during long image operations
+## NEW in V7.0:
 ## - ALBUM ART DISPLAY: Album cover art displayed inside progress arc on media page
 ## - HA TEMPLATE SENSORS: Uses Home Assistant template sensors for album art URL, title, and artist
 ## - OPTIMIZED IMAGE SIZE: Album art sized to fit perfectly within the progress arc
@@ -947,6 +952,19 @@ script:
           else:
             - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
 
+  - id: update_album_art
+    mode: single
+    then:
+      - lambda: |-
+          if (id(album_art_updating)) {
+            ESP_LOGW("album_art", "Update already in progress, skipping");
+            return;
+          }
+          id(album_art_updating) = true;
+      - component.update: album_art_image
+      - delay: 100ms
+      - lambda: id(album_art_updating) = false;
+
   - id: play_sound
     parameters:
       priority: bool
@@ -1178,6 +1196,9 @@ globals:
   - id: swipe_in_progress
     type: bool
     restore_value: no
+  - id: album_art_updating
+    type: bool
+    restore_value: no
     initial_value: 'false'
   - id: slider_interaction
     type: bool
@@ -1272,12 +1293,14 @@ text_sensor:
   - platform: homeassistant
     id: ha_album_art_url
     entity_id: sensor.now_playing_album_art
+    filters:
+      - throttle: 5s
     on_value:
       - lambda: |-
           if (x.length() > 0) {
             ESP_LOGD("album_art", "Album art URL: %s", x.c_str());
             id(album_art_image).set_url(x.c_str());
-            id(album_art_image).update();
+            id(update_album_art)->execute();
           } else {
             ESP_LOGD("album_art", "No album art available");
           }

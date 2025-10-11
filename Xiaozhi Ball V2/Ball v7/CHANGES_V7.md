@@ -1,5 +1,28 @@
 # Ball V7 Changes - Album Art Edition
 
+## Version History
+
+### V7.1 (2025-10-11) - Device Freezing Fix ✅
+**Critical Fix**: Resolved device freezing issue during album art downloads
+
+**Issues Fixed:**
+- Device freezing during image downloads (93+ seconds)
+- "Components should block for at most 30 ms" warnings
+- "Image already being updated" errors
+- API operation delays (1760ms)
+
+**Changes:**
+1. Added 5-second throttle filter to `ha_album_art_url` text sensor
+2. Created `update_album_art` script with `mode: single` 
+3. Added `album_art_updating` global guard variable
+4. Modified lambda to use guarded script instead of direct update
+
+**See**: [FIX_DEVICE_FREEZING.md](./FIX_DEVICE_FREEZING.md) for detailed information
+
+---
+
+### V7.0 (2025-10-11) - Initial Release ✅
+
 ## Problem Statement (From User)
 
 > Make a new folder called ball v7 and a yaml file that will be the upgrade of the ball v6. The upgrade will consist of adding a album cover in the media page. the cover art will be placed inside the arc, make sure to make the image as visible as possible considering the size restraints of the arc.
