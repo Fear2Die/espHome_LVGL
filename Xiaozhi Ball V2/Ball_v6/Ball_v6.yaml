@@ -278,6 +278,7 @@ sensor:
     entity_id: ${media_player_entity}
     attribute: volume_level
     filters:
+      - throttle: 200ms  # Throttle updates to prevent rapid bouncing
       - lambda: |-
           if (std::isnan(x)) return 0.5;
           return x;
@@ -290,6 +291,7 @@ sensor:
             - lvgl.slider.update:
                 id: media_volume_slider
                 value: !lambda 'return x * 100.0;'
+            - delay: 100ms  # Small delay to ensure slider update completes
             - lambda: 'id(updating_volume_from_ha) = false;'
 
   # Media player position sensor
@@ -334,16 +336,6 @@ sensor:
               return 0;
             }
 
-  # Media player position updated at timestamp
-  - platform: homeassistant
-    id: ha_media_position_updated_at
-    entity_id: ${media_player_entity}
-    attribute: media_position_updated_at
-    filters:
-      - lambda: |-
-          if (std::isnan(x)) return 0.0;
-          return x;
-
 time:
   - platform: homeassistant
     id: ha_time
@@ -358,43 +350,6 @@ time:
                 auto time = id(ha_time).now();
                 snprintf(buf, sizeof(buf), "%02d:%02d", time.hour, time.minute);
                 return buf;
-      # Update progress arc every second when media is playing
-      - seconds: '*'
-        then:
-          - lvgl.arc.update:
-              id: media_progress_arc
-              value: !lambda |-
-                // Get base position and other values
-                float base_position = id(ha_media_position).state;
-                float duration = id(ha_media_duration).state;
-                float updated_at = id(ha_media_position_updated_at).state;
-                
-                // Check if media is playing
-                std::string state = id(ha_media_state).state;
-                bool is_playing = (state == "playing");
-                
-                // Calculate real-time position
-                float current_position = base_position;
-                if (is_playing && !std::isnan(updated_at) && updated_at > 0) {
-                  // Get current timestamp and calculate elapsed time
-                  auto now = id(ha_time).now();
-                  if (now.is_valid()) {
-                    time_t current_timestamp = now.timestamp;
-                    float elapsed = current_timestamp - updated_at;
-                    current_position = base_position + elapsed;
-                  }
-                }
-                
-                // Calculate and return percentage
-                if (duration > 0 && !std::isnan(current_position) && !std::isnan(duration)) {
-                  float percentage = (current_position / duration) * 100.0;
-                  // Clamp to 0-100 range
-                  if (percentage < 0) percentage = 0;
-                  if (percentage > 100) percentage = 100;
-                  return percentage;
-                } else {
-                  return 0;
-                }
 
 touchscreen:
   - platform: cst816
@@ -1509,7 +1464,6 @@ lvgl:
                     - lambda: 'id(slider_interaction) = true;'
                   on_release:
                     - lambda: 'id(slider_interaction) = false;'
-                  on_value:
                     - if:
                         condition:
                           lambda: 'return !id(updating_volume_from_ha);'
@@ -1518,7 +1472,7 @@ lvgl:
                               action: media_player.volume_set
                               data:
                                 entity_id: ${media_player_entity}
-                                volume_level: !lambda 'return x / 100.0;'
+                                volume_level: !lambda 'return id(media_volume_slider).get_value() / 100.0;'
               
               # Control Buttons - Previous
               - button:
