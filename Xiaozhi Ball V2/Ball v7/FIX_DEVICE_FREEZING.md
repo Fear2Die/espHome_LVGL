@@ -26,24 +26,24 @@ Ball Assistant: [W][component:446]: Components should block for at most 30 ms
 
 ## Solution
 
-### 1. Added Throttling (5-second filter)
+### 1. Throttling via Script Protection
+
+**Note:** ESPHome text_sensor platform does not support the `throttle` filter (only available for numeric sensors). Instead, throttling is achieved through script mode and global flag protection.
 
 ```yaml
 text_sensor:
   - platform: homeassistant
     id: ha_album_art_url
     entity_id: sensor.now_playing_album_art
-    filters:
-      - throttle: 5s  # NEW: Prevents rapid-fire updates
     on_value:
-      # ...
+      # Calls guarded script instead of direct update
 ```
 
-**Why 5 seconds?**
-- Prevents multiple updates when track metadata arrives in bursts
-- Allows reasonable update frequency for track changes
+**Protection mechanism:**
+- Script `mode: single` prevents concurrent execution
+- Global `album_art_updating` flag provides additional protection
+- Together these prevent rapid-fire updates and ensure stability
 - Gives previous downloads time to complete
-- Balances responsiveness with stability
 
 ### 2. Created Guarded Update Script
 
