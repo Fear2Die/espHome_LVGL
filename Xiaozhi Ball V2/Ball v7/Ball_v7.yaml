@@ -2,8 +2,13 @@ substitutions:
   name: ball_v7
   friendly_name: "Ball V7"
 
-## v7.0 Ball V7 - Album Art Edition ######################################################################################################
-## NEW in V7:
+## v7.1 Ball V7 - Album Art Edition ######################################################################################################
+## NEW in V7.1 (Device Freezing Fix):
+## - THROTTLING: 5-second throttle on album art sensor to prevent rapid updates
+## - CONCURRENT PROTECTION: Single-mode script ensures only one update at a time
+## - GUARD VARIABLE: Prevents multiple simultaneous image downloads
+## - STABILITY: Device no longer freezes during long image operations
+## NEW in V7.0:
 ## - ALBUM ART DISPLAY: Album cover art displayed inside progress arc on media page
 ## - HA TEMPLATE SENSORS: Uses Home Assistant template sensors for album art URL, title, and artist
 ## - OPTIMIZED IMAGE SIZE: Album art sized to fit perfectly within the progress arc

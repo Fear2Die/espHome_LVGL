@@ -158,6 +158,25 @@ The image is resized to 100×100 pixels to fit within the circular display and p
 - Display performance
 - Visual balance with other UI elements
 
+### Device Freezing or Long Operation Warnings
+
+If you see warnings like:
+```
+[W][component:443]: online_image took a long time for an operation (93589 ms)
+[W][component:446]: Components should block for at most 30 ms
+[W][online_image:106]: Image already being updated
+```
+
+**This has been fixed in the latest version** with the following improvements:
+- **5-second throttle filter** on album art sensor prevents rapid-fire updates
+- **Single-mode script** ensures only one image update runs at a time
+- **Concurrent update guard** prevents multiple simultaneous download attempts
+
+**Solution:**
+1. Pull the latest Ball_v7.yaml from the repository
+2. Re-flash your device with the updated configuration
+3. Device should no longer freeze during album art downloads
+
 ---
 
 ## Migration from Ball V6
@@ -226,6 +245,12 @@ text_sensor:
 ---
 
 ## Version History
+
+### V7.1 (2025-10-11)
+- ✅ **Fix**: Added throttling and concurrent update guards to prevent device freezing
+- ✅ **Fix**: Added 5-second throttle on album art sensor updates
+- ✅ **Fix**: Implemented single-mode script to prevent multiple simultaneous image downloads
+- ✅ **Improvement**: Added concurrent update detection with warning logs
 
 ### V7.0 (2025-10-11)
 - ✅ Initial release with album art support

@@ -11,6 +11,10 @@
 - [VISUAL_LAYOUT.md](VISUAL_LAYOUT.md) - Complete visual layout guide with diagrams
 - [Ball_v7.yaml](Ball_v7.yaml) - Main ESPHome configuration file
 
+### Fixes and Updates
+- [FIX_DEVICE_FREEZING.md](FIX_DEVICE_FREEZING.md) - V7.1 device freezing fix (Critical)
+- [FIX_ALBUM_ART_FORMAT.md](FIX_ALBUM_ART_FORMAT.md) - JPEG format fix
+
 ---
 
 ## What's New in Ball V7?
@@ -27,12 +31,14 @@
 
 ```
 Ball v7/
-├── Ball_v7.yaml          # Main ESPHome configuration (1774 lines)
-├── README.md             # Main documentation
-├── QUICK_START.md        # 5-minute setup guide
-├── CHANGES_V7.md         # Detailed changelog and technical details
-├── VISUAL_LAYOUT.md      # Complete visual layout guide
-└── INDEX.md              # This file - documentation index
+├── Ball_v7.yaml               # Main ESPHome configuration
+├── README.md                  # Main documentation
+├── QUICK_START.md             # 5-minute setup guide
+├── CHANGES_V7.md              # Detailed changelog and technical details
+├── VISUAL_LAYOUT.md           # Complete visual layout guide
+├── FIX_DEVICE_FREEZING.md     # V7.1 device freezing fix
+├── FIX_ALBUM_ART_FORMAT.md    # JPEG format fix
+└── INDEX.md                   # This file - documentation index
 ```
 
 ---
@@ -157,6 +163,14 @@ See [CHANGES_V7.md](CHANGES_V7.md) for implementation details
 
 ## Version History
 
+### V7.1 (2025-10-11) - Device Freezing Fix
+- **Critical Fix**: Resolved device freezing during album art downloads
+- Added 5-second throttle to prevent rapid updates
+- Implemented single-mode script for concurrent update protection
+- Added global guard variable for extra safety
+- Device now remains responsive during image operations
+- See [FIX_DEVICE_FREEZING.md](FIX_DEVICE_FREEZING.md) for details
+
 ### V7.0 (2025-10-11)
 - Initial release with album art support
 - Home Assistant template sensor integration
@@ -206,5 +220,5 @@ Found an issue or have a suggestion?
 ---
 
 **Last Updated**: 2025-10-11  
-**Documentation Version**: 1.0  
-**Ball Version**: V7.0
+**Documentation Version**: 1.1  
+**Ball Version**: V7.1
