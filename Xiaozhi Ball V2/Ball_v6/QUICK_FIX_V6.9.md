@@ -99,6 +99,43 @@ These are **normal** and **not fixed by this update**:
 
 ### If you still see "Can't convert 'None' to number!"
 
+First, **identify which entity** is causing the problem by looking at the warning message:
+```
+[W][homeassistant.sensor:015]: 'light.living_room_lamp': Can't convert...
+                                ^^^^^^^^^^^^^^^^^^^^^ This is the problematic entity
+```
+
+#### If the error mentions a **light entity** (e.g., `light.living_room_lamp`):
+
+1. **Verify the entity exists in Home Assistant**:
+   - Open Home Assistant → Developer Tools → States
+   - Search for your light entity (e.g., `light.living_room_lamp`)
+   - If not found, check the entity ID is correct in your substitutions
+
+2. **Check if your light supports brightness**:
+   - Not all lights have a brightness attribute (e.g., simple on/off lights)
+   - In Developer Tools → States, click on your light entity
+   - Look for a `brightness` attribute in the attributes section
+   - If no brightness attribute: Your light doesn't support dimming
+
+3. **If using Ball V6.0 or later**: The light brightness filter is already included. Make sure you have the latest `Ball_v6.yaml` file.
+
+4. **If using an older version**: Add this filter to the `ha_light_brightness` sensor (around line 215):
+   ```yaml
+   - platform: homeassistant
+     id: ha_light_brightness
+     entity_id: ${light_entity}
+     attribute: brightness
+     filters:                          # ← ADD THESE 4 LINES IF MISSING
+       - lambda: |-                    # ←
+           if (std::isnan(x)) return 0.0;  # ←
+           return x;                    # ←
+     on_value:
+       # ... rest stays the same
+   ```
+
+#### If the error mentions a **weather entity** (e.g., `weather.home`):
+
 1. **Check your entity IDs**: Make sure they're correct in substitutions
    ```yaml
    substitutions:
@@ -106,15 +143,15 @@ These are **normal** and **not fixed by this update**:
      weather_entity: "weather.YOUR_ACTUAL_WEATHER" # ← Update this
    ```
 
-2. **Verify you applied the filters**: Check both weather sensors have the filters
+2. **Verify you applied the filters**: Check both weather sensors have the filters (see Manual Patch above)
 
-3. **Check the entity name in the warning**: The warning shows which entity is problematic
-   ```
-   [W][homeassistant.sensor:015]: 'weather.home': Can't convert...
-                                   ^^^^^^^^^^ This is the problematic entity
-   ```
+3. **Make sure entity exists in Home Assistant**: Open HA Developer Tools → States and search for your entity
 
-4. **Make sure entity exists in Home Assistant**: Open HA Developer Tools → States and search for your entity
+#### If the error mentions a **media player entity**:
+
+1. **Verify the entity exists and is available in Home Assistant**
+2. **Check the media player supports the required attributes**: `volume_level`, `media_position`, `media_duration`
+3. **If using Ball V6.0 or later**: Filters are already included for all media sensors
 
 ## 💡 Pro Tip
 

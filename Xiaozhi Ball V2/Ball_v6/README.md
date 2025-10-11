@@ -169,6 +169,46 @@ Ball V6 follows modern UI/UX principles:
 4. **Optimized for Circular Display**: Elements positioned to avoid edge cutoff
 5. **Smooth Interactions**: Animations provide feedback and continuity
 
+## Troubleshooting
+
+### Common Issues
+
+#### "Can't convert 'None' to number!" Error
+
+If you see warnings like:
+```
+[W][homeassistant.sensor:015]: 'light.living_room_lamp': Can't convert 'None' to number!
+```
+
+**Quick Fixes:**
+1. **Check entity exists in Home Assistant** (Developer Tools → States)
+2. **Verify your entity IDs** in the substitutions section
+3. **For light entities**: Ensure your light supports brightness (not all lights do)
+4. **Update to latest version**: Ball V6 includes filters for all sensors
+
+**Detailed Help:**
+- **TROUBLESHOOTING_LIGHT_ERRORS.md**: Comprehensive guide for light-related errors
+- **QUICK_FIX_V6.9.md**: Quick fixes for all None conversion errors
+- **FIX_NONE_CONVERSION_ERROR.md**: Technical details about the fix
+
+#### Other Common Warnings
+
+These are **normal** and can be safely ignored:
+- `[E][component:332]: i2s_audio.microphone cleared Error flag` - Hardware/driver message
+- `[W][micro_wake_word:353]: Wake word detection already running` - Informational only
+- `[W][component:443]: lvgl took a long time` - Performance info during animations
+
+### Documentation Index
+
+- **README.md**: Overview and features (this file)
+- **QUICK_START_V6.md**: Getting started guide
+- **QUICK_FIX_V6.9.md**: Quick fixes for common errors
+- **TROUBLESHOOTING_LIGHT_ERRORS.md**: Light entity error troubleshooting
+- **MIGRATION_GUIDE_V5_TO_V6.md**: Upgrading from V5.x
+- **LAYOUT.md**: UI layout details
+- **CHANGES_V6.9.md**: Latest changes and improvements
+- **FIX_NONE_CONVERSION_ERROR.md**: Technical details on None handling
+
 ## Future Enhancements
 
 Potential improvements for future versions:
