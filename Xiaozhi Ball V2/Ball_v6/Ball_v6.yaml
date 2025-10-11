@@ -1472,7 +1472,7 @@ lvgl:
                               action: media_player.volume_set
                               data:
                                 entity_id: ${media_player_entity}
-                                volume_level: !lambda 'return id(media_volume_slider).get_value() / 100.0;'
+                                volume_level: !lambda 'return lv_slider_get_value(id(media_volume_slider)) / 100.0;'
               
               # Control Buttons - Previous
               - button:
