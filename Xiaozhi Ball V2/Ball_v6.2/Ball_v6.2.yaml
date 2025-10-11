@@ -24,6 +24,14 @@ substitutions:
   
   # Weather entity - your weather integration
   weather_entity: "weather.YOUR_WEATHER_ENTITY"  # Example: weather.home or weather.forecast_home
+  
+  # Home Assistant long-lived access token for album art authentication
+  # IMPORTANT: Get this token from Home Assistant:
+  #   1. Profile icon (bottom left) → Long-Lived Access Tokens
+  #   2. Click "Create Token", name it "ESPHome Display"
+  #   3. Copy the token and paste it below (replace YOUR_TOKEN_HERE)
+  # Without this token, album art from protected endpoints won't load (401 Unauthorized)
+  ha_token: "YOUR_TOKEN_HERE"
 
 ##############################################################################################################################################
 
@@ -1272,12 +1280,18 @@ text_sensor:
     attribute: entity_picture
     on_value:
       - lambda: |-
-          if (x.length() > 0 && x[0] == '/') {
-            auto url = "http://homeassistant.local:8123" + x;
+          std::string token = "${ha_token}";
+          if (x.length() > 0) {
+            std::string url;
+            if (x[0] == '/') {
+              url = "http://homeassistant.local:8123" + x + "?authSig=" + token;
+            } else {
+              url = x + "?authSig=" + token;
+            }
             id(album_art_image).set_url(url.c_str());
             id(album_art_image).update();
-          } else if (x.length() > 0) {
-            id(album_art_image).set_url(x.c_str());
+          } else {
+            id(album_art_image).set_url("");
             id(album_art_image).update();
           }
 

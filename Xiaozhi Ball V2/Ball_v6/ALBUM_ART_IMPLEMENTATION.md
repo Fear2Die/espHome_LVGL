@@ -5,6 +5,31 @@ Ball V6 implements album art display using the standard Home Assistant media pla
 
 ## Implementation Details
 
+### Authentication Requirement
+
+**IMPORTANT**: Home Assistant's album art endpoints (like `/api/media_player_proxy/...`) are protected and require authentication. Without a valid access token, ESPHome will receive **401 Unauthorized** responses and album art won't display.
+
+#### Setting Up Authentication Token
+
+1. **Create a Long-Lived Access Token in Home Assistant**:
+   - Click your **Profile icon** (bottom left in Home Assistant)
+   - Scroll to **Long-Lived Access Tokens**
+   - Click **Create Token**
+   - Name it `ESPHome Display` (or any name you prefer)
+   - **Copy the token immediately** (you won't see it again!)
+
+2. **Add Token to Configuration**:
+   - In `Ball_v6.yaml`, find the substitutions section at the top
+   - Replace `YOUR_TOKEN_HERE` with your actual token:
+   ```yaml
+   ha_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."  # Your actual token here
+   ```
+
+3. **How It Works**:
+   - The token is appended to image URLs as `?authSig=YOUR_TOKEN`
+   - This authenticates the ESPHome device with Home Assistant
+   - Album art images can now be fetched from protected endpoints
+
 ### Components Required
 
 1. **HTTP Request Component** (line 154-155)
@@ -30,7 +55,7 @@ Ball V6 implements album art display using the standard Home Assistant media pla
    - 100x100 resolution fits the circular display layout
    - Manual update triggered when media changes
 
-3. **Entity Picture Sensor** (line 1217-1231)
+3. **Entity Picture Sensor** (line 1256-1269)
    ```yaml
    - platform: homeassistant
      id: ha_media_picture
@@ -38,19 +63,27 @@ Ball V6 implements album art display using the standard Home Assistant media pla
      attribute: entity_picture
      on_value:
        - lambda: |-
-           if (x.length() > 0 && x[0] == '/') {
-             auto url = "http://homeassistant.local:8123" + x;
+           std::string token = "${ha_token}";
+           if (x.length() > 0) {
+             std::string url;
+             if (x[0] == '/') {
+               url = "http://homeassistant.local:8123" + x + "?authSig=" + token;
+             } else {
+               url = x + "?authSig=" + token;
+             }
              id(album_art_image).set_url(url.c_str());
              id(album_art_image).update();
-           } else if (x.length() > 0) {
-             id(album_art_image).set_url(x.c_str());
+           } else {
+             id(album_art_image).set_url("");
              id(album_art_image).update();
            }
    ```
    - Monitors the `entity_picture` attribute from the media player
    - Converts relative URLs (starting with `/`) to absolute URLs
+   - **Appends authentication token to all image URLs**
    - Handles both relative and absolute URL formats
    - Updates the image when media changes
+   - Clears image URL when no media is playing
 
 4. **Display Widget** (line 1403-1410)
    ```yaml
@@ -106,12 +139,26 @@ ESPHome media players and displays can fetch remote images using:
 ## Troubleshooting
 
 ### Album Art Not Displaying
-1. Check that your media player provides the `entity_picture` attribute
+1. **Check Authentication Token** (Most Common Issue!)
+   - Verify you've created a long-lived access token in Home Assistant
+   - Ensure the token is correctly copied into `ha_token` substitution
+   - Check ESPHome logs for "401 Unauthorized" errors
+   - If you see 401 errors, your token is missing or incorrect
+
+2. Check that your media player provides the `entity_picture` attribute
    - In Home Assistant: Developer Tools → States → Find your media player
    - Look for `entity_picture` in attributes
-2. Verify network connectivity between ESP32 and Home Assistant
-3. Check ESPHome logs for HTTP errors
+
+3. Verify network connectivity between ESP32 and Home Assistant
+   - Ping test from ESP32 to Home Assistant
+   - Check ESPHome logs for HTTP errors
+
 4. Ensure `homeassistant.local` resolves correctly (or use IP address)
+   - If `.local` doesn't work, update the URL to use your HA IP address:
+   ```yaml
+   # Change in the lambda function around line 1263
+   url = "http://192.168.1.100:8123" + x + "?authSig=" + token;
+   ```
 
 ### Slow Updates
 - First load may take 5-10 seconds (normal)

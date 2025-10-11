@@ -201,15 +201,39 @@ Most media_player integrations include these by default.
 
 ## Configuration Tips
 
+### Home Assistant Access Token (REQUIRED for Album Art!)
+
+**Album art won't display without this token!** Home Assistant's image endpoints require authentication.
+
+1. **Create Token in Home Assistant**:
+   - Click **Profile icon** (bottom left)
+   - Scroll to **Long-Lived Access Tokens**
+   - Click **Create Token**, name it `ESPHome Display`
+   - **Copy the token** (you won't see it again!)
+
+2. **Add Token to Config**:
+   ```yaml
+   # In substitutions section (top of file, around line 32)
+   ha_token: "YOUR_TOKEN_HERE"
+   
+   # Replace with your actual token:
+   ha_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+   ```
+
+3. **Security Note**:
+   - Keep this token secure - treat it like a password
+   - Don't share your configuration file with the token in it
+   - If compromised, revoke the token in Home Assistant and create a new one
+
 ### Custom Home Assistant URL
 If your HA isn't at `homeassistant.local:8123`:
 
 ```yaml
-# Find this line in text_sensor section (~line 1149)
-auto url = "http://homeassistant.local:8123" + x;
+# Find this line in text_sensor section (~line 1263)
+url = "http://homeassistant.local:8123" + x + "?authSig=" + token;
 
 # Change to your HA address:
-auto url = "http://192.168.1.100:8123" + x;
+url = "http://192.168.1.100:8123" + x + "?authSig=" + token;
 ```
 
 ### Different Media Player Entity
