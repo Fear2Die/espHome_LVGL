@@ -12,7 +12,9 @@
 - [Ball_v7.yaml](Ball_v7.yaml) - Main ESPHome configuration file
 
 ### Fixes and Updates
+- [QUICK_FIX_SUMMARY.md](QUICK_FIX_SUMMARY.md) - Quick reference for V7.1 fix
 - [FIX_DEVICE_FREEZING.md](FIX_DEVICE_FREEZING.md) - V7.1 device freezing fix (Critical)
+- [FIX_FLOW_DIAGRAM.md](FIX_FLOW_DIAGRAM.md) - Visual flow diagram of the fix
 - [FIX_ALBUM_ART_FORMAT.md](FIX_ALBUM_ART_FORMAT.md) - JPEG format fix
 
 ---
@@ -36,7 +38,9 @@ Ball v7/
 ├── QUICK_START.md             # 5-minute setup guide
 ├── CHANGES_V7.md              # Detailed changelog and technical details
 ├── VISUAL_LAYOUT.md           # Complete visual layout guide
-├── FIX_DEVICE_FREEZING.md     # V7.1 device freezing fix
+├── QUICK_FIX_SUMMARY.md       # V7.1 quick fix reference
+├── FIX_DEVICE_FREEZING.md     # V7.1 device freezing fix (detailed)
+├── FIX_FLOW_DIAGRAM.md        # V7.1 fix flow diagram (visual)
 ├── FIX_ALBUM_ART_FORMAT.md    # JPEG format fix
 └── INDEX.md                   # This file - documentation index
 ```
