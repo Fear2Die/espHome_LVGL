@@ -282,15 +282,13 @@ sensor:
           if (std::isnan(x)) return 0.5;
           return x;
     on_value:
-      - if:
-          condition:
-            lambda: 'return !id(slider_interaction);'  # Only update if user is not interacting
-          then:
-            - lambda: 'id(updating_volume_from_ha) = true;'
-            - lvgl.slider.update:
-                id: media_volume_slider
-                value: !lambda 'return x * 100.0;'
-            - lambda: 'id(updating_volume_from_ha) = false;'
+      # Fix for volume slider bouncing - use same pattern as light slider
+      # Set flag, update slider, clear flag - prevents feedback loop
+      - lambda: 'id(updating_volume_from_ha) = true;'
+      - lvgl.slider.update:
+          id: media_volume_slider
+          value: !lambda 'return x * 100.0;'
+      - lambda: 'id(updating_volume_from_ha) = false;'
 
   # Media player position sensor
   - platform: homeassistant
@@ -388,6 +386,21 @@ time:
                   float elapsed_seconds = (current_time - id(media_last_update_time)) / 1000.0;
                   // Add elapsed time to last known position
                   current_position = id(media_last_position) + elapsed_seconds;
+                  
+                  // Validation check: If elapsed time is > 5 seconds, check for drift
+                  // between calculated position and HA sensor position
+                  if (elapsed_seconds > 5.0) {
+                    float ha_position = id(ha_media_position).state;
+                    if (!std::isnan(ha_position)) {
+                      float drift = abs(current_position - ha_position);
+                      // If drift is more than 2 seconds, resync with HA position
+                      if (drift > 2.0) {
+                        current_position = ha_position;
+                        id(media_last_position) = ha_position;
+                        id(media_last_update_time) = current_time;
+                      }
+                    }
+                  }
                 }
                 
                 // Calculate and return percentage
@@ -400,6 +413,15 @@ time:
                 } else {
                   return 0;
                 }
+
+# INACTIVITY TIMEOUT: Automatically return to main screen after period of inactivity
+# Uncomment the interval section below to enable this feature
+# The check runs every 10 seconds and returns to main screen after 60 seconds of inactivity
+# Adjust the timing values in the check_inactivity script as needed
+# interval:
+#   - interval: 10s
+#     then:
+#       - script.execute: check_inactivity
 
 touchscreen:
   - platform: cst816
@@ -419,6 +441,9 @@ touchscreen:
               id(touch_start_x) = touch_point.value().x;
               id(touch_start_y) = touch_point.value().y;
               id(swipe_in_progress) = true;
+              // INACTIVITY TIMEOUT: Update last interaction time
+              // Uncomment the line below to track touch events for auto-return
+              // id(last_interaction_time) = millis();
             }
     on_release:
       then:
@@ -982,6 +1007,27 @@ script:
                   - lvgl.page.show: media_screen
                 else:
                   - lvgl.page.show: weather_screen
+  
+  # INACTIVITY TIMEOUT: Auto-return to main screen after period of inactivity
+  # Uncomment the script below to enable automatic return to main screen
+  # after 60 seconds of inactivity (no touch events)
+  # - id: check_inactivity
+  #   then:
+  #     - lambda: |-
+  #         // Check if on media or weather screen and if inactive for too long
+  #         int current_screen = id(current_screen_index);
+  #         if (current_screen != 0) {  // Not on main screen
+  #           unsigned long current_time = millis();
+  #           unsigned long inactive_time = current_time - id(last_interaction_time);
+  #           // 60 seconds = 60000 milliseconds (adjust as needed)
+  #           if (inactive_time > 60000) {
+  #             id(current_screen_index) = 0;
+  #           }
+  #         }
+  #     - script.execute:
+  #         id: navigate_to_screen
+  #         screen_index: !lambda 'return id(current_screen_index);'
+  #         direction: -1
 
 switch:
   - platform: template
@@ -1184,6 +1230,12 @@ globals:
     type: unsigned long
     restore_value: no
     initial_value: '0'
+  # INACTIVITY TIMEOUT: Track last interaction time for auto-return to main screen
+  # Uncomment to enable auto-return to main screen after inactivity
+  # - id: last_interaction_time
+  #   type: unsigned long
+  #   restore_value: no
+  #   initial_value: '0'
 
 text_sensor:
   - id: text_request
