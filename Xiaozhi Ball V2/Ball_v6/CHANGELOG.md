@@ -1,5 +1,41 @@
 # Ball V6 Changelog
 
+## Version 6.7 - Album Art Token Authentication (2025-10-11)
+
+### 🎉 New Features
+
+#### Album Art Token Authentication
+- **NEW**: Configurable Home Assistant base URL (`ha_base_url`)
+- **NEW**: Optional long-lived access token support (`ha_token`)
+- **ENHANCED**: Smart URL construction with automatic token injection
+- **IMPROVED**: Album art reliability for authenticated HA instances
+- **ADDED**: Support for both local and remote Home Assistant URLs
+
+### 📖 Documentation
+- **NEW**: ALBUM_ART_TOKEN_AUTH.md - Comprehensive token setup guide
+- **UPDATED**: README.md - Added configuration section with token parameters
+- **NEW**: CHANGES_V6.7.md - Detailed change log for this version
+
+### 🔧 Configuration Changes
+```yaml
+# NEW substitutions added:
+ha_base_url: "http://homeassistant.local:8123"  # Your HA URL
+ha_token: ""  # Optional: Long-lived access token
+```
+
+### ✅ Backward Compatibility
+- Default values match previous Ball V6 behavior
+- Existing configurations work without modification
+- Token is optional enhancement
+
+### 📊 Progress Arc Status
+- ✅ Real-time progress arc already implemented in Ball V6
+- ✅ Media position and duration sensors configured
+- ✅ Automatic updates as media plays
+- ✅ Green indicator arc (Spotify green: #1DB954)
+
+---
+
 ## Version 6.0 - Swipe Navigation Edition (2025-10-10)
 
 ### 🎉 Major Features

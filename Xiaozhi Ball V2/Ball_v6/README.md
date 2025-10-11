@@ -27,8 +27,8 @@ Ball V6 is a modern, gesture-based interface for the Xiaozhi Ball smart display,
 - Clean, minimalist design
 
 #### 2. Media Screen
-- Album art display with rounded corners
-- Circular progress indicator
+- Album art display with rounded corners and token authentication support
+- Real-time circular progress indicator showing playback position
 - Song title and artist with scrolling text
 - Three control buttons: Previous, Play/Pause, Next
 - Professional media player look
@@ -88,12 +88,33 @@ This is a UI component file (screens.c) that should be integrated into an ESPHom
 - Touch input device with gesture support
 - GC9A01A circular display (240x240)
 - ESPHome environment
+- Home Assistant instance with media player entities
+
+### Configuration
+
+Edit the entity configuration section at the top of `Ball_v6.yaml`:
+
+```yaml
+substitutions:
+  # Required: Your Home Assistant entities
+  light_entity: "light.YOUR_LIGHT_ENTITY"
+  media_player_entity: "media_player.YOUR_MEDIA_PLAYER_ENTITY"
+  weather_entity: "weather.YOUR_WEATHER_ENTITY"
+  
+  # Album Art Configuration
+  ha_base_url: "http://homeassistant.local:8123"  # Your HA URL
+  ha_token: ""  # Optional: Long-lived access token for authenticated access
+```
+
+For detailed album art setup with token authentication, see: **ALBUM_ART_TOKEN_AUTH.md**
 
 ### Integration Steps
 1. Copy `screens.c` to your project
 2. Ensure all header files are available (screens.h, ui.h, etc.)
-3. Call `create_screens()` during initialization
-4. Enable touch gesture detection in your LVGL configuration
+3. Configure your Home Assistant entities in `Ball_v6.yaml`
+4. (Optional) Generate and add long-lived access token for album art
+5. Call `create_screens()` during initialization
+6. Enable touch gesture detection in your LVGL configuration
 
 ## Usage
 
